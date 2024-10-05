@@ -1,22 +1,39 @@
-<h1>CoralTime</h1>
 
-CoralTime is a simple, easy to use web-based Time Tracking system. Use it to track time for yourself, your team, your project or your company. CoralTime allows for tracking the time by Clients, Projects and Tasks.
+# CoralTime
 
-CoralTime is developed by Coral Team and released as open source product under MIT license. 
+CoralTime is a simple, web-based time-tracking system designed for individuals, teams, projects, and companies. Track time by clients, projects, and tasks with ease.
 
-GitHub: https://github.com/CoralTime/CoralTime
+Developed by the [Coral Team](https://coral.team/) and released as an open-source product under the [MIT License](LICENSE).
 
-<h1>Live Demo</h1>
-http://coraltime.azurewebsites.net/login <br />
-(login as admin/password or user/password or pm/password)
+[GitHub Repository](https://github.com/coral-tech-apps/CoralTime)
 
-<h1>The technology stack</h1>
-.NET Core 2.0 <br>
-Angular 5
+## Live Demo
 
-<h1>How To Run CoralTime</h1> 
-https://github.com/CoralTime/CoralTime/wiki/How-to-run-CoralTime
-<br /><br /><br /><br />
+Check out the live demo at: [CoralTime Demo](http://coraltime.azurewebsites.net/login)  
+Use one of the demo accounts:  
+- **admin/password**
+- **user/password**
+- **pm/password**
 
-coraltime.help@gmail.com <br />
-Copyright 2018, CoralTeam
+## Technology Stack
+
+- **Backend**: .NET Core 2.0
+- **Frontend**: Angular 5
+
+## Getting Started
+
+Follow our [How to Run CoralTime Guide](https://github.com/CoralTime/CoralTime/wiki/How-to-run-CoralTime) to set up and run CoralTime locally.
+
+## Contributing
+
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
+
+## Support
+
+If you have questions or need support, please contact us at: [coraltime.support@coral.team](mailto:coraltime.support@coral.team).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+© 2024, [Coral Team](https://coral.team/)
