@@ -95,8 +95,11 @@ namespace CoralTime.DAL.Repositories
         private bool HasImpersonationHeader(IHttpContextAccessor httpContextAccessor, out StringValues headerImpersonatedUserValue) =>
             GetHeaderValue(httpContextAccessor, Constants.ImpersonatedUserNameHeader, out headerImpersonatedUserValue);
 
-        private bool GetHeaderValue(IHttpContextAccessor httpContextAccessor, string headerName, out StringValues headerValue) =>
-            httpContextAccessor?.HttpContext?.Request?.Headers?.TryGetValue(headerName, out headerValue) ?? false;
+        private bool GetHeaderValue(IHttpContextAccessor httpContextAccessor, string headerName, out StringValues headerValue)
+        {
+            headerValue = default;
+            return httpContextAccessor?.HttpContext?.Request?.Headers?.TryGetValue(headerName, out headerValue) ?? false;
+        }
 
         #endregion Get Impersonated UserName From HttpContext
 

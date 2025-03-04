@@ -1,9 +1,11 @@
-﻿using CoralTime.Services;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -31,27 +33,22 @@ namespace CoralTime
             Process.Start(new ProcessStartInfo("cmd", "/c start http://localhost:5000"));
 #endif
 
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
-
-        public static IWebHostBuilder CreateDefaultBuilder(string[] args)
-        {
-            CurrentDirectoryHelpers.SetCurrentDirectory();
-            var builder = new WebHostBuilder()
-                .UseApplicationInsights()
-                .UseContentRoot(Environment.CurrentDirectory)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
 
                     config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                          .AddJsonFile("defaultDbData.json", optional: true); 
+                          .AddJsonFile("defaultDbData.json", optional: true);
 
                     if (env.IsDevelopment())
                     {
@@ -77,29 +74,6 @@ namespace CoralTime
                     logging.AddConsole();
                     logging.AddDebug();
                 })
-                .UseDefaultServiceProvider((context, options) =>
-                {
-                    options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
-                });
-
-            var isIIS = (Environment.GetEnvironmentVariable("ASPNETCORE_IIS")?? "0") == "1";
-            var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-            if (isDevelopment)
-            {
-                if (isIIS)
-                {
-                    builder.UseIIS();
-                }
-                else
-                {
-                    builder.UseKestrel();
-                }
-            }
-            else
-            {
-                builder.UseIIS();
-            }
-            return builder;
-        }
+            .UseNLog();
     }
 }

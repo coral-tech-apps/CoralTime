@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using CoralTime.BL.Interfaces;
+﻿using CoralTime.BL.Interfaces;
 using CoralTime.BL.Interfaces.Reports;
 using CoralTime.BL.Services;
+using CoralTime.BL.Services.Notifications;
 using CoralTime.BL.Services.Reports.DropDownsAndGrid;
 using CoralTime.BL.Services.Reports.Export;
 using CoralTime.Common.Attributes;
@@ -15,42 +15,39 @@ using CoralTime.Services;
 using CoralTime.ViewModels.Clients;
 using CoralTime.ViewModels.Errors;
 using CoralTime.ViewModels.Member;
+using CoralTime.ViewModels.MemberActions;
 using CoralTime.ViewModels.MemberProjectRoles;
 using CoralTime.ViewModels.ProjectRole;
 using CoralTime.ViewModels.Projects;
 using CoralTime.ViewModels.Settings;
 using CoralTime.ViewModels.Tasks;
+using CoralTime.ViewModels.Vsts;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OData.Edm;
-using NLog.Extensions.Logging;
-using NLog.Web;
+using Microsoft.OData.ModelBuilder;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using CoralTime.BL.Services.Notifications;
-using CoralTime.ViewModels.MemberActions;
-using Microsoft.IdentityModel.Tokens;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
-using Microsoft.IdentityModel.Logging;
-using CoralTime.ViewModels.Vsts;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CoralTime
 {
@@ -63,7 +60,7 @@ namespace CoralTime
 
         private IConfiguration Configuration { get; }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             bool.TryParse(Configuration["UseMySql"], out var useMySql);
             if (useMySql)
@@ -71,6 +68,7 @@ namespace CoralTime
                 // Add MySQL support (At first create DB on MySQL server.)
                 services.AddDbContextPool<AppDbContext>(options =>
                     options.UseMySql(Configuration.GetConnectionString("DefaultConnectionMySQL"),
+                    new MySqlServerVersion(new Version(8, 0, 21)),
                     b => b.MigrationsAssembly("CoralTime.MySqlMigrations")));
             }
             else
@@ -79,7 +77,7 @@ namespace CoralTime
                 services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             }
 
-            IdentityModelEventSource.ShowPII = true; 
+            IdentityModelEventSource.ShowPII = true;
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
@@ -98,51 +96,20 @@ namespace CoralTime
 
             AddApplicationServices(services);
             services.AddMemoryCache();
-            services.AddAutoMapper();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2); 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddControllers().AddOData(opt => opt.AddRouteComponents("odata", GetEdmModel()).EnableQueryFeatures(100));
 
-            // Add OData
-            services.AddOData();
-            services.AddMvcCore(options =>
-            {
-                foreach (var outputFormatter in options.OutputFormatters.OfType<ODataOutputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
-                {
-                    outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
-                }
-                foreach (var inputFormatter in options.InputFormatters.OfType<ODataInputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
-                {
-                    inputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
-                }
-
-                options.EnableEndpointRouting = false; // TODO: Remove when OData does not causes exceptions anymore
-            })
-            .AddJsonOptions(options =>
-            {
-                options.SerializerSettings.Converters.Insert(0, new TrimmingStringConverter());
-            });
-
-            SetupIdentity(services);
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "CoralTime", Version = "v1" });
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "CoralTime", Version = "v1" });
             });
-            
-            return services.BuildServiceProvider();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            //add NLog to ASP.NET Core
-            loggerFactory.AddNLog();
-
-            // Configure NLog
-            env.ConfigureNLog("nlog.config");
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
 
             // Disable ApplicationInsights messages if it isn't configured
@@ -169,21 +136,21 @@ namespace CoralTime
             app.UseIdentityServer();
 
             // Add middleware exceptions
-            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
-            // Add OData
-            var edmModel = SetupODataEntities(app.ApplicationServices);
-
-            //Make sure you add app.UseCors before app.UseMvc otherwise the request will be finished before the CORS middleware is applied
+            //Make sure you add app.UseCors before app.UseRouting otherwise the request will be finished before the CORS middleware is applied
             app.UseCors("AllowAllOrigins");
 
-            app.UseMvc();
+            app.UseRouting();
 
-            app.UseMvc(routeBuilder =>
+            app.UseAuthorization();
+
+            app.UseEndpoints(static endpoints =>
             {
-                routeBuilder.Count().Filter().OrderBy().Expand().Select().MaxTop(null);
-                routeBuilder.MapODataServiceRoute("ODataRoute", BaseODataRoute, edmModel);
-                routeBuilder.EnableDependencyInjection();
+                endpoints.MapControllers();
+
+                // TODO: review it
+                //endpoints.MapODataRouteComponent("ODataRouteComponent", "odata", GetEdmModel());
             });
 
             app.UseSwagger();
@@ -207,7 +174,7 @@ namespace CoralTime
             services.AddSingleton<IConfiguration>(sp => Configuration);
 
             services.AddScoped<BaseService>();
-            
+
             services.AddScoped<UnitOfWork>();
             services.AddScoped<IPersistedGrantDbContext, AppDbContext>();
 
@@ -245,107 +212,17 @@ namespace CoralTime
                 {
                     context.Request.Path = new PathString("/");
 
-                    context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
-                    context.Response.Headers.Add("Expires", "-1");
+                    context.Response.Headers.Append("Cache-Control", "no-cache, no-store");
+                    context.Response.Headers.Append("Expires", "-1");
                 }
 
                 await next();
             });
         }
 
-        private void SetupIdentity(IServiceCollection services)
+        private static IEdmModel GetEdmModel()
         {
-            var isDemo = bool.Parse(Configuration["DemoSiteMode"]);
-
-            // Identity options.
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings.
-                if (isDemo)
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                }
-                else
-                {
-                    options.Password.RequireDigit = true;
-                    options.Password.RequireNonAlphanumeric = true;
-                    options.Password.RequireUppercase = true;
-                    options.Password.RequireLowercase = true;
-                }
-
-                options.Password.RequiredLength = 8;
-                options.User.RequireUniqueEmail = true;
-            });
-
-
-
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = Configuration["Authority"],
-                ValidateAudience = true,
-                ValidAudience = Constants.Authorization.WebApiScope,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            };
-            var clients = Config.GetClients(Configuration);
-
-            if (isDemo)
-            {
-                services.AddIdentityServer()
-                    .AddDeveloperSigningCredential()
-                    .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                    .AddInMemoryApiResources(Config.GetApiResources())
-                    .AddInMemoryClients(clients)
-                    .AddAspNetIdentity<ApplicationUser>()
-                    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
-                    .AddProfileService<IdentityWithAdditionalClaimsProfileService>();
-            }
-            else
-            {
-                var cert = new X509Certificate2("coraltime.pfx", "", X509KeyStorageFlags.MachineKeySet);
-
-                services.AddIdentityServer()
-                    .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                    .AddInMemoryApiResources(Config.GetApiResources())
-                    .AddInMemoryClients(clients)
-                    .AddAspNetIdentity<ApplicationUser>()
-                    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
-                    .AddSigningCredential(cert)
-                    .AddProfileService<IdentityWithAdditionalClaimsProfileService>()
-                    .AddOperationalStore<AppDbContext>(options =>
-                        {
-                            options.EnableTokenCleanup = true;
-                        }
-                    );
-                var key = new X509SecurityKey(cert);
-                tokenValidationParameters.IssuerSigningKey = key;
-                tokenValidationParameters.ValidateIssuerSigningKey = true;
-            }
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = Constants.Authorization.AuthenticateScheme;
-                options.DefaultChallengeScheme = Constants.Authorization.AuthenticateScheme;
-                options.DefaultForbidScheme = "Identity.Application";
-            }).AddJwtBearer(options =>
-                {
-                    // name of the API resource
-                    options.Audience = Constants.Authorization.WebApiScope;
-                    options.Authority = Configuration["Authority"];
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = tokenValidationParameters;
-                });
-
-            services.AddAuthorization(Config.CreateAuthorizationOptions);
-        }
-
-        private static IEdmModel SetupODataEntities(IServiceProvider serviceProvider)
-        {
-            var builder = new ODataConventionModelBuilder(serviceProvider);
+            var builder = new ODataConventionModelBuilder();
             builder.EntitySet<ClientView>("Clients");
             builder.EntitySet<ProjectView>("Projects");
             builder.EntitySet<MemberView>("Members");
@@ -362,7 +239,7 @@ namespace CoralTime
             return builder.GetEdmModel();
         }
 
-        private void CombineFileWkhtmltopdf(IHostingEnvironment environment)
+        private void CombineFileWkhtmltopdf(IWebHostEnvironment environment)
         {
             var fileNameWkhtmltopdf = "wkhtmltopdf.exe";
             var patchContentRoot = environment.ContentRootPath;

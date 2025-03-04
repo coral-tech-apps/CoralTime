@@ -1,13 +1,14 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.MemberProjectRoles;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Routing;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using Microsoft.AspNetCore.OData.Formatter;
 
 namespace CoralTime.Api.v1.Odata.Members
 {
@@ -33,7 +34,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         // GET api/v1/odata/MemberProjectRoles(2)
-        [ODataRoute(MemberProjectRolesWithIdRoute)]
+        [ODataRouteComponent(MemberProjectRolesWithIdRoute)]
         [HttpGet(IdRoute)]
         public IActionResult GetById([FromODataUri]int id)
         {
@@ -48,7 +49,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         // GET api/v1/odata/MemberProjectRoles(2)/members
-        [ODataRoute(MemberProjectRolesRouteWithMembers)]
+        [ODataRouteComponent(MemberProjectRolesRouteWithMembers)]
         [HttpGet(IdRouteWithMembers)]
         public IActionResult GetNotAssignMembersAtProjByProjectId([FromODataUri] int id)
         {
@@ -63,7 +64,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         // GET api/v1/odata/MemberProjectRoles(2)/projects
-        [ODataRoute(MemberProjectRolesRouteWithProjects)]
+        [ODataRouteComponent(MemberProjectRolesRouteWithProjects)]
         [HttpGet(IdRouteWithProjects)]
         public IActionResult GetNotAssignMembersAtProjByMemberId([FromODataUri] int id)
         {
@@ -84,7 +85,7 @@ namespace CoralTime.Api.v1.Odata.Members
             try
             {
                 var value = _service.Create(projectRole);
-                var locationUri = $"{Request.Host}/{BaseODataRoute}/MemberProjectRoles({value.Id})";
+                var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/MemberProjectRoles({value.Id})";
 
                 return Created(locationUri, value);
             }
@@ -95,7 +96,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         // PUT: api/v1/odata/MemberProjectRoles(2)
-        [ODataRoute(MemberProjectRolesWithIdRoute)]
+        [ODataRouteComponent(MemberProjectRolesWithIdRoute)]
         [HttpPut(IdRoute)]
         public IActionResult Update([FromODataUri] int id, [FromBody]dynamic projectRole)
         {
@@ -113,7 +114,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         // PATCH: api/v1/odata/MemberProjectRoles(2)
-        [ODataRoute(MemberProjectRolesWithIdRoute)]
+        [ODataRouteComponent(MemberProjectRolesWithIdRoute)]
         [HttpPatch(IdRoute)]
         public IActionResult Patch([FromODataUri] int id, [FromBody] MemberProjectRoleView projectRole)
         {
@@ -131,7 +132,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         //DELETE :api/v1/odata/MemberProjectRoles(1)
-        [ODataRoute(MemberProjectRolesWithIdRoute)]
+        [ODataRouteComponent(MemberProjectRolesWithIdRoute)]
         [HttpDelete(IdRoute)]
         public IActionResult Delete([FromODataUri] int id)
         {

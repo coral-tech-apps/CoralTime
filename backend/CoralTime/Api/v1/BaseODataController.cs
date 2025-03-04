@@ -1,11 +1,12 @@
 ﻿using CoralTime.Common.Middlewares;
 using CoralTime.ViewModels.Errors;
-using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace CoralTime.Api.v1
 {

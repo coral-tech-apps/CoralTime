@@ -1,39 +1,42 @@
 ﻿using CoralTime.BL.Interfaces;
 using CoralTime.Common.Exceptions;
 using CoralTime.ViewModels.Vsts;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.Extensions.Logging;
 using System;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
-
+using Microsoft.AspNetCore.OData.Formatter;
 
 namespace CoralTime.Api.v1.Odata
 {
     [Route(BaseODataControllerRoute)]
     [Authorize(Roles = ApplicationRoleAdmin)]
-    public class VstsProjectIntegrationController : BaseODataController<VstsProjectIntegrationController, IVstsService>
+    public class VstsProjectIntegrationController : ODataController
     {
+        private readonly IVstsService _service;
         private readonly IVstsAdminService _vstsAdminService;
+        private readonly ILogger<VstsProjectIntegrationController> _logger;
 
         public VstsProjectIntegrationController(IVstsService service, IVstsAdminService vstsAdminService, ILogger<VstsProjectIntegrationController> logger)
-            : base(logger, service)
         {
+            _service = service;
             _vstsAdminService = vstsAdminService;
+            _logger = logger;
         }
 
         // GET: api/v1/odata/VstsProjectIntegration
         [HttpGet]
-        public IActionResult Get() => new ObjectResult(_service.Get());
+        public IActionResult Get() => Ok(_service.Get());
 
         // GET api/v1/odata/VstsProjectIntegration(2)/members
-        [ODataRoute(VstsProjectIntegrationMembersByProject)]
         [HttpGet(IdRouteWithMembers)]
-        public IActionResult GetNotAssignMembersAtProjByProjectId([FromODataUri] int id)
+        [ODataRouteComponent(VstsProjectIntegrationMembersByProject)]
+        public IActionResult GetNotAssignMembersAtProjByProjectId([FromRoute] int id)
         {
             try
             {
@@ -47,7 +50,7 @@ namespace CoralTime.Api.v1.Odata
 
         // POST api/v1/odata/VstsProjectIntegration
         [HttpPost]
-        public IActionResult Create([FromBody]VstsProjectIntegrationView vstsProjectIntegrationView)
+        public IActionResult Create([FromBody] VstsProjectIntegrationView vstsProjectIntegrationView)
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +63,7 @@ namespace CoralTime.Api.v1.Odata
 
                 UpdateVstsInfo(vstsProjectIntegrationViewResult);
 
-                var locationUri = $"{Request.Host}/{BaseODataRoute}/VstsProjectIntegrationView({vstsProjectIntegrationViewResult.Id})";
+                var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/VstsProjectIntegrationView({vstsProjectIntegrationViewResult.Id})";
 
                 return Created(locationUri, vstsProjectIntegrationViewResult);
             }
@@ -71,7 +74,6 @@ namespace CoralTime.Api.v1.Odata
         }
 
         // PUT api/v1/odata/VstsProjectIntegration(1)
-        [ODataRoute(VstsProjectIntegrationWithIdRoute)]
         [HttpPut(IdRoute)]
         public IActionResult Update([FromODataUri] int id, [FromBody]VstsProjectIntegrationView vstsProjectIntegrationView)
         {
@@ -88,7 +90,7 @@ namespace CoralTime.Api.v1.Odata
 
                 UpdateVstsInfo(vstsProjectIntegrationViewResult);
 
-                return new ObjectResult(vstsProjectIntegrationViewResult);
+                return Ok(vstsProjectIntegrationViewResult);
             }
             catch (Exception e)
             {
@@ -96,15 +98,14 @@ namespace CoralTime.Api.v1.Odata
             }
         }
 
-        //DELETE :api/v1/odata/VstsProjectIntegration(1)
-        [ODataRoute(VstsProjectIntegrationWithIdRoute)]
+        // DELETE api/v1/odata/VstsProjectIntegration(1)
         [HttpDelete(IdRoute)]
         public IActionResult Delete([FromODataUri] int id)
         {
             try
             {
                 var result = _service.Delete(id);
-                return new ObjectResult(null);
+                return NoContent();
             }
             catch (Exception e)
             {
@@ -127,6 +128,17 @@ namespace CoralTime.Api.v1.Odata
             {
                 throw new CoralTimeSafeEntityException("Error getting VSTS users info");
             }
+        }
+
+        private IActionResult SendErrorODataResponse(Exception exception)
+        {
+            _logger.LogError(exception, exception.Message);
+            return StatusCode(500, new { error = exception.Message });
+        }
+
+        private IActionResult SendInvalidModelResponse()
+        {
+            return BadRequest(ModelState);
         }
     }
 }

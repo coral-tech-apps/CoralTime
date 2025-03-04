@@ -97,8 +97,8 @@ namespace CoralTime.Common.Constants
             
             public static class OData
             {
-                public const string BaseODataRoute = BaseApiRoute + "odata";
-                public const string BaseODataControllerRoute = BaseODataRoute + "/[controller]";
+                public const string BaseODataRouteComponent = BaseApiRoute + "odata";
+                public const string BaseODataControllerRoute = BaseODataRouteComponent + "/[controller]";
                 public const string TasksWithIdRoute = "Tasks(" + IdRoute + ")";
                 public const string ClientsWithIdRoute = "Clients(" + IdRoute + ")";
                 public const string ProjectsWithIdRoute = "Projects(" + IdRoute + ")";

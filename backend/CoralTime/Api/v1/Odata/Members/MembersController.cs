@@ -1,7 +1,7 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.Member;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Routing;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using Microsoft.AspNetCore.OData.Formatter;
 
 namespace CoralTime.Api.v1.Odata.Members
 {
@@ -35,7 +36,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         // GET api/v1/odata/Members(5)
-        [ODataRoute(MembersWithIdRoute)]
+        [ODataRouteComponent(MembersWithIdRoute)]
         [HttpGet(IdRoute)]
         public IActionResult GetById([FromODataUri]int id)
         {
@@ -50,7 +51,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         // GET api/v1/odata/Members(2)/projects
-        [ODataRoute(MembersRouteWithProjects)]
+        [ODataRouteComponent(MembersRouteWithProjects)]
         [HttpGet(IdRouteWithProjects)]
         public IActionResult GetProjects([FromODataUri]int id)
         {
@@ -76,13 +77,13 @@ namespace CoralTime.Api.v1.Odata.Members
 
             var createdMemberView = await _service.CreateNewUser(memberView, GetBaseUrl());
 
-            var locationUri = $"{Request.Host}/{BaseODataRoute}/Members/{memberView.Id}";
+            var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/Members/{memberView.Id}";
 
             return base.Created(locationUri, (object)createdMemberView);
         }
 
         // PUT: api/v1/odata/Members(1)
-        [ODataRoute(MembersWithIdRoute)]
+        [ODataRouteComponent(MembersWithIdRoute)]
         [HttpPut(IdRoute)]
         public async Task<IActionResult> Update([FromODataUri]int id, [FromBody]MemberView memberView)
         {
@@ -104,7 +105,7 @@ namespace CoralTime.Api.v1.Odata.Members
         }
 
         //DELETE :api/v1/odata/Members(1)
-        [ODataRoute(MembersWithIdRoute)]
+        [ODataRouteComponent(MembersWithIdRoute)]
         [HttpDelete(IdRoute)]
         [Authorize(Roles = ApplicationRoleAdmin)]
         public IActionResult Delete([FromODataUri]int id) => BadRequest($"Can't delete the member with Id - {id}");

@@ -87,7 +87,9 @@ namespace CoralTime.Services
                 var tokenToCheck = new JwtSecurityToken(jwtToken);
                 var x5t = tokenToCheck.Header.X5t;
                 var x509data = Encoding.ASCII.GetBytes(certificates.Keys.FirstOrDefault(x => x.X5t == x5t).X5c.FirstOrDefault());
-                var certificate = new X509SecurityKey(new X509Certificate2(x509data));
+
+                var certificate = X509CertificateLoader.LoadCertificate(x509data);
+                var securityKey = new X509SecurityKey(certificate);
 
                 var azureIssuer = _config["Authentication:AzureAd:Issuer"];
                 var tokenValidationParameters = new TokenValidationParameters
@@ -96,10 +98,10 @@ namespace CoralTime.Services
                     ValidIssuer = azureIssuer,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = certificate,
+                    IssuerSigningKey = securityKey,
                     ValidateAudience = true,
                     ValidAudience = _config["Authentication:AzureAd:Audience"]
-            };
+                };
 
                 var jwtHandler = new JwtSecurityTokenHandler();
                 jwtHandler.ValidateToken(jwtToken, tokenValidationParameters, out var securityToken);
