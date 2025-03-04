@@ -17,7 +17,7 @@ Use one of the demo accounts:
 
 ## Technology Stack
 
-- **Backend**: .NET Core 2.0
+- **Backend**: .NET 9.0
 - **Frontend**: Angular 5
 
 ## Getting Started
@@ -36,4 +36,4 @@ If you have questions or need support, please contact us at: [coraltime.support@
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-© 2024, [Coral Team](https://coral.team/)
+© 2025, [Coral Team](https://coral.team/)
