@@ -31,8 +31,10 @@ namespace CoralTime.DAL
 
         public static async Task InitializeFirstTimeDataBaseAsync(IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            using (DbContext = serviceProvider.GetRequiredService<AppDbContext>())
+            using(var scope = serviceProvider.CreateScope())
+            //using (DbContext = serviceProvider.GetRequiredService<AppDbContext>())
             {
+                var DbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var isExistDataBase = (DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
 
                 if (!isExistDataBase)

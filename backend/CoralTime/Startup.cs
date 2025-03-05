@@ -94,6 +94,8 @@ namespace CoralTime
                     });
             });
 
+            SetupIdentity(services);
+
             AddApplicationServices(services);
             services.AddMemoryCache();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -237,6 +239,100 @@ namespace CoralTime
             builder.EntitySet<VstsProjectIntegrationView>("VstsProjectIntegration");
             builder.EnableLowerCamelCase();
             return builder.GetEdmModel();
+        }
+
+        private void SetupIdentity(IServiceCollection services)
+        {
+            var isDemo = bool.Parse(Configuration["DemoSiteMode"]);
+
+            // Identity options.
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                if (isDemo)
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                }
+                else
+                {
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireNonAlphanumeric = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequireLowercase = true;
+                }
+
+                options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = true;
+            });
+
+            var accessTokenLifetime = int.Parse(Configuration["AccessTokenLifetime"]);
+            var refreshTokenLifetime = int.Parse(Configuration["RefreshTokenLifetime"]);
+            var slidingRefreshTokenLifetime = int.Parse(Configuration["SlidingRefreshTokenLifetime"]);
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = Configuration["Authority"],
+                ValidateAudience = true,
+                ValidAudience = "WebAPI",
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            if (isDemo)
+            {
+                services.AddIdentityServer()
+                    .AddDeveloperSigningCredential()
+                    .AddInMemoryIdentityResources(Config.GetIdentityResources())
+                    .AddInMemoryApiResources(Config.GetApiResources())
+                    .AddInMemoryClients((Config.GetClients(Configuration)))
+                    .AddAspNetIdentity<ApplicationUser>()
+                    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+                    .AddProfileService<IdentityWithAdditionalClaimsProfileService>();
+            }
+            else
+            {
+                var cert = new X509Certificate2("coraltime.pfx", "", X509KeyStorageFlags.MachineKeySet);
+
+                services.AddIdentityServer()
+                    .AddInMemoryIdentityResources(Config.GetIdentityResources())
+                    .AddInMemoryApiResources(Config.GetApiResources())
+                    .AddInMemoryClients(Config.GetClients(Configuration))
+                    .AddAspNetIdentity<ApplicationUser>()
+                    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+                    .AddSigningCredential(cert)
+                    .AddProfileService<IdentityWithAdditionalClaimsProfileService>()
+                    .AddOperationalStore<AppDbContext>(options =>
+                    {
+                        options.EnableTokenCleanup = true;
+                    }
+                    );
+                var key = new X509SecurityKey(cert);
+                tokenValidationParameters.IssuerSigningKey = key;
+                tokenValidationParameters.ValidateIssuerSigningKey = true;
+            }
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
+                options.DefaultForbidScheme = "Identity.Application";
+            }).AddJwtBearer(options =>
+            {
+                // name of the API resource
+                options.Audience = "WebAPI";
+                options.Authority = Configuration["Authority"];
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = tokenValidationParameters;
+            });
+
+            services.AddAuthorization(options =>
+            {
+                Config.CreateAuthorizationOptions(options);
+            });
         }
 
         private void CombineFileWkhtmltopdf(IWebHostEnvironment environment)

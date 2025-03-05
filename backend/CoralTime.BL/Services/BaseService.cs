@@ -16,7 +16,7 @@ namespace CoralTime.BL.Services
         protected Member BaseMemberCurrent => Uow.MemberCurrent;
         protected Member BaseMemberImpersonated => Uow.MemberImpersonated;
 
-        protected BaseService(UnitOfWork uow, IMapper mapper = null)
+        public BaseService(UnitOfWork uow, IMapper mapper = null)
         {
             Uow = uow;
             Mapper = mapper;
