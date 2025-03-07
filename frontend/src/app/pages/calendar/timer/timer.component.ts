@@ -1,10 +1,12 @@
+
+import {timer as observableTimer,  Observable, Subscription } from 'rxjs';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
 import { CalendarDay, DateUtils, Time, TimeEntry, TimerResponse } from '../../../models/calendar';
 import { Project } from '../../../models/project';
 import { Task } from '../../../models/task';
 import { User } from '../../../models/user';
+import { AclService } from '../../../core/auth/acl.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ArrayUtils, ObjectUtils } from '../../../core/object-utils';
 import { CalendarService } from '../../../services/calendar.service';
@@ -13,6 +15,7 @@ import { ImpersonationService } from '../../../services/impersonation.service';
 import { NotificationService } from '../../../core/notification.service';
 import { TasksService } from '../../../services/tasks.service';
 import { LoadingMaskService } from '../../../shared/loading-indicator/loading-mask.service';
+import { SettingsService } from '../../../services/settings.service';
 
 export const MAX_TIMER_VALUE = 86399;
 
@@ -26,8 +29,10 @@ export class TimerComponent implements OnInit, OnDestroy {
 
 	defaultProject: Project;
 	defaultTask: Task;
+	isTimerEnabled: boolean;
 	isTimerLoading: boolean;
 	isTimerLoading2: boolean;
+	isEstimatedTimeEnabled: boolean;
 	timeEntry: TimeEntry;
 	ticks: number = 0;
 	timerValue: Time;
@@ -38,20 +43,25 @@ export class TimerComponent implements OnInit, OnDestroy {
 	private subscriptionImpersonation: Subscription;
 	private timerSubscription: Subscription;
 
-	constructor(private authService: AuthService,
+	constructor(private aclService: AclService,
+	            private authService: AuthService,
 	            private calendarService: CalendarService,
 	            private impersonationService: ImpersonationService,
 	            private loadingService: LoadingMaskService,
 	            private notificationService: NotificationService,
 	            private projectsService: CalendarProjectsService,
 	            private route: ActivatedRoute,
-	            private tasksService: TasksService) {
+	            private tasksService: TasksService,
+	            private settingsService: SettingsService) {
 	}
 
 	ngOnInit() {
 		this.route.data.forEach((data: { user: User }) => {
 			this.userInfo = data.user;
 		});
+
+		this.isTimerEnabled = this.settingsService.getIsTimerEnabled();
+		this.isEstimatedTimeEnabled = this.settingsService.getIsEstimatedTimeEnabled();
 
 		if (!this.getImpersonationUser()) {
 			this.initTimer();
@@ -158,7 +168,7 @@ export class TimerComponent implements OnInit, OnDestroy {
 	}
 
 	startTimerFront(): void {
-		const timer = Observable.timer(0, 1000);
+		const timer = observableTimer(0, 1000);
 		this.timerSubscription = timer.subscribe(() => {
 			this.ticks = DateUtils.getSecondsFromStartDay(true) - this.timeEntry.timeOptions.timeTimerStart
 				+ this.timeEntry.timeValues.timeActual;
@@ -303,7 +313,7 @@ export class TimerComponent implements OnInit, OnDestroy {
 		let errorMessage: string;
 
 		let isTimeEntryAvailable: boolean;
-		if (this.userInfo.isAdmin || this.timeEntry.isUserManagerOnProject) {
+		if (this.aclService.isGranted("ManagesAllProjects") || this.timeEntry.isUserManagerOnProject) {
 			isTimeEntryAvailable = true;
 		} else {
 			isTimeEntryAvailable = !this.timeEntry.isLocked

@@ -50,8 +50,7 @@ export interface ReportDropdownsDetails {
 export interface CurrentUserDetails {
 	currentUserFullName: string;
 	currentUserId: number;
-	isAdminCurrentUser: boolean;
-	isManagerCurrentUser: boolean;
+	currentUserRole: string;
 }
 
 export interface ClientDetail {
@@ -107,6 +106,8 @@ export interface GroupByType {
 	memberUrlIcon: string;
 	projectId: number;
 	projectName: string;
+	taskId: string;
+	taskName: string;
 	workingHoursPerDay: number;
 }
 

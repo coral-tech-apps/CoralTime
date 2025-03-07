@@ -1,8 +1,11 @@
+
+import {finalize, switchMap, debounceTime} from 'rxjs/operators';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Project } from '../../../models/project';
 import { UserProject } from '../../../models/user-project';
 import { UsersService } from '../../../services/users.service';
 import { NotificationService } from '../../../core/notification.service';
+import { AclService } from '../../../core/auth/acl.service';
 import { AuthUser } from '../../../core/auth/auth-user';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ProjectRolesService } from '../../../services/project-roles.service';
@@ -10,7 +13,7 @@ import { SettingsService } from '../../../services/settings.service';
 import { ProjectRole } from '../../../models/project-role';
 import { User } from '../../../models/user';
 import { PagedResult } from '../../../services/odata';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { ArrayUtils } from '../../../core/object-utils';
 import { ROWS_ON_PAGE } from '../../../core/constant.service';
 
@@ -21,9 +24,10 @@ import { ROWS_ON_PAGE } from '../../../core/constant.service';
 
 export class ProjectUsersComponent implements OnInit {
 	@Input() project: Project;
-	@ViewChild('grid') gridContainer: ElementRef;
+	@ViewChild('grid', { static: true }) gridContainer: ElementRef;
 
 	authUser: AuthUser;
+	canAssignProjectManager: boolean = false;
 	defaultProjectRole: ProjectRole;
 	filterStr: string = '';
 	projectRoles: ProjectRole[];
@@ -42,7 +46,8 @@ export class ProjectUsersComponent implements OnInit {
 	private notAssignedUsersLastEvent: any;
 	private notAssignedUsersSubject = new Subject<any>();
 
-	constructor(private authService: AuthService,
+	constructor(private aclService: AclService,
+	            private authService: AuthService,
 	            private notificationService: NotificationService,
 	            private projectRolesService: ProjectRolesService,
 	            private settingsService: SettingsService,
@@ -51,11 +56,12 @@ export class ProjectUsersComponent implements OnInit {
 
 	ngOnInit() {
 		this.authUser = this.authService.authUser;
+		this.canAssignProjectManager = this.aclService.isGranted("AssignProjectManager");
 		this.getProjectRoles();
 		this.loadAssignedUsers();
 		this.loadNotAssignedUsers();
 
-		this.wrapperHeightObservable.debounceTime(100).subscribe(() => {
+		this.wrapperHeightObservable.pipe(debounceTime(100)).subscribe(() => {
 			this.changeScrollableContainer();
 			this.resizeObservable.next();
 		});
@@ -74,9 +80,9 @@ export class ProjectUsersComponent implements OnInit {
 	// ASSIGNED USERS GRID
 
 	loadAssignedUsers(): void {
-		this.assignedUsersSubject.debounceTime(500).switchMap(() => {
+		this.assignedUsersSubject.pipe(debounceTime(500),switchMap(() => {
 			return this.usersService.getProjectUsersWithCount(this.assignedUsersLastEvent, this.filterStr, this.project.id);
-		})
+		}),)
 			.subscribe((res: PagedResult<UserProject>) => {
 					if (!this.assignedUsersPagedResult || !this.assignedUsersLastEvent.first || this.updatingAssignedUsersGrid) {
 						this.assignedUsersPagedResult = res;
@@ -136,9 +142,9 @@ export class ProjectUsersComponent implements OnInit {
 	// NOT ASSIGNED USERS GRID
 
 	loadNotAssignedUsers(): void {
-		this.notAssignedUsersSubject.debounceTime(500).switchMap(() => {
+		this.notAssignedUsersSubject.pipe(debounceTime(500),switchMap(() => {
 			return this.usersService.getUnassignedUsersWithCount(this.notAssignedUsersLastEvent, this.filterStr, this.project.id);
-		})
+		}),)
 			.subscribe((res: PagedResult<User>) => {
 					if (!this.notAssignedUsersPagedResult || !this.notAssignedUsersLastEvent.first || this.updatingNotAssignedUsersGrid) {
 						this.notAssignedUsersPagedResult = res;
@@ -210,8 +216,8 @@ export class ProjectUsersComponent implements OnInit {
 
 	assignToPublic(userProject: UserProject, target: HTMLElement): void {
 		target.classList.add('ct-loading');
-		this.usersService.assignProjectToUser(userProject.memberId, userProject.projectId, userProject.roleId)
-			.finally(() => target.classList.remove('ct-loading'))
+		this.usersService.assignProjectToUser(userProject.memberId, userProject.projectId, userProject.roleId).pipe(
+			finalize(() => target.classList.remove('ct-loading')))
 			.subscribe(() => {
 					this.notificationService.success('Access level has been changed.');
 					this.updateAssignedUsers(null, true);
@@ -225,8 +231,8 @@ export class ProjectUsersComponent implements OnInit {
 
 	changeRole(userProject: UserProject, target: HTMLElement): void {
 		target.classList.add('ct-loading');
-		this.usersService.changeRole(userProject.id, userProject.role.id)
-			.finally(() => target.classList.remove('ct-loading'))
+		this.usersService.changeRole(userProject.id, userProject.role.id).pipe(
+			finalize(() => target.classList.remove('ct-loading')))
 			.subscribe(() => {
 					this.notificationService.success('Access level has been changed.');
 					this.updateAssignedUsers(null, true);

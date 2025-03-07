@@ -1,13 +1,15 @@
+
+import {forkJoin as observableForkJoin,  Observable } from 'rxjs';
 import {
 	Component, Input, ViewChild, EventEmitter, Output, OnInit, QueryList, ViewChildren, ElementRef
 } from '@angular/core';
-import { MatDialogRef, MatDialog } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import Moment = moment.Moment;
-import { Observable } from 'rxjs';
 import { TimeEntry, DateUtils, CalendarDay } from '../../../../models/calendar';
 import { User } from '../../../../models/user';
+import { AclService } from '../../../../core/auth/acl.service';
 import { NotificationService } from '../../../../core/notification.service';
 import { CalendarService } from '../../../../services/calendar.service';
 import { ImpersonationService } from '../../../../services/impersonation.service';
@@ -28,7 +30,7 @@ export class CalendarTaskComponent implements OnInit {
 	@Output() closeEntryTimeForm: EventEmitter<void> = new EventEmitter<void>();
 	@Output() timeEntryDeleted: EventEmitter<void> = new EventEmitter<void>();
 
-	@ViewChild('form') form: EntryTimeComponent;
+	@ViewChild('form', { static: true }) form: EntryTimeComponent;
 	@ViewChildren(MenuComponent) menuList: QueryList<MenuComponent>;
 
 	dialogRef: MatDialogRef<MultipleDatepickerComponent>;
@@ -37,14 +39,14 @@ export class CalendarTaskComponent implements OnInit {
 	isOpenRight: boolean = false;
 	isOpenMobile: boolean = false;
 	isTimeEntryAvailable: boolean;
-	isUserAdmin: boolean;
 	isUserManagerOnProject: boolean;
 	firstDayOfWeek: number;
 	lockReason: string = '';
 	selectedDate: string;
 	timeFormat: number;
 
-	constructor(private route: ActivatedRoute,
+	constructor(private aclService: AclService,              
+	            private route: ActivatedRoute,
 	            private calendarService: CalendarService,
 	            private dialog: MatDialog,
 	            private elementRef: ElementRef,
@@ -56,7 +58,6 @@ export class CalendarTaskComponent implements OnInit {
 		this.route.data.forEach((data: { user: User }) => {
 			let user = this.impersonationService.impersonationUser || data.user;
 			this.firstDayOfWeek = user.weekStart;
-			this.isUserAdmin = data.user.isAdmin;
 			this.timeFormat = data.user.timeFormat;
 		});
 
@@ -157,7 +158,7 @@ export class CalendarTaskComponent implements OnInit {
 			observableList.push(this.calendarService.Post(currentTimeEntry));
 		});
 
-		Observable.forkJoin(observableList).subscribe(
+		observableForkJoin(observableList).subscribe(
 			() => {
 				this.notificationService.success('New Time Entry has been successfully dublicated.');
 				this.calendarService.timeEntriesUpdated.emit();
@@ -254,7 +255,7 @@ export class CalendarTaskComponent implements OnInit {
 			this.lockReason += '\nTime Entry is locked, because the task is archived.';
 		}
 
-		if (this.isUserAdmin || this.isUserManagerOnProject) {
+		if (this.aclService.isGranted("ManagesAllProjects") || this.isUserManagerOnProject) {
 			this.isTimeEntryAvailable = true;
 		} else {
 			this.isTimeEntryAvailable = !this.timeEntry.isLocked

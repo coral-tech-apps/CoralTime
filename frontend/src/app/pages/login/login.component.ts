@@ -1,3 +1,5 @@
+
+import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalConfig, Authentication } from 'adal-ts';
@@ -29,7 +31,8 @@ export class LoginComponent implements OnInit {
 
 	ngOnInit() {
 		this.route.data.forEach((data: { loginSettings: LoginSettings }) => {
-            this.setupAppInsights(data.loginSettings.instrumentationKey);
+			this.setupAppInsights(data.loginSettings.instrumentationKey);
+			this.authService.roles = data.loginSettings.roles;
 			if (data.loginSettings.enableAzure) {
 				this.enableAzure = true;                
 				this.createConfig(data.loginSettings.azureSettings);
@@ -40,8 +43,8 @@ export class LoginComponent implements OnInit {
 	login(): void {
 		this.errorMessage = null;
 		this.loadingService.addLoading();
-		this.authService.login(this.username, this.password)
-			.finally(() => this.loadingService.removeLoading())
+		this.authService.login(this.username, this.password).pipe(
+			finalize(() => this.loadingService.removeLoading()))
 			.subscribe(
 				data => this.router.navigateByUrl('/' + this.auth.url),
 				error => this.handleError(error)
@@ -79,12 +82,15 @@ export class LoginComponent implements OnInit {
 			tenant: azureSettings.tenant,
 			clientId: azureSettings.clientId,
 			postLogoutRedirectUrl: window.location.origin + '/',
-			redirectUri: azureSettings.redirectUrl
+			redirectUri: azureSettings.redirectUrl,
+			resource: null,
+			responseType: null,
+			extraQueryParameter: null
 		};
 
 		return;
 	}
-	
+
 	private setupAppInsights(instrumentationKey: string ): void {
         localStorage.setItem('instrumentationKey', instrumentationKey);
 		if (instrumentationKey!= null && instrumentationKey !='') {

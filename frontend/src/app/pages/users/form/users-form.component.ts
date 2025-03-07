@@ -1,9 +1,11 @@
+
+import {forkJoin as observableForkJoin, of as observableOf,  Observable } from 'rxjs';
+
+import {map, finalize} from 'rxjs/operators';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Observable } from 'rxjs/Observable';
 import { User } from '../../../models/user';
-import { Roles } from '../../../core/auth/permissions';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthUser } from '../../../core/auth/auth-user';
 import { ArrayUtils } from '../../../core/object-utils';
@@ -11,13 +13,14 @@ import { EMAIL_PATTERN } from '../../../core/constant.service';
 import { ImpersonationService } from '../../../services/impersonation.service';
 import { UsersService } from '../../../services/users.service';
 import { LoadingMaskService } from '../../../shared/loading-indicator/loading-mask.service';
+import { SettingsService } from '../../../services/settings.service';
 
 class FormUser {
 	email: string;
 	fullName: string;
 	id: number;
 	isActive: boolean;
-	role: number;
+	role: string;
 	userName: string;
 
 	static fromUser(user: User) {
@@ -27,12 +30,7 @@ class FormUser {
 		instance.userName = user.userName;
 		instance.email = user.email;
 		instance.isActive = user.id ? user.isActive : true;
-
-		if (user.isAdmin) {
-			instance.role = Roles.admin;
-		} else if (user.id) {
-			instance.role = Roles.user;
-		}
+		instance.role = user.role;
 
 		return instance;
 	}
@@ -47,8 +45,7 @@ class FormUser {
 			fullName: this.fullName,
 			id: this.id,
 			isActive: this.isActive,
-			isAdmin: this.role === Roles.admin,
-			isManager: user.isManager,
+			role: this.role,
 			isWeeklyTimeEntryUpdatesSend: user.isWeeklyTimeEntryUpdatesSend,
 			projectsCount: user.projectsCount,
 			sendEmailDays: user.sendEmailDays,
@@ -80,16 +77,12 @@ export class UsersFormComponent implements OnInit {
 	isActive: boolean;
 	isNewUser: boolean;
 	model: FormUser;
-	roleModel: any;
+	roleModel: string;
 	showErrors: boolean[] = []; // [showEmailError, showFullNameError, showUserNameError]
 	stateModel: any;
 	stateText: string;
 	userNotification: string;
-
-	roles = [
-		{value: Roles.admin, title: 'admin'},
-		{value: Roles.user, title: 'user'}
-	];
+	roles: string[];
 
 	states = [
 		{value: true, title: 'active'},
@@ -99,6 +92,7 @@ export class UsersFormComponent implements OnInit {
 	constructor(private authService: AuthService,
 	            private impersonationService: ImpersonationService,
 	            private loadingService: LoadingMaskService,
+	            private settingsService: SettingsService,
 	            private translatePipe: TranslatePipe,
 	            private userService: UsersService) { }
 
@@ -112,7 +106,8 @@ export class UsersFormComponent implements OnInit {
 		this.submitButtonText = this.user.id ? 'Save' : 'Create';
 
 		this.model = FormUser.fromUser(this.user);
-		this.roleModel = this.user.id ? this.roles.filter((role) => role.value === this.model.role)[0] : this.roles[1];
+		this.roles = Object.keys(this.authService.roles);
+		this.roleModel = this.model.role;
 		this.dialogHeader = this.user.id ? 'Edit' : this.translatePipe.transform('Create New User');
 		this.userNotification = this.user.id ? 'Send update account email' : 'Send invitation email';
 		this.stateModel = ArrayUtils.findByProperty(this.states, 'value', this.model.isActive);
@@ -125,13 +120,13 @@ export class UsersFormComponent implements OnInit {
 	}
 
 	roleOnChange(): void {
-		this.model.role = this.roleModel.value;
+		this.model.role = this.roleModel;
 	}
 
 	validateAndSubmit(form: NgForm): void {
 		this.isValidateLoading = true;
-		this.validateForm(form)
-			.finally(() => this.isValidateLoading = false)
+		this.validateForm(form).pipe(
+			finalize(() => this.isValidateLoading = false))
 			.subscribe((isFormValid: boolean) => {
 				if (isFormValid) {
 					this.submit();
@@ -146,12 +141,14 @@ export class UsersFormComponent implements OnInit {
 		if (updatedUser.id) {
 			submitObservable = this.userService.odata.Put(updatedUser, updatedUser.id.toString());
 		} else {
+			updatedUser.dateFormatId = this.settingsService.getDefaultDateFormat();
+			updatedUser.timeFormat = this.settingsService.getDefaultTimeFormat();
 			submitObservable = this.userService.odata.Post(updatedUser);
 		}
 
 		this.isRequestLoading = true;
 		this.loadingService.addLoading();
-		submitObservable.finally(() => this.loadingService.removeLoading())
+		submitObservable.pipe(finalize(() => this.loadingService.removeLoading()))
 			.subscribe(
 				() => {
 					this.isRequestLoading = false;
@@ -183,23 +180,23 @@ export class UsersFormComponent implements OnInit {
 		let isUserNameValidObservable: Observable<any>;
 
 		if (!this.model.email.trim() || !!form.controls['email'].errors) {
-			isEmailValidObservable = Observable.of(false);
+			isEmailValidObservable = observableOf(false);
 		} else {
-			isEmailValidObservable = this.userService.getUserByEmail(this.model.email)
-				.map((user) => !user || (user.id === this.model.id));
+			isEmailValidObservable = this.userService.getUserByEmail(this.model.email).pipe(
+				map((user) => !user || (user.id === this.model.id)));
 		}
 
 		if (!this.model.userName.trim()) {
-			isUserNameValidObservable = Observable.of(false);
+			isUserNameValidObservable = observableOf(false);
 		} else {
-			isUserNameValidObservable = this.userService.getUserByUsername(this.model.userName)
-				.map((user) => !user || (user.id === this.model.id));
+			isUserNameValidObservable = this.userService.getUserByUsername(this.model.userName).pipe(
+				map((user) => !user || (user.id === this.model.id)));
 		}
 
-		return Observable.forkJoin(isEmailValidObservable, Observable.of(!!this.model.fullName), isUserNameValidObservable)
-			.map((response: boolean[]) =>
+		return observableForkJoin(isEmailValidObservable, observableOf(!!this.model.fullName), isUserNameValidObservable).pipe(
+			map((response: boolean[]) =>
 				response.map((isControlValid, i) => this.showErrors[i] = !isControlValid)
 					.every((showError) => showError === false)
-			);
+			));
 	}
 }

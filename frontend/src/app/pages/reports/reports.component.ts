@@ -1,5 +1,7 @@
+import { Subscription } from 'rxjs';
+import {finalize} from 'rxjs/operators';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import Moment = moment.Moment;
@@ -18,6 +20,7 @@ import {
 } from '../../models/reports';
 import { User } from '../../models/user';
 import { ArrayUtils } from '../../core/object-utils';
+import { AclService } from '../../core/auth/acl.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 import { NotificationService } from '../../core/notification.service';
@@ -90,8 +93,10 @@ export class ReportsComponent implements OnInit {
 	private reportsConfirmationRef: MatDialogRef<ConfirmationComponent>;
 	private reportsQueryRef: MatDialogRef<ReportsQueryFormComponent>;
 	private reportsSendRef: MatDialogRef<ReportsSendComponent>;
+	private subscriptionAdminOrManager: Subscription;
 
-	constructor(private authService: AuthService,
+	constructor(private aclService: AclService,
+	            private authService: AuthService,
 	            private dialog: MatDialog,
 	            private impersonationService: ImpersonationService,
 	            private loadingService: LoadingMaskService,
@@ -109,15 +114,22 @@ export class ReportsComponent implements OnInit {
 			this.firstDayOfWeek = this.userInfo.weekStart;
 		});
 		this.isUsersFilterShown = this.authService.isUserAdminOrManager;
+		this.subscriptionAdminOrManager = this.authService.adminOrManagerParameterOnChange.subscribe(() => {
+			this.isUsersFilterShown = this.authService.isUserAdminOrManager;
+		});
 
 		this.loadingService.addLoading();
-		this.reportsService.getReportDropdowns()
-			.finally(() => this.loadingService.removeLoading())
+		this.reportsService.getReportDropdowns().pipe(
+			finalize(() => this.loadingService.removeLoading()))
 			.subscribe((reportFilters: ReportDropdowns) => {
 				this.setReportDropdowns(reportFilters);
 				this.getReportGrid(!!this.reportQuery.queryId);
 				this.onResize();
 			});
+	}
+
+	ngOnDestroy() {
+		this.subscriptionAdminOrManager.unsubscribe();
 	}
 
 	onResize(): void {
@@ -183,8 +195,8 @@ export class ReportsComponent implements OnInit {
 		};
 
 		this.loadingService.addLoading();
-		this.reportsService.getReportGrid(filters)
-			.finally(() => this.loadingService.removeLoading())
+		this.reportsService.getReportGrid(filters).pipe(
+			finalize(() => this.loadingService.removeLoading()))
 			.subscribe((res: ReportGrid) => {
 					this.reportGridData = res;
 					this.gridData = this.getNextGridDataPage(this.reportGridData.groupedItems, []);
@@ -315,8 +327,8 @@ export class ReportsComponent implements OnInit {
 
 	deleteQuery(queryModel: ReportQuery): void {
 		this.loadingService.addLoading();
-		this.reportsService.deleteQuery(queryModel.queryId)
-			.finally(() => this.loadingService.removeLoading())
+		this.reportsService.deleteQuery(queryModel.queryId).pipe(
+			finalize(() => this.loadingService.removeLoading()))
 			.subscribe(() => {
 					this.notificationService.success('Report query has been successfully deleted.');
 					this.updateQueryItems();
@@ -333,8 +345,8 @@ export class ReportsComponent implements OnInit {
 
 	private updateQueryItems(): void {
 		this.loadingService.addLoading();
-		this.reportsService.getReportDropdowns()
-			.finally(() => this.loadingService.removeLoading())
+		this.reportsService.getReportDropdowns().pipe(
+			finalize(() => this.loadingService.removeLoading()))
 			.subscribe((reportDropdowns: ReportDropdowns) => {
 				this.setReportQueryItems(reportDropdowns);
 			});
@@ -500,8 +512,8 @@ export class ReportsComponent implements OnInit {
 		};
 
 		this.loadingService.addLoading();
-		this.reportsService.exportAs(filters)
-			.finally(() => this.loadingService.removeLoading())
+		this.reportsService.exportAs(filters).pipe(
+			finalize(() => this.loadingService.removeLoading()))
 			.subscribe();
 	}
 
@@ -642,10 +654,7 @@ export class ReportsComponent implements OnInit {
 	toggleArchivedProjects(): void {
 		this.showOnlyActiveProjects = !this.showOnlyActiveProjects;
 		this.getProjectItems(this.selectedClients.length ? this.selectedClients : this.reportDropdowns.values.filters);
-
-		if (this.reportDropdowns.values.userDetails.isAdminCurrentUser || this.reportDropdowns.values.userDetails.isManagerCurrentUser) {
-			this.getUserItems(this.projects);
-		}
+		this.getUserItems(this.projects);
 	}
 
 	toggleUser(): void {
@@ -686,7 +695,7 @@ export class ReportsComponent implements OnInit {
 	private getUsersFromProjects(projects: ProjectDetail[]): UserDetail[] {
 		let users = [];
 
-		if (!this.reportDropdowns.values.userDetails.isAdminCurrentUser && this.reportDropdowns.values.userDetails.isManagerCurrentUser) {
+		if (!this.aclService.isGrantedForRole("ManagesAllProjects", this.reportDropdowns.values.userDetails.currentUserRole)) {
 			projects = projects.filter((project: ProjectDetail) => project.isUserManagerOnProject === true);
 		}
 

@@ -32,8 +32,8 @@ namespace CoralTime.Api.v1
         {
             try
             {
-                var member = _uow.MemberRepository.GetQuery().FirstOrDefault();
-                if (member != null)
+                var users = _uow.UserRepository.GetQuery().FirstOrDefault();
+                if (users != null)
                     return Ok("DB is alive !!!");
                 return BadRequest("DB is dead!!");
             }
