@@ -305,7 +305,7 @@ namespace CoralTime
             }
             else
             {
-                var cert = new X509Certificate2("coraltime.pfx", "", X509KeyStorageFlags.MachineKeySet);
+                var cert = X509CertificateLoader.LoadPkcs12FromFile("coraltime.pfx", "", X509KeyStorageFlags.MachineKeySet);
 
                 services.AddIdentityServer()
                     .AddInMemoryIdentityResources(Config.GetIdentityResources())
