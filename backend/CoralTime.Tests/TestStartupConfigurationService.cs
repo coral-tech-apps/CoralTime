@@ -2,7 +2,6 @@
 using CoralTime.DAL;
 using GeekLearning.Testavior.Environment;
 using Duende.IdentityModel;
-//using IdentityModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;

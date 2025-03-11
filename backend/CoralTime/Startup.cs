@@ -22,9 +22,6 @@ using CoralTime.ViewModels.Projects;
 using CoralTime.ViewModels.Settings;
 using CoralTime.ViewModels.Tasks;
 using CoralTime.ViewModels.Vsts;
-//using IdentityServer4.EntityFramework.Interfaces;
-//using IdentityServer4.Stores;
-//using IdentityServer4.Validation;
 using Duende.IdentityServer;
 using Duende.IdentityServer.AspNetIdentity;
 using Duende.IdentityServer.EntityFramework.Interfaces;
@@ -96,8 +93,7 @@ namespace CoralTime
                     {
                         builder.AllowAnyOrigin()
                             .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
+                            .AllowAnyMethod();
                     });
             });
 

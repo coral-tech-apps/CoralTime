@@ -3,10 +3,6 @@ using CoralTime.DAL.Models;
 using CoralTime.DAL.Repositories;
 using CoralTime.DAL.Repositories.Member;
 using CoralTime.ViewModels.Reports.Responce.DropDowns;
-
-//using IdentityModel;
-//using IdentityServer4.Models;
-//using IdentityServer4.Services;
 using Duende.IdentityModel;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;

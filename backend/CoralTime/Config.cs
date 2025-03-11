@@ -2,9 +2,6 @@ using CoralTime.Common.Constants;
 using Duende.IdentityModel;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
-/*using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Models;*/
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;

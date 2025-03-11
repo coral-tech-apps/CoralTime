@@ -4,7 +4,6 @@ using CoralTime.DAL.Models.LogChanges;
 using CoralTime.DAL.Repositories.Member;
 using CoralTime.DAL.Repositories.User;
 using Duende.IdentityModel;
-//using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
