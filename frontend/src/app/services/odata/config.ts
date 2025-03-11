@@ -55,7 +55,7 @@ export class ODataConfiguration {
 			throw new Error('Bad response status: ' + res.status);
 		}
 
-		let entities: T[] = res['value'];
+		let entities: T[] = Array.isArray(res) ? res : res['value'];
 		return entities;
 	}
 
@@ -65,7 +65,7 @@ export class ODataConfiguration {
 		if (res.status < 200 || res.status >= 300) {
 			throw new Error('Bad response status: ' + res.status);
 		}
-		let entities: T[] = res['value'];
+		let entities: T[] = Array.isArray(res) ? res : res['value'];
 
 		pagedResult.data = entities;
 

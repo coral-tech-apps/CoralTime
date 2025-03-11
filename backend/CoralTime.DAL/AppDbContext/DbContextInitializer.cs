@@ -63,60 +63,64 @@ namespace CoralTime.DAL
 
         public static async Task InitializeDataBase(IServiceProvider serviceProvider, IConfiguration configuration)
         {
+            
             Configuration = configuration;
             ServiceProvider = serviceProvider;
-            UserManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            RoleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            var sqlDb = DbContext.Database;
-
-            if (sqlDb != null)
+            using(var scope = serviceProvider.CreateScope()) 
             {
-                //async method doesn't work for MySQL
-                await DbContext.Database.MigrateAsync();
+                UserManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                RoleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                await InitializeRoles();
-                await InitializeProjectRoles();
-                await InitializeSettings();
+                var sqlDb = DbContext.Database;
 
-                if (bool.Parse(Configuration["AddTasks"]))
+                if (sqlDb != null)
                 {
-                    await InitializeTaskTypes();
-                }
+                    //async method doesn't work for MySQL
+                    await DbContext.Database.MigrateAsync();
 
-                if (bool.Parse(Configuration["AddAdmins"]))
-                {
-                    await InitializeUsers(Constants.UserTypeAdmins, Constants.ApplicationRoleAdmin);
-                }
+                    await InitializeRoles();
+                    await InitializeProjectRoles();
+                    await InitializeSettings();
 
-                if (bool.Parse(Configuration["AddMembers"]))
-                {
-                    await InitializeUsers(Constants.UserTypeMembers, Constants.ApplicationRoleUser);
-                }
+                    if (bool.Parse(Configuration["AddTasks"]))
+                    {
+                        await InitializeTaskTypes();
+                    }
 
-                if (bool.Parse(Configuration["AddClients"]))
-                {
-                    await InitializeClients();
-                }
+                    if (bool.Parse(Configuration["AddAdmins"]))
+                    {
+                        await InitializeUsers(Constants.UserTypeAdmins, Constants.ApplicationRoleAdmin);
+                    }
 
-                if (bool.Parse(Configuration["AddProjects"]))
-                {
-                    await InitializeProjects();
-                }
+                    if (bool.Parse(Configuration["AddMembers"]))
+                    {
+                        await InitializeUsers(Constants.UserTypeMembers, Constants.ApplicationRoleUser);
+                    }
 
-                if (bool.Parse(Configuration["AddXRefProjectsClients"]))
-                {
-                    await InitializeXRefProjectsClients();
-                }
+                    if (bool.Parse(Configuration["AddClients"]))
+                    {
+                        await InitializeClients();
+                    }
 
-                if (bool.Parse(Configuration["AddXRefMemberProjectRoles"]))
-                {
-                    await InitializeXRefMemberProjectRoles();
-                }
+                    if (bool.Parse(Configuration["AddProjects"]))
+                    {
+                        await InitializeProjects();
+                    }
 
-                if (bool.Parse(Configuration["AddXRefTimeEntries"]))
-                {
-                    await InitializeXRefTimeEntries();
+                    if (bool.Parse(Configuration["AddXRefProjectsClients"]))
+                    {
+                        await InitializeXRefProjectsClients();
+                    }
+
+                    if (bool.Parse(Configuration["AddXRefMemberProjectRoles"]))
+                    {
+                        await InitializeXRefMemberProjectRoles();
+                    }
+
+                    if (bool.Parse(Configuration["AddXRefTimeEntries"]))
+                    {
+                        await InitializeXRefTimeEntries();
+                    }
                 }
             }
         }

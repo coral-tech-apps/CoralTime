@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using CoralTime.Common.Exceptions;
 using CoralTime.DAL.Models;
-using IdentityServer4.Extensions;
+using Duende.IdentityServer.Extensions;
+//using IdentityServer4.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace CoralTime.DAL.Repositories.User

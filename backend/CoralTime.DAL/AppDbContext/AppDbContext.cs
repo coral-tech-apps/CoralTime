@@ -3,8 +3,8 @@ using CoralTime.DAL.Models.LogChanges;
 using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Models.ReportsSettings;
 using CoralTime.DAL.Models.Vsts;
-using IdentityServer4.EntityFramework.Entities;
-using IdentityServer4.EntityFramework.Interfaces;
+using Duende.IdentityServer.EntityFramework.Entities;
+using Duende.IdentityServer.EntityFramework.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -48,6 +48,14 @@ namespace CoralTime.DAL
 
         public DbSet<VstsProjectUser> VstsProjectUsers { get; set; }
 
+        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
+
+        public DbSet<Key> Keys { get; set; }
+
+        public DbSet<ServerSideSession> ServerSideSessions { get; set; }
+
+        public DbSet<PushedAuthorizationRequest> PushedAuthorizationRequests { get; set; }
+
         public Task<int> SaveChangesAsync()
         {
             return base.SaveChangesAsync();
@@ -55,6 +63,9 @@ namespace CoralTime.DAL
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<DeviceFlowCodes>()
+                .HasKey(d => d.DeviceCode);
+
             builder.Entity<TimeEntry>()
                 .HasOne(p => p.Project)
                 .WithMany(p => p.TimeEntries).HasForeignKey(k => k.ProjectId).OnDelete(DeleteBehavior.Restrict);

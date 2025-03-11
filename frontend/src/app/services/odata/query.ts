@@ -129,7 +129,7 @@ export class ODataQuery<T> {
 
 	private buildResourceURL(): string {
 		this._property = this._property ? '/' + this._property : '';
-		return this.config.baseUrl + '/' + this._typeName + this._property + '()';
+		return this.config.baseUrl + '/' + this._typeName + this._property; //there
 	}
 
 	private extractArrayData(res: any, config: ODataConfiguration): Array<T> {

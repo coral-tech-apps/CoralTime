@@ -12,14 +12,20 @@ export class AuthUser {
 	readonly tokenType: string;
 
 	constructor(data, isSso: boolean) {
+		if(typeof data === 'string'){
+			data = JSON.parse(data);
+		}
+
 		this.accessToken = data.access_token;
 		this.expiresIn = data.expires_in;
+		this.id = data.MemberId;
 		this.isSso = isSso;
 		this.refreshToken = data.refresh_token;
 		this.tokenType = data.token_type;
+		this.role = data.role
 
 		let decodedToken = jwt_decode(data.access_token);
-		this.id = +decodedToken.id;
+		this.id = decodedToken.MemberId;
 		this.nickname = decodedToken.nickname;
 		this.refreshTokenExpiration = new Date().getTime() + decodedToken.refreshTokenLifeTime * 1000;
 		let roleName = Array.isArray(decodedToken.role) ? decodedToken.role[0] : decodedToken.role;

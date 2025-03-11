@@ -1,7 +1,8 @@
 ﻿using CoralTime.Common.Constants;
 using CoralTime.DAL;
 using GeekLearning.Testavior.Environment;
-using IdentityModel;
+using Duende.IdentityModel;
+//using IdentityModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace CoralTime.Tests
     //for tests
     public class TestStartupConfigurationService : TestStartupConfigurationService<AppDbContext>
     {
+
         protected override ClaimsIdentity ConfigureIdentity()
         {
             var claims = new ClaimsIdentity(new Claim[]

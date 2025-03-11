@@ -108,7 +108,7 @@ export class ProjectsService {
 			filters.push('isActive eq ' + isActive);
 		}
 		query.Filter(filters.join(' and '));
-
+		
 		return query.ExecWithCount().pipe(map(res => {
 			res.data = res.data.map((x: Object) => new Project(x));
 			return res;

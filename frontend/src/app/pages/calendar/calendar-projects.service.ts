@@ -2,6 +2,7 @@
 import {of as observableOf,  Observable } from 'rxjs';
 
 import {map} from 'rxjs/operators';
+
 import { Injectable } from '@angular/core';
 
 import { ODataService } from '../../services/odata/odata';
@@ -58,7 +59,6 @@ export class CalendarProjectsService {
 		if (showOnlyActive) {
 			filters.push('isActive eq true');
 		}
-
 		query.Filter(filters.join(' and '));
 
 		return query.Exec().pipe(map(res => {

@@ -58,7 +58,8 @@ export class AuthService {
 	get roles(): object {
 		if (this._roles == null) {
 			if (localStorage.hasOwnProperty('ROLES')) {
-				this._roles = JSON.parse(localStorage.getItem('ROLES'));
+				this.roles = JSON.parse(localStorage.getItem('ROLES'));
+				//this.roles = user.role;
 			}
 		}
 		return this._roles;
@@ -86,6 +87,7 @@ export class AuthService {
 		return this.http.post('/connect/token', body, {headers: headers}).pipe(
 			map(response => {
 				this.authUser = new AuthUser(response, false);
+				this.roles = this.authUser.role;
 				this.appInsightsService.setAuthenticatedUserContext(this.authUser.id.toString(), this.authUser.nickname);
 				return true;
 			}));

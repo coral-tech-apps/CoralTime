@@ -12,7 +12,6 @@ export class AclService {
 		if (!this.authService.isLoggedIn()) {
 			return false;
 		}
-
 		if (this.impersonationService.impersonationUser) {
 			return this.isGrantedForRole(policy, this.impersonationService.impersonationUser.role);
 		} else {

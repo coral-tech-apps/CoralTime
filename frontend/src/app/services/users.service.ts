@@ -173,7 +173,8 @@ export class UsersService {
 	}
 
 	getUserById(id: number): Observable<User> {
-		return this.http.get(this.constantService.apiBaseUrl + '/odata/Members(' + id + ')').pipe(
+
+		return this.http.get(this.constantService.apiBaseUrl + '/odata/Members/' + id).pipe(
 			map((user: Object) => new User(user)));
 	}
 

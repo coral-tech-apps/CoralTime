@@ -1,8 +1,10 @@
 ﻿using CoralTime.Common.Constants;
 using CoralTime.DAL.Models;
 using CoralTime.ViewModels.Azure;
-using IdentityServer4.Models;
-using IdentityServer4.Validation;
+//using IdentityServer4.Models;
+//using IdentityServer4.Validation;
+using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;

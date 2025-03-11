@@ -1,7 +1,10 @@
 using CoralTime.Common.Constants;
-using IdentityModel;
+using Duende.IdentityModel;
+using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
+/*using IdentityModel;
 using IdentityServer4;
-using IdentityServer4.Models;
+using IdentityServer4.Models;*/
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +13,14 @@ namespace CoralTime
 {
     public class Config
     {
+        public static IEnumerable<ApiScope> ApiScopes =>
+            new List<ApiScope>
+            {
+                new ApiScope("WebAPI"),
+                new ApiScope("Access to Web API"),
+                new ApiScope("offline_access")
+            };
+
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             return new List<IdentityResource>
@@ -27,6 +38,7 @@ namespace CoralTime
             return new List<ApiResource>
             {
                 new ApiResource(Constants.Authorization.WebApiScope ) {
+                    Scopes = {"WebAPI"},
                     UserClaims = { JwtClaimTypes.Email, JwtClaimTypes.NickName, JwtClaimTypes.Name, JwtClaimTypes.Role, JwtClaimTypes.Id}
                 }
             };

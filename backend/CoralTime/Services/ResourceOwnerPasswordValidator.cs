@@ -1,7 +1,11 @@
-﻿using CoralTime.DAL.Models;
-using IdentityModel;
-using IdentityServer4.Models;
-using IdentityServer4.Validation;
+﻿//using CoralTime.DAL.Models;
+//using IdentityModel;
+//using IdentityServer4.Models;
+//using IdentityServer4.Validation;
+using CoralTime.DAL.Models;
+using Duende.IdentityModel;
+using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -57,7 +61,7 @@ namespace CoralTime.Services
             return new[]
             {
                 new Claim(type: "user_id", value: user.Id ?? ""),
-                new Claim(type: JwtClaimTypes.Email, value: user.Email  ?? "")
+                new Claim(type: JwtClaimTypes.Email, value: user.Email  ?? ""),
             };
         }
     }

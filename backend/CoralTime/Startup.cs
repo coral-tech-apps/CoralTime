@@ -22,9 +22,15 @@ using CoralTime.ViewModels.Projects;
 using CoralTime.ViewModels.Settings;
 using CoralTime.ViewModels.Tasks;
 using CoralTime.ViewModels.Vsts;
-using IdentityServer4.EntityFramework.Interfaces;
-using IdentityServer4.Stores;
-using IdentityServer4.Validation;
+//using IdentityServer4.EntityFramework.Interfaces;
+//using IdentityServer4.Stores;
+//using IdentityServer4.Validation;
+using Duende.IdentityServer;
+using Duende.IdentityServer.AspNetIdentity;
+using Duende.IdentityServer.EntityFramework.Interfaces;
+using Duende.AccessTokenManagement;
+using Duende.IdentityServer.Validation;
+using Duende.IdentityServer.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +54,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using Microsoft.AspNetCore.Routing;
 
 namespace CoralTime
 {
@@ -87,10 +94,10 @@ namespace CoralTime
                 options.AddPolicy("AllowAllOrigins",
                     builder =>
                     {
-                        builder
-                            .AllowAnyOrigin()
+                        builder.AllowAnyOrigin()
                             .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                     });
             });
 
@@ -99,15 +106,16 @@ namespace CoralTime
             AddApplicationServices(services);
             services.AddMemoryCache();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddControllers().AddOData(opt => opt.AddRouteComponents("odata", GetEdmModel()).EnableQueryFeatures(100));
+            services.AddControllers().AddOData(opt => opt.AddRouteComponents("/odata", GetEdmModel()).EnableQueryFeatures(100));
 
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "CoralTime", Version = "v1" });
             });
         }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        //dell endpointDataSource, Logger
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, EndpointDataSource endpointDataSource, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
@@ -141,11 +149,12 @@ namespace CoralTime
             app.UseMiddleware<ErrorHandlingMiddleware>();
 
             //Make sure you add app.UseCors before app.UseRouting otherwise the request will be finished before the CORS middleware is applied
-            app.UseCors("AllowAllOrigins");
+            app.UseCors("AllowAngularApp");
 
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(static endpoints =>
             {
@@ -181,7 +190,7 @@ namespace CoralTime
             services.AddScoped<IPersistedGrantDbContext, AppDbContext>();
 
             services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
-            services.AddTransient<IdentityServer4.Services.IProfileService, IdentityWithAdditionalClaimsProfileService>();
+            services.AddTransient<Duende.IdentityServer.Services.IProfileService, IdentityWithAdditionalClaimsProfileService>();
             services.AddTransient<IExtensionGrantValidator, AzureGrant>();
             services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
 
@@ -286,6 +295,7 @@ namespace CoralTime
             {
                 services.AddIdentityServer()
                     .AddDeveloperSigningCredential()
+                    .AddInMemoryApiScopes(Config.ApiScopes)
                     .AddInMemoryIdentityResources(Config.GetIdentityResources())
                     .AddInMemoryApiResources(Config.GetApiResources())
                     .AddInMemoryClients((Config.GetClients(Configuration)))

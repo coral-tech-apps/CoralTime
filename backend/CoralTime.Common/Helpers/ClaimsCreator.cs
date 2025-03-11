@@ -1,4 +1,5 @@
-﻿using IdentityModel;
+﻿//using IdentityModel;
+using Duende.IdentityModel;
 using System.Collections.Generic;
 using System.Security.Claims;
 

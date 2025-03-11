@@ -1,7 +1,11 @@
-﻿using IdentityServer4.EntityFramework.Interfaces;
+﻿/*using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
-using IdentityServer4.Stores;
+using IdentityServer4.Stores;*/
+using Duende.IdentityServer.EntityFramework.Interfaces;
+using Duende.IdentityServer.EntityFramework.Mappers;
+using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Stores;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -42,7 +46,7 @@ namespace CoralTime.DAL.PersistedGrantStore
 
             try
             {
-                _context.SaveChanges();
+                _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -94,7 +98,7 @@ namespace CoralTime.DAL.PersistedGrantStore
 
                 try
                 {
-                    _context.SaveChanges();
+                    _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -119,7 +123,7 @@ namespace CoralTime.DAL.PersistedGrantStore
 
             try
             {
-                _context.SaveChanges();
+                _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -142,7 +146,7 @@ namespace CoralTime.DAL.PersistedGrantStore
 
             try
             {
-                _context.SaveChanges();
+                _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -150,6 +154,16 @@ namespace CoralTime.DAL.PersistedGrantStore
             }
 
             return Task.FromResult(0);
+        }
+
+        public Task<IEnumerable<PersistedGrant>> GetAllAsync(PersistedGrantFilter filter)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task RemoveAllAsync(PersistedGrantFilter filter)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
