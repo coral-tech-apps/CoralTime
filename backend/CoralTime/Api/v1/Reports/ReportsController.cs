@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NLog.Targets;
 using System;
 using static CoralTime.Common.Constants.Constants.Routes;
 
@@ -32,7 +33,7 @@ namespace CoralTime.Api.v1.Reports
             }
 
             var jsonSerializatorSettings = new JsonSerializerSettings
-            {
+            {                
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Ignore
             };
@@ -41,7 +42,9 @@ namespace CoralTime.Api.v1.Reports
 
             var reportsGrid = _service.GetReportsGrid(reportsGridView);
 
-            return new JsonResult(reportsGrid, jsonSerializatorSettings);
+            var result = JsonConvert.SerializeObject(reportsGrid, jsonSerializatorSettings);
+
+            return Ok(result);
         }
     }
 }

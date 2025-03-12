@@ -8,7 +8,7 @@ export class AuthUser {
 	readonly nickname: string;
 	readonly refreshToken: string;
 	readonly refreshTokenExpiration: number;
-	readonly role: string;
+	readonly role: string[];
 	readonly tokenType: string;
 
 	constructor(data, isSso: boolean) {
@@ -22,13 +22,12 @@ export class AuthUser {
 		this.isSso = isSso;
 		this.refreshToken = data.refresh_token;
 		this.tokenType = data.token_type;
-		this.role = data.role
 
 		let decodedToken = jwt_decode(data.access_token);
 		this.id = decodedToken.MemberId;
 		this.nickname = decodedToken.nickname;
 		this.refreshTokenExpiration = new Date().getTime() + decodedToken.refreshTokenLifeTime * 1000;
-		let roleName = Array.isArray(decodedToken.role) ? decodedToken.role[0] : decodedToken.role;
+		let roleName = Array.isArray(decodedToken.role) ? decodedToken.role : [decodedToken.role];
 		this.role = roleName;
 	}
 }

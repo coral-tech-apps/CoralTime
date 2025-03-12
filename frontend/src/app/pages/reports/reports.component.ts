@@ -695,7 +695,11 @@ export class ReportsComponent implements OnInit {
 	private getUsersFromProjects(projects: ProjectDetail[]): UserDetail[] {
 		let users = [];
 
-		if (!this.aclService.isGrantedForRole("ManagesAllProjects", this.reportDropdowns.values.userDetails.currentUserRole)) {
+		const currentUserRoles = Array.isArray(this.reportDropdowns.values.userDetails.currentUserRole)
+        ? this.reportDropdowns.values.userDetails.currentUserRole
+        : [this.reportDropdowns.values.userDetails.currentUserRole];
+
+		if (!this.aclService.isGrantedForRole("ManagesAllProjects", currentUserRoles)) {
 			projects = projects.filter((project: ProjectDetail) => project.isUserManagerOnProject === true);
 		}
 

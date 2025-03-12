@@ -87,7 +87,6 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
 	ngOnInit() {
 		this.authUser = this.authService.authUser;
-
 		this.getUserInfo();
 		this.onResize();
 		this.updateManageMenuVisibility();

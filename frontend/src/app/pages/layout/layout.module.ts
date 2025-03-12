@@ -12,7 +12,8 @@ import { NavigationComponent } from './navigation/navigation.component';
 		ButtonModule,
 		MenuModule,
 		RouterModule,
-		SharedModule
+		SharedModule,
+		
 	],
 	exports: [
 		NavigationComponent

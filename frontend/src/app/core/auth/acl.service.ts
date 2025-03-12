@@ -12,16 +12,27 @@ export class AclService {
 		if (!this.authService.isLoggedIn()) {
 			return false;
 		}
-		if (this.impersonationService.impersonationUser) {
-			return this.isGrantedForRole(policy, this.impersonationService.impersonationUser.role);
-		} else {
-			return this.isGrantedForRole(policy, this.authService.authUser.role);
-		}
+		let roles: string[];
+        if (this.impersonationService.impersonationUser) {
+            roles = Array.isArray(this.impersonationService.impersonationUser.role)
+                ? this.impersonationService.impersonationUser.role
+                : [this.impersonationService.impersonationUser.role];
+        } else {
+            roles = Array.isArray(this.authService.authUser.role)
+                ? this.authService.authUser.role
+                : [this.authService.authUser.role];
+        }
+
+		return this.isGrantedForRole(policy, roles);
 	}
 
-	isGrantedForRole(policy: string, role: string): boolean {
-		var policies = this.authService.roles[role] as string;
-		var isGranted = (policies && policies.indexOf(policy) != -1);
-		return isGranted;
+	isGrantedForRole(policy: string, roles: string[]): boolean {
+		return roles.some(role => {
+			if(!this.authService.roles){
+				return false;
+			}
+			let isGranted = (this.authService.roles as string[]).includes(role);
+			return isGranted;
+        });
 	}
 }

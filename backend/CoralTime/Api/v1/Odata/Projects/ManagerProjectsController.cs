@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
 
 namespace CoralTime.Api.v1.Odata.Projects

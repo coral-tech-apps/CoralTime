@@ -139,7 +139,7 @@ export class MultiSelectComponent extends MultiSelect {
 
 	private redrowSlimScroll(): void {
 		setTimeout(() => {
-			this.slimScroll.getBarHeight();
+			this.slimScroll?.getBarHeight();
 		}, 0);
 	}
 

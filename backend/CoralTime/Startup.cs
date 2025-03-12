@@ -28,6 +28,8 @@ using Duende.IdentityServer.EntityFramework.Interfaces;
 using Duende.AccessTokenManagement;
 using Duende.IdentityServer.Validation;
 using Duende.IdentityServer.Stores;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

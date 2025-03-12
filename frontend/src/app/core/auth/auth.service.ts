@@ -52,14 +52,14 @@ export class AuthService {
 
 	set authUser(authUser: AuthUser) {
 		localStorage.setItem('APPLICATION_USER', JSON.stringify(authUser));
+		this.roles = this.authUser.role;
 		this.onChange.emit(authUser);
 	}
 
 	get roles(): object {
 		if (this._roles == null) {
 			if (localStorage.hasOwnProperty('ROLES')) {
-				this.roles = JSON.parse(localStorage.getItem('ROLES'));
-				//this.roles = user.role;
+				this._roles = JSON.parse(localStorage.getItem('ROLES'));
 			}
 		}
 		return this._roles;
@@ -86,8 +86,7 @@ export class AuthService {
 
 		return this.http.post('/connect/token', body, {headers: headers}).pipe(
 			map(response => {
-				this.authUser = new AuthUser(response, false);
-				this.roles = this.authUser.role;
+				this.authUser = new AuthUser(response, false);	
 				this.appInsightsService.setAuthenticatedUserContext(this.authUser.id.toString(), this.authUser.nickname);
 				return true;
 			}));

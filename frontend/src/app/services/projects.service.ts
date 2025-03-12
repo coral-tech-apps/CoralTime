@@ -52,7 +52,7 @@ export class ProjectsService {
 	}
 
 	getManagerProjectsCount(): Observable<number> {
-		return this.http.get(this.odataConfig.baseUrl + '/ManagerProjects/$count').pipe(map(res => parseInt(res.toString())));
+		return this.http.get(this.odataConfig.baseUrl + '/ManagerProjects?$count=true').pipe(map(res => parseInt(res.toString())));
 	}
 
 	getManagerProjectsWithCount(event, filterStr = '', isActive: boolean = true): Observable<PagedResult<Project>> {
