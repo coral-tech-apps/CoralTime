@@ -1,14 +1,16 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.Clients;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Text.Json;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Formatter;
 
 namespace CoralTime.Api.v1.Odata
@@ -36,14 +38,19 @@ namespace CoralTime.Api.v1.Odata
 
         // POST: api/v1/odata/Clients
         [HttpPost]
-        [Authorize(Roles = ApplicationRoleAdmin)]
+        [Authorize(Policy = PolicyAddClient)]
         public IActionResult Create([FromBody] ClientView clientData)
         {
+            if (!ModelState.IsValid)
+            {
+                return SendInvalidModelResponse();
+            }
+
             try
             {
                 var result = _service.Create(clientData);
 
-                var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/Clients({result.Id})";
+                var locationUri = $"{Request.Host}/{BaseODataRoute}/Clients({result.Id})";
                 return Created(locationUri, result);
             }
             catch (Exception e)
@@ -71,14 +78,17 @@ namespace CoralTime.Api.v1.Odata
         // PUT: api/v1/odata/Clients(2)
         [ODataRouteComponent(ClientsWithIdRoute)]
         [HttpPut(IdRoute)]
-        [Authorize(Roles = ApplicationRoleAdmin)]
-        public IActionResult Update([FromODataUri]int id, [FromBody]dynamic clientData)
+        [Authorize(Policy = PolicyEditClient)]
+        public IActionResult Update([FromODataUri]int id, [FromBody] JsonElement clientData)
         {
-            clientData.Id = id;
+            if (!ModelState.IsValid)
+            {
+                return SendInvalidModelResponse();
+            }
 
             try
             {
-                var result = _service.Update(clientData);
+                var result = _service.Update(id, clientData);
                 return new ObjectResult(result);
             }
             catch (Exception e)
@@ -90,14 +100,17 @@ namespace CoralTime.Api.v1.Odata
         // PATCH: api/v1/odata/Clients(30)
         [ODataRouteComponent(ClientsWithIdRoute)]
         [HttpPatch(IdRoute)]
-        [Authorize(Roles = ApplicationRoleAdmin)]
-        public IActionResult Patch([FromODataUri]int id, [FromBody]dynamic clientData)
+        [Authorize(Policy = PolicyEditClient)]
+        public IActionResult Patch([FromODataUri]int id, [FromBody] JsonElement clientData)
         {
-            clientData.Id = id;
+            if (!ModelState.IsValid)
+            {
+                return SendInvalidModelResponse();
+            }
 
             try
             {
-                var result = _service.Update(clientData);
+                var result = _service.Update(id, clientData);
                 return new ObjectResult(result);
             }
             catch (Exception e)
@@ -109,7 +122,7 @@ namespace CoralTime.Api.v1.Odata
         //DELETE :api/v1/odata/Clients(1)
         [HttpDelete(IdRoute)]
         [ODataRouteComponent(ClientsWithIdRoute)]
-        [Authorize(Roles = ApplicationRoleAdmin)]
+        [Authorize(Policy = PolicyEditClient)]
         public IActionResult Delete([FromODataUri]int id)
         {
             return BadRequest($"Can't delete the client with Id - {id}");

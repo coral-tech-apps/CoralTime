@@ -57,7 +57,7 @@ namespace CoralTime.Services
             return new[]
             {
                 new Claim(type: "user_id", value: user.Id ?? ""),
-                new Claim(type: JwtClaimTypes.Email, value: user.Email  ?? ""),
+                new Claim(type: JwtClaimTypes.Email, value: user.Email  ?? "")
             };
         }
     }

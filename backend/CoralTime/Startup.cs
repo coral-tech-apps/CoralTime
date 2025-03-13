@@ -54,6 +54,8 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
 using Microsoft.AspNetCore.Routing;
+using System.Collections.Generic;
+using Duende.IdentityModel;
 
 namespace CoralTime
 {
@@ -185,7 +187,7 @@ namespace CoralTime
             services.AddScoped<BaseService>();
 
             services.AddScoped<UnitOfWork>();
-            services.AddScoped<IPersistedGrantDbContext, AppDbContext>();
+            services.AddScoped<AppDbContext>();
 
             services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
             services.AddTransient<Duende.IdentityServer.Services.IProfileService, IdentityWithAdditionalClaimsProfileService>();
@@ -339,7 +341,32 @@ namespace CoralTime
 
             services.AddAuthorization(options =>
             {
-                Config.CreateAuthorizationOptions(options);
+                /*var allPolicies = Constants.ApplicationsPolicies;
+
+                foreach(var policy in allPolicies)
+                {
+                    options.AddPolicy(policy, policyBuilder =>
+                    {
+                        policyBuilder.RequireClaim(JwtClaimTypes.Role, Constants.ApplicationRoles.ToArray());
+                    });
+                }*/
+/*                var roles = new Dictionary<string, string[]>();//i had this in CONSANTS
+                var rolesSection = Configuration.GetSection("Roles");
+                foreach (var roleItem in rolesSection.GetChildren())
+                {
+                    roles.Add(roleItem.Key, roleItem.Value.Split(','));
+                }
+*/ 
+                //var policies = roles.SelectMany(x => x.Value).Distinct().ToArray(); //all policies this too
+                
+                foreach (var policyName in Constants.ApplicationsPolicies)
+                {
+                    var policyRoles = Constants.RolePolicies.Where(x => x.Value.Contains(policyName)).Select(x => x.Key).ToArray();
+                    options.AddPolicy(policyName, policy =>
+                    {
+                        policy.RequireClaim(JwtClaimTypes.Role, policyRoles);
+                    });
+                }
             });
         }
 

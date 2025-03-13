@@ -1,7 +1,7 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.Tasks;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,6 +9,7 @@ using System;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Formatter;
 
 namespace CoralTime.Api.v1.Odata
@@ -53,7 +54,7 @@ namespace CoralTime.Api.v1.Odata
             try
             {
                 var taskTypeViewResult = _service.Create(taskTypeView);
-                var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/Tasks({taskTypeViewResult.Id})";
+                var locationUri = $"{Request.Host}/{BaseODataRoute}/Tasks({taskTypeViewResult.Id})";
 
                 return Created(locationUri, taskTypeViewResult);
             }
@@ -110,7 +111,7 @@ namespace CoralTime.Api.v1.Odata
         }
 
         //DELETE :api/v1/odata/Tasks(1)
-        [Authorize(Roles = ApplicationRoleAdmin)]
+        [Authorize(Policy = PolicyEditTask)]
         [ODataRouteComponent(TasksWithIdRoute)]
         [HttpDelete(IdRoute)]
         public IActionResult Delete([FromODataUri] int id)

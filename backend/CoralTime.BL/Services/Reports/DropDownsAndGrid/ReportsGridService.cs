@@ -9,6 +9,7 @@ using System.Linq;
 using CoralTime.DAL.Models.Member;
 using CoralTime.ViewModels.Reports.Responce.Grid.ReportTotal;
 using static CoralTime.Common.Constants.Constants;
+using CoralTime.Common.Constants;
 
 namespace CoralTime.BL.Services.Reports.DropDownsAndGrid
 {
@@ -72,6 +73,17 @@ namespace CoralTime.BL.Services.Reports.DropDownsAndGrid
                         reportTotalView =  reportTotalView.GetView(timeEntriesGroupByClients);
                         break;
                     }
+
+                    case (int)ReportsGroupByIds.Task:
+                    {
+                        var timeEntriesGroupByTask = filteredTimeEntries
+                            .GroupBy(i => i.TaskType)
+                            .OrderBy(x => x.Key.Name)
+                            .ToDictionary(key => key.Key, value => value.OrderBy(x => x.Date).ToList());
+
+                        reportTotalView = reportTotalView.GetView(timeEntriesGroupByTask);
+                        break;
+                     }
                 }
             }
 
@@ -204,6 +216,14 @@ namespace CoralTime.BL.Services.Reports.DropDownsAndGrid
         private void FillDatesByDateStaticOrDateFromTo(ReportsGridView reportsGridView, ref DateTime dateFrom, ref DateTime dateTo)
         {
             var dateStaticId = reportsGridView.CurrentQuery.DateStaticId;
+
+            if (dateStaticId.HasValue && dateStaticId.Value == (int)DatesStaticIds.Lifetime)
+            {
+                dateFrom = DateTime.MinValue;
+                dateTo = DateTime.MaxValue;
+                return;
+            }
+
             var isFilledDateStaticIdAndDateFromDateTo = dateStaticId != null && reportsGridView.CurrentQuery?.DateFrom != null && reportsGridView.CurrentQuery?.DateTo != null;
             var isFilledOnlyDateFromDateTo = dateStaticId == null && reportsGridView.CurrentQuery?.DateFrom != null && reportsGridView.CurrentQuery?.DateTo != null;
 
@@ -245,18 +265,26 @@ namespace CoralTime.BL.Services.Reports.DropDownsAndGrid
                 .Include(x => x.TaskType)
                 .Where(t => t.Date.Date >= dateFrom.Date && t.Date.Date <= dateTo.Date && t.TimeTimerStart <= 0); // TODO update logic to set values for start/stop timer in TimeEntry create method!
 
+            var managesAll = Authorize(ReportMemberImpersonated, PolicyManagesAllProjects);
+
             #region Constrain for Admin: return all TimeEntries.
 
-            if (ReportMemberImpersonated.User.IsAdmin)
+            if (managesAll)
             {
                 return timeEntriesByDate;
             }
 
             #endregion
 
+            var managerProjectIds = Uow.MemberProjectRoleRepository.LinkedCacheGetList()
+                .Where(r => r.MemberId == ReportMemberImpersonated.Id && r.RoleId == Uow.ProjectRoleRepository.GetManagerRoleId())
+                .Select(x => x.ProjectId)
+                .ToArray();
+            var isManager = managerProjectIds.Length > 0;
+
             #region Constrain for Member. return only TimeEntries that manager is assign.
 
-            if (!ReportMemberImpersonated.User.IsAdmin && !ReportMemberImpersonated.User.IsManager)
+            if (!managesAll && !isManager)
             {
                 // #1. TimeEntries. Get tEntries for this member.
                 timeEntriesByDate = timeEntriesByDate.Where(t => t.MemberId == ReportMemberImpersonated.Id);
@@ -266,13 +294,8 @@ namespace CoralTime.BL.Services.Reports.DropDownsAndGrid
 
             #region Constrain for Manager : return #1 TimeEntries that currentMember is assign, #2 TimeEntries for not assign users at Projects (but TEntries was saved), #4 TimeEntries with global projects that not contains in result.
 
-            if (!ReportMemberImpersonated.User.IsAdmin && ReportMemberImpersonated.User.IsManager)
+            if (!managesAll && isManager)
             {
-                var managerProjectIds = Uow.MemberProjectRoleRepository.LinkedCacheGetList()
-                    .Where(r => r.MemberId == ReportMemberImpersonated.Id && r.RoleId == Uow.ProjectRoleRepository.GetManagerRoleId())
-                    .Select(x => x.ProjectId)
-                    .ToArray();
-
                 // #1. TimeEntries. Get tEntries for this member and tEntries that is current member is Manager!.
                 timeEntriesByDate = timeEntriesByDate.Where(t => t.MemberId == ReportMemberImpersonated.Id || managerProjectIds.Contains(t.ProjectId));
             }

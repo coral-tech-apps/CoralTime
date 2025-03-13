@@ -4,6 +4,7 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 
 namespace CoralTime
@@ -25,7 +26,7 @@ namespace CoralTime
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
                 new IdentityResources.Email(),
-                new IdentityResource(Constants.Authorization.RolesScope, new List<string> { Constants.Authorization.RoleClaimType })
+                new IdentityResource(Constants.Authorization.RolesScope, new List<string> { ClaimTypes.Role })
             };
         }
 
@@ -124,20 +125,6 @@ namespace CoralTime
                     AllowOfflineAccess = true
                 }
             };
-        }
-
-        public static void CreateAuthorizationOptions(AuthorizationOptions options)
-        {
-            // main Policies
-            options.AddPolicy(Constants.ApplicationRoleAdmin, policy =>
-            {
-                policy.RequireClaim(Constants.Authorization.RoleClaimType, Constants.ApplicationRoleAdmin);
-            });
-
-            options.AddPolicy(Constants.ApplicationRoleUser, policy =>
-            {
-                policy.RequireClaim(Constants.Authorization.RoleClaimType, Constants.ApplicationRoleUser);
-            });
         }
     }
 }

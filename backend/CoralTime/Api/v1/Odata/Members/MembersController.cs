@@ -1,7 +1,7 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.Member;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,6 +11,7 @@ using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
 using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 
 namespace CoralTime.Api.v1.Odata.Members
 {
@@ -67,7 +68,7 @@ namespace CoralTime.Api.v1.Odata.Members
 
         // POST: api/v1/odata/Members
         [HttpPost]
-        [Authorize(Roles = ApplicationRoleAdmin)]
+        [Authorize(Policy = PolicyAddMember)]
         public async Task<IActionResult> Create([FromBody] MemberView memberView)
         {
             if (!ModelState.IsValid)
@@ -77,7 +78,7 @@ namespace CoralTime.Api.v1.Odata.Members
 
             var createdMemberView = await _service.CreateNewUser(memberView, GetBaseUrl());
 
-            var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/Members/{memberView.Id}";
+            var locationUri = $"{Request.Host}/{BaseODataRoute}/Members/{memberView.Id}";
 
             return base.Created(locationUri, (object)createdMemberView);
         }
@@ -107,7 +108,7 @@ namespace CoralTime.Api.v1.Odata.Members
         //DELETE :api/v1/odata/Members(1)
         [ODataRouteComponent(MembersWithIdRoute)]
         [HttpDelete(IdRoute)]
-        [Authorize(Roles = ApplicationRoleAdmin)]
+        [Authorize(Policy = PolicyEditMember)]
         public IActionResult Delete([FromODataUri]int id) => BadRequest($"Can't delete the member with Id - {id}");
     }
 }

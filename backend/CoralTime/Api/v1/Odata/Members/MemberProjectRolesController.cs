@@ -1,13 +1,14 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.MemberProjectRoles;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Formatter;
 
 namespace CoralTime.Api.v1.Odata.Members
@@ -80,12 +81,17 @@ namespace CoralTime.Api.v1.Odata.Members
 
         // POST: api/v1/odata/MemberProjectRoles
         [HttpPost]
-        public IActionResult Create([FromBody]MemberProjectRoleView projectRole)
+        public IActionResult Create([FromBody] MemberProjectRoleView projectRole)
         {
+            if (!ModelState.IsValid)
+            {
+                return SendInvalidModelResponse();
+            }
+
             try
             {
                 var value = _service.Create(projectRole);
-                var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/MemberProjectRoles({value.Id})";
+                var locationUri = $"{Request.Host}/{BaseODataRoute}/MemberProjectRoles({value.Id})";
 
                 return Created(locationUri, value);
             }
@@ -98,8 +104,13 @@ namespace CoralTime.Api.v1.Odata.Members
         // PUT: api/v1/odata/MemberProjectRoles(2)
         [ODataRouteComponent(MemberProjectRolesWithIdRoute)]
         [HttpPut(IdRoute)]
-        public IActionResult Update([FromODataUri] int id, [FromBody]dynamic projectRole)
+        public IActionResult Update([FromODataUri] int id, [FromBody] MemberProjectRoleView projectRole)
         {
+            if (!ModelState.IsValid)
+            {
+                return SendInvalidModelResponse();
+            }
+
             projectRole.Id = id;
             try
             {
@@ -118,6 +129,11 @@ namespace CoralTime.Api.v1.Odata.Members
         [HttpPatch(IdRoute)]
         public IActionResult Patch([FromODataUri] int id, [FromBody] MemberProjectRoleView projectRole)
         {
+            if (!ModelState.IsValid)
+            {
+                return SendInvalidModelResponse();
+            }
+
             projectRole.Id = id;
 
             try

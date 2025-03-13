@@ -9,25 +9,22 @@ export class AuthUser {
 	readonly refreshToken: string;
 	readonly refreshTokenExpiration: number;
 	readonly role: string[];
+	readonly policies: string[];
 	readonly tokenType: string;
 
 	constructor(data, isSso: boolean) {
-		if(typeof data === 'string'){
-			data = JSON.parse(data);
-		}
-
 		this.accessToken = data.access_token;
 		this.expiresIn = data.expires_in;
-		this.id = data.MemberId;
 		this.isSso = isSso;
 		this.refreshToken = data.refresh_token;
 		this.tokenType = data.token_type;
 
 		let decodedToken = jwt_decode(data.access_token);
-		this.id = decodedToken.MemberId;
+		this.id = +decodedToken.id;
 		this.nickname = decodedToken.nickname;
 		this.refreshTokenExpiration = new Date().getTime() + decodedToken.refreshTokenLifeTime * 1000;
-		let roleName = Array.isArray(decodedToken.role) ? decodedToken.role : [decodedToken.role];
+		let roleName = Array.isArray(decodedToken.role) ? decodedToken.role[0] : decodedToken.role;
 		this.role = roleName;
+		this.policies = decodedToken.policies;
 	}
 }

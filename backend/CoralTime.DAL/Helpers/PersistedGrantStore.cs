@@ -12,13 +12,13 @@ namespace CoralTime.DAL.Helpers
 {
     public class PersistedGrantStore : IPersistedGrantStore
     {
-        private readonly IPersistedGrantDbContext _context;
+        private readonly AppDbContext _context;
         private readonly ILogger _logger;
         private readonly AppDbContext _appContext;
 
-        public PersistedGrantStore(IPersistedGrantDbContext context, AppDbContext appContext, ILogger<PersistedGrantStore> logger)
+        public PersistedGrantStore(AppDbContext appContext, ILogger<PersistedGrantStore> logger)
         {
-            _context = context;
+            _context = appContext;
             _logger = logger;
             _appContext = appContext;
         }
@@ -42,7 +42,7 @@ namespace CoralTime.DAL.Helpers
 
             try
             {
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -94,7 +94,7 @@ namespace CoralTime.DAL.Helpers
 
                 try
                 {
-                    _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -119,7 +119,7 @@ namespace CoralTime.DAL.Helpers
 
             try
             {
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -142,7 +142,7 @@ namespace CoralTime.DAL.Helpers
 
             try
             {
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {

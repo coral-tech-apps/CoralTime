@@ -220,7 +220,7 @@ export class ReportsComponent implements OnInit {
 	}
 
 	private isAllGridRowsShown(gridDataShown: ReportGridData[]): boolean {
-		const gridData = this.reportGridData.groupedItems;
+		const gridData = this.reportGridData?.groupedItems;
 		return gridDataShown.length === gridData.length
 			&& gridDataShown[gridDataShown.length - 1].rows === this.getRowsNumberFromGrid([gridData[gridData.length - 1]]);
 	}

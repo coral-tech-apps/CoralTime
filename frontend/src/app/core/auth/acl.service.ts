@@ -28,10 +28,12 @@ export class AclService {
 
 	isGrantedForRole(policy: string, roles: string[]): boolean {
 		return roles.some(role => {
-			if(!this.authService.roles){
+			if(!this.authService.policies){
+				console.log(this.authService.policies);
 				return false;
 			}
-			let isGranted = (this.authService.roles as string[]).includes(role);
+			var policies = this.authService.policies as string[];
+			var isGranted = (policies && policies.indexOf(policy) != -1);
 			return isGranted;
         });
 	}

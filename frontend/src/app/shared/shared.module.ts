@@ -41,7 +41,6 @@ import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 					breaks: true,
 					headerIds: false,
 					pedantic: true,
-					sanitize: true,
 				},
 			},
 		}),

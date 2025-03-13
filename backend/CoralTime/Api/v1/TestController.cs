@@ -32,8 +32,8 @@ namespace CoralTime.Api.v1
         {
             try
             {
-                var users = _uow.UserRepository.GetQuery().FirstOrDefault();
-                if (users != null)
+                var member = _uow.MemberRepository.GetQuery().FirstOrDefault();
+                if (member != null)
                     return Ok("DB is alive !!!");
                 return BadRequest("DB is dead!!");
             }
@@ -70,7 +70,7 @@ namespace CoralTime.Api.v1
         }
 
         // GET: api/v1/test/authorize/admin
-        [Authorize(Policy = ApplicationRoleAdmin)]
+        [Authorize(Roles = ApplicationRoleAdmin)]
         [HttpGet]
         [Route(AuthorizeAdminRoute)]
         public IActionResult GetAuthorizeAdmin()
@@ -79,7 +79,7 @@ namespace CoralTime.Api.v1
         }
 
         // GET: api/v1/test/authorize/user
-        [Authorize(Policy = ApplicationRoleUser)]
+        [Authorize(Roles = ApplicationRoleUser)]
         [HttpGet]
         [Route(AuthorizeUserRoute)]
         public IActionResult GetAuthorizeUser()

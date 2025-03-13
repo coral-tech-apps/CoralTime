@@ -44,23 +44,6 @@ namespace CoralTime.Common.Helpers
                     _message.Bcc.Add(new MailboxAddress(email, email));
                 }
             }
-            _message.To.Add(new MailboxAddress(emailTo, emailTo));
-
-            if (CcEmails != null)
-            {
-                foreach (var email in CcEmails)
-                {
-                    _message.Cc.Add(new MailboxAddress(email, email));
-                }
-            }
-
-            if (BccEmails != null)
-            {
-                foreach (var email in BccEmails)
-                {
-                    _message.Bcc.Add(new MailboxAddress(email, email));
-                }
-            }
         }
 
         public async Task SendMessageAsync()

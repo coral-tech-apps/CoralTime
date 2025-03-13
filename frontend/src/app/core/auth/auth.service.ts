@@ -19,6 +19,7 @@ export class AuthService {
 	private readonly scope: string = 'WebAPI offline_access openid profile roles';
 	private _isUserAdminOrManager: boolean = false;
 	private _roles: object = null;
+	private _policies: object = null;
 
 	public adminOrManagerParameterOnChange: EventEmitter<void> = new EventEmitter<void>();
 	public onChange: EventEmitter<AuthUser> = new EventEmitter<AuthUser>();
@@ -52,7 +53,9 @@ export class AuthService {
 
 	set authUser(authUser: AuthUser) {
 		localStorage.setItem('APPLICATION_USER', JSON.stringify(authUser));
+		this._policies = this.authUser.policies;
 		this.roles = this.authUser.role;
+		console.log(this.policies);
 		this.onChange.emit(authUser);
 	}
 
@@ -68,6 +71,14 @@ export class AuthService {
 	set roles(value: object) {
 		localStorage.setItem('ROLES', JSON.stringify(value));
 		this._roles = value;
+	}
+
+	get policies(): object{
+		return this._policies;
+	}
+
+	set policies(value: object){
+		this._policies = value;
 	}
 
 	login(username: string, password: string): Observable<boolean> {

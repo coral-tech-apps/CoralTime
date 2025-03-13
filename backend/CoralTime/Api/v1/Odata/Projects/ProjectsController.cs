@@ -1,14 +1,16 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.Projects;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Text.Json;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Formatter;
 
 namespace CoralTime.Api.v1.Odata.Projects
@@ -66,19 +68,19 @@ namespace CoralTime.Api.v1.Odata.Projects
         }
 
         // POST api/v1/odata/Projects
-        [Authorize(Roles = ApplicationRoleAdmin)]
+        [Authorize(Policy = PolicyAddProject)]
         [HttpPost]
-        public IActionResult Create([FromBody]dynamic projectData)
+        public IActionResult Create([FromBody] ProjectView projectData)
         {
             if (!ModelState.IsValid)
             {
-                SendInvalidModelResponse();
+                return SendInvalidModelResponse();
             }
 
             try
             {
                 var result = _service.Create(projectData);
-                var locationUri = $"{Request.Host}/{BaseODataRouteComponent}/Projects({result.Id})";
+                var locationUri = $"{Request.Host}/{BaseODataRoute}/Projects({result.Id})";
 
                 return Created(locationUri, result);
             }
@@ -91,18 +93,16 @@ namespace CoralTime.Api.v1.Odata.Projects
         // PUT api/v1/odata/Projects(1)
         [ODataRouteComponent(ProjectsWithIdRoute)]
         [HttpPut(IdRoute)]
-        public IActionResult Update([FromODataUri] int id, [FromBody]dynamic project)
+        public IActionResult Update([FromODataUri] int id, [FromBody] JsonElement project)
         {
             if (!ModelState.IsValid)
             {
-                SendInvalidModelResponse();
+                return SendInvalidModelResponse();
             }
-
-            project.Id = id;
 
             try
             {
-                var result = _service.Update(project);
+                var result = _service.Update(id, project);
                 return new ObjectResult(result);
             }
             catch (Exception e)
@@ -114,18 +114,16 @@ namespace CoralTime.Api.v1.Odata.Projects
         // PATCH api/v1/odata/Projects(1)
         [ODataRouteComponent(ProjectsWithIdRoute)]
         [HttpPatch(IdRoute)]
-        public IActionResult Patch([FromODataUri] int id, [FromBody]dynamic project)
+        public IActionResult Patch([FromODataUri] int id, [FromBody] JsonElement project)
         {
             if (!ModelState.IsValid)
             {
-                SendInvalidModelResponse();
+                return SendInvalidModelResponse();
             }
-
-            project.Id = id;
 
             try
             {
-                var result = _service.Patch(project);
+                var result = _service.Patch(id, project);
                 return new ObjectResult(result);
             }
             catch (Exception e)
@@ -135,7 +133,7 @@ namespace CoralTime.Api.v1.Odata.Projects
         }
 
         // DELETE api/v1/odata/Projects(1)
-        [Authorize(Roles = ApplicationRoleAdmin)]
+        [Authorize(Policy = PolicyEditProject)]
         [ODataRouteComponent(ProjectsWithIdRoute)]
         [HttpDelete(IdRoute)]
         public IActionResult Delete([FromODataUri] int id)

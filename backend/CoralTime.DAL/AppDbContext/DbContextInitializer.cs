@@ -31,96 +31,126 @@ namespace CoralTime.DAL
 
         public static async Task InitializeFirstTimeDataBaseAsync(IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            using(var scope = serviceProvider.CreateScope())
+            using (var scope = serviceProvider.CreateScope())
             {
-                DbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var isExistDataBase = (DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+                using (DbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>())
+                {
+                    var isExistDataBase = (DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
 
-                if (!isExistDataBase)
-                {
-                    await InitializeDataBase(serviceProvider, configuration);
-                }
-                else
-                {
-                    // DB will be refreshed after clearing __EFMigrationsHistory table in Demo mode
-                    var isDemo = bool.Parse(configuration["DemoSiteMode"]);
-                    if (isDemo)
+                    if (!isExistDataBase)
                     {
-                        var x = DbContext.Database.GetPendingMigrations().Count();
-                        var y = DbContext.Database.GetMigrations().Count();
-
-                        var isMigrationsHistoryEmpty = y == x;
-
-                        if (isMigrationsHistoryEmpty)
+                        await InitializeDataBase(scope.ServiceProvider, configuration);
+                    }
+                    else
+                    {
+                        // DB will be refreshed after clearing __EFMigrationsHistory table in Demo mode
+                        var isDemo = bool.Parse(configuration["DemoSiteMode"]);
+                        if (isDemo)
                         {
-                            await InitializeDataBase(serviceProvider, configuration);
-                            Environment.Exit(1);
+                            var x = DbContext.Database.GetPendingMigrations().Count();
+                            var y = DbContext.Database.GetMigrations().Count();
+
+                            var isMigrationsHistoryEmpty = y == x;
+
+                            if (isMigrationsHistoryEmpty)
+                            {
+                                await InitializeDataBase(scope.ServiceProvider, configuration);
+                                Environment.Exit(1);
+                            }
                         }
-                    }                   
+                    }
+                }
+            }
+        }
+
+        public static async Task InitializeRoleAsync(IServiceProvider serviceProvider, IConfiguration configuration, string roleName)
+        {
+            using (var scope = serviceProvider.CreateScope())
+            {
+                using (DbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>())
+                {
+                    var isExistDataBase = (DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+
+                    Configuration = configuration;
+                    ServiceProvider = scope.ServiceProvider;
+                    UserManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    RoleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    var sqlDb = DbContext.Database;
+
+                    if (sqlDb != null)
+                    {
+                        var aspNetRoleNew = new IdentityRole(roleName);
+                        var aspNetRoleDb = await RoleManager.FindByNameAsync(aspNetRoleNew.Name);
+                        if (aspNetRoleDb == null)
+                        {
+                            var aspNetRoleCreateResult = await RoleManager.CreateAsync(aspNetRoleNew);
+                            if (!aspNetRoleCreateResult.Succeeded)
+                            {
+                                return;
+                            }
+                        }
+                    }
                 }
             }
         }
 
         public static async Task InitializeDataBase(IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            
             Configuration = configuration;
             ServiceProvider = serviceProvider;
-            using(var scope = serviceProvider.CreateScope()) 
+            UserManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            RoleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            var sqlDb = DbContext.Database;
+
+            if (sqlDb != null)
             {
-                UserManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                RoleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                //async method doesn't work for MySQL
+                await DbContext.Database.MigrateAsync();
 
-                var sqlDb = DbContext.Database;
+                await InitializeRoles();
+                await InitializeProjectRoles();
+                await InitializeSettings();
 
-                if (sqlDb != null)
+                if (bool.Parse(Configuration["AddTasks"]))
                 {
-                    //async method doesn't work for MySQL
-                    await DbContext.Database.MigrateAsync();
+                    await InitializeTaskTypes();
+                }
 
-                    await InitializeRoles();
-                    await InitializeProjectRoles();
-                    await InitializeSettings();
+                if (bool.Parse(Configuration["AddAdmins"]))
+                {
+                    await InitializeUsers(Constants.UserTypeAdmins, Constants.ApplicationRoleAdmin);
+                }
 
-                    if (bool.Parse(Configuration["AddTasks"]))
-                    {
-                        await InitializeTaskTypes();
-                    }
+                if (bool.Parse(Configuration["AddMembers"]))
+                {
+                    await InitializeUsers(Constants.UserTypeMembers, Constants.ApplicationRoleUser);
+                }
 
-                    if (bool.Parse(Configuration["AddAdmins"]))
-                    {
-                        await InitializeUsers(Constants.UserTypeAdmins, Constants.ApplicationRoleAdmin);
-                    }
+                if (bool.Parse(Configuration["AddClients"]))
+                {
+                    await InitializeClients();
+                }
 
-                    if (bool.Parse(Configuration["AddMembers"]))
-                    {
-                        await InitializeUsers(Constants.UserTypeMembers, Constants.ApplicationRoleUser);
-                    }
+                if (bool.Parse(Configuration["AddProjects"]))
+                {
+                    await InitializeProjects();
+                }
 
-                    if (bool.Parse(Configuration["AddClients"]))
-                    {
-                        await InitializeClients();
-                    }
+                if (bool.Parse(Configuration["AddXRefProjectsClients"]))
+                {
+                    await InitializeXRefProjectsClients();
+                }
 
-                    if (bool.Parse(Configuration["AddProjects"]))
-                    {
-                        await InitializeProjects();
-                    }
+                if (bool.Parse(Configuration["AddXRefMemberProjectRoles"]))
+                {
+                    await InitializeXRefMemberProjectRoles();
+                }
 
-                    if (bool.Parse(Configuration["AddXRefProjectsClients"]))
-                    {
-                        await InitializeXRefProjectsClients();
-                    }
-
-                    if (bool.Parse(Configuration["AddXRefMemberProjectRoles"]))
-                    {
-                        await InitializeXRefMemberProjectRoles();
-                    }
-
-                    if (bool.Parse(Configuration["AddXRefTimeEntries"]))
-                    {
-                        await InitializeXRefTimeEntries();
-                    }
+                if (bool.Parse(Configuration["AddXRefTimeEntries"]))
+                {
+                    await InitializeXRefTimeEntries();
                 }
             }
         }
@@ -133,7 +163,7 @@ namespace CoralTime.DAL
                 var aspNetRoleDb = await RoleManager.FindByNameAsync(aspNetRoleNew.Name);
                 if (aspNetRoleDb == null)
                 {
-                    var aspNetRoleCreateResult =  await RoleManager.CreateAsync(aspNetRoleNew);
+                    var aspNetRoleCreateResult = await RoleManager.CreateAsync(aspNetRoleNew);
                     if (!aspNetRoleCreateResult.Succeeded)
                     {
                         continue;
@@ -222,8 +252,7 @@ namespace CoralTime.DAL
                 {
                     UserName = userName,
                     Email = userEmail,
-                    IsAdmin = roleUser == Constants.ApplicationRoleAdmin,
-                    IsManager = false,
+                    Role = roleUser,
                     IsActive = bool.Parse(user["IsActive"])
                 };
 
@@ -612,19 +641,19 @@ namespace CoralTime.DAL
 
         private static void UpdateIsManagerRoleForMember(int projectRoleManagerId, List<MemberProjectRole> memberProjectRoleList, Member mprUser, ProjectRole mprProjectRole)
         {
-            var checkManagerRoleFromDb = memberProjectRoleList.Exists(x => x.MemberId == mprUser.Id && x.RoleId == projectRoleManagerId);
+            /*var checkManagerRoleFromDb = memberProjectRoleList.Exists(x => x.MemberId == mprUser.Id && x.RoleId == projectRoleManagerId);
             var checkManagerRoleFromConfig = mprProjectRole.Name == Constants.ProjectRoleManager;
 
             mprUser.User.IsManager = checkManagerRoleFromDb || checkManagerRoleFromConfig;
 
-            DbContext.Members.Update(mprUser);
+            DbContext.Members.Update(mprUser);*/
         }
 
         private static bool CanMemberCreateTimeEntry(List<MemberProjectRole> memberProjectRolesList, Member memberByName)
         {
             var isMemberAssignAtProject = memberProjectRolesList.Exists(x => x.MemberId == memberByName.Id);
 
-            return memberByName.User.IsAdmin || isMemberAssignAtProject;
+            return memberByName.User.Role == Constants.ApplicationRoleAdmin || isMemberAssignAtProject;
         }
 
         private static DateTime? CreateTimeEntryDate(int timeEntryDayOfWeek)

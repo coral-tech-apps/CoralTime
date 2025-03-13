@@ -4,17 +4,27 @@ using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Models.ReportsSettings;
 using CoralTime.DAL.Models.Vsts;
 using Duende.IdentityServer.EntityFramework.Entities;
+using Duende.IdentityServer.EntityFramework.Extensions;
 using Duende.IdentityServer.EntityFramework.Interfaces;
+using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System;
 using System.Threading.Tasks;
 
 namespace CoralTime.DAL
 {
     public partial class AppDbContext : IdentityDbContext<ApplicationUser>, IPersistedGrantDbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options) { }
+        private readonly OperationalStoreOptions storeOptions;
+
+        public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<OperationalStoreOptions> storeOptions)
+            : base(options)
+        {
+            if (storeOptions == null) throw new ArgumentNullException(nameof(storeOptions));
+            this.storeOptions = storeOptions.Value;
+        }
 
         public DbSet<Member> Members { get; set; }
 
@@ -38,6 +48,8 @@ namespace CoralTime.DAL
 
         public DbSet<PersistedGrant> PersistedGrants { get; set; }
 
+        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
+
         public DbSet<ReportsSettings> ReportsSettings { get; set; }
 
         public DbSet<MemberAction> MemberActions { get; set; }
@@ -48,9 +60,7 @@ namespace CoralTime.DAL
 
         public DbSet<VstsProjectUser> VstsProjectUsers { get; set; }
 
-        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
-
-        public DbSet<Key> Keys { get; set; }
+         public DbSet<Key> Keys { get; set; }
 
         public DbSet<ServerSideSession> ServerSideSessions { get; set; }
 
@@ -63,8 +73,7 @@ namespace CoralTime.DAL
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<DeviceFlowCodes>()
-                .HasKey(d => d.DeviceCode);
+            builder.ConfigurePersistedGrantContext(storeOptions);
 
             builder.Entity<TimeEntry>()
                 .HasOne(p => p.Project)

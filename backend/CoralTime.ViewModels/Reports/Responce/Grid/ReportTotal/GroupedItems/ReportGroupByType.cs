@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace CoralTime.ViewModels.Reports.Responce.Grid.ReportTotal.GroupedItems
 {
@@ -35,6 +35,9 @@ namespace CoralTime.ViewModels.Reports.Responce.Grid.ReportTotal.GroupedItems
 
         [JsonIgnore] public int ClientId { get; set; }
         public string ClientName { get; set; }
+
+        [JsonIgnore] public int TaskId { get; set; }
+        public string TaskName { get; set; }
 
         public int? WorkingHoursPerDay { get; set; }
     }

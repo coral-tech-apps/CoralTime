@@ -1,11 +1,14 @@
 ﻿using CoralTime.ViewModels.DateFormat;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace CoralTime.Common.Constants
 {
     public static class Constants
     {
+        public const string RoleClaimType = "role";
+
         public const string UserTypeAdmins = "Admins";
         public const string UserTypeMembers = "Members";
 
@@ -14,7 +17,84 @@ namespace CoralTime.Common.Constants
         public const string ApplicationRoleAdmin = "admin";
         public const string ApplicationRoleUser = "user";
 
-        public static readonly IEnumerable<string> ApplicationRoles = new[] {ApplicationRoleAdmin, ApplicationRoleUser};
+        public static readonly IEnumerable<string> ApplicationRoles = new[] {  ApplicationRoleUser, ApplicationRoleAdmin };
+
+        public const string PolicyAuthenticatedUser = "AuthenticatedUser";
+        public const string PolicyViewProject = "ViewProject";
+        public const string PolicyAddProject = "AddProject";
+        public const string PolicyEditProject = "EditProject";
+        public const string PolicyChangeProjectStatus = "ChangeProjectStatus";
+        public const string PolicyAssignProjectManager = "AssignProjectManager";
+        public const string PolicyAssignProjectMember = "AssignProjectMember";
+        public const string PolicyViewClient = "ViewClient";
+        public const string PolicyAddClient = "AddClient";
+        public const string PolicyEditClient = "EditClient";
+        public const string PolicyViewTask = "ViewTask";
+        public const string PolicyAddTask = "AddTask";
+        public const string PolicyEditTask = "EditTask";
+        public const string PolicyViewMember = "ViewMember";
+        public const string PolicyAddMember = "AddMember";
+        public const string PolicyEditMember = "EditMember";
+        public const string PolicyViewAdminPanel = "ViewAdminPanel";
+        public const string PolicyViewIntegrationPage = "ViewIntegrationPage";
+        public const string PolicyManagesAllProjects = "ManagesAllProjects";
+
+        public static readonly IEnumerable<string> AdminPolicies = new[]
+        {
+            PolicyAuthenticatedUser,
+            PolicyViewProject,
+            PolicyAddProject,
+            PolicyEditProject,
+            PolicyChangeProjectStatus,
+            PolicyAssignProjectManager,
+            PolicyAssignProjectMember,
+            PolicyViewClient,
+            PolicyAddClient,
+            PolicyEditClient,
+            PolicyViewTask,
+            PolicyAddTask,
+            PolicyEditTask,
+            PolicyViewMember,
+            PolicyAddMember,
+            PolicyEditMember,
+            PolicyViewAdminPanel,
+            PolicyViewIntegrationPage,
+            PolicyManagesAllProjects
+        };
+
+        public static readonly IEnumerable<string> UserPolicies = new[]
+        {
+            PolicyAuthenticatedUser,
+        };
+
+        public static readonly IDictionary<string, IEnumerable<string>> RolePolicies = new Dictionary<string, IEnumerable<string>>()
+        {
+            {"admin", AdminPolicies},
+            {"user", UserPolicies }
+        };
+
+        public static readonly IEnumerable<string> ApplicationsPolicies = new[]
+        {
+            PolicyAuthenticatedUser,
+            PolicyViewProject,
+            PolicyAddProject,
+            PolicyEditProject,
+            PolicyChangeProjectStatus,
+            PolicyAssignProjectManager,
+            PolicyAssignProjectMember,
+            PolicyViewClient,
+            PolicyAddClient,
+            PolicyEditClient,
+            PolicyViewTask,
+            PolicyAddTask,
+            PolicyEditTask,
+            PolicyViewMember,
+            PolicyAddMember,
+            PolicyEditMember,
+            PolicyViewAdminPanel,
+            PolicyViewIntegrationPage,
+            PolicyManagesAllProjects
+        };
 
         #endregion
 
@@ -97,8 +177,8 @@ namespace CoralTime.Common.Constants
             
             public static class OData
             {
-                public const string BaseODataRouteComponent = BaseApiRoute + "odata";
-                public const string BaseODataControllerRoute = BaseODataRouteComponent + "/[controller]";
+                public const string BaseODataRoute = BaseApiRoute + "odata";
+                public const string BaseODataControllerRoute = BaseODataRoute + "/[controller]";
                 public const string TasksWithIdRoute = "Tasks(" + IdRoute + ")";
                 public const string ClientsWithIdRoute = "Clients(" + IdRoute + ")";
                 public const string ProjectsWithIdRoute = "Projects(" + IdRoute + ")";
@@ -124,7 +204,6 @@ namespace CoralTime.Common.Constants
 
         #endregion
 
-        public const string JwtIsManagerClaimType = "isManager";
         public const string JwtRefreshTokenLifeTimeClaimType = "refreshTokenLifeTime";
         public const string ImpersonatedUserNameHeader = "Impersonate";
 
@@ -222,7 +301,8 @@ namespace CoralTime.Common.Constants
             User = 2,
             Date = 3,
             Client = 4,
-            UnknownGrouping = 5
+            Task = 5,
+            UnknownGrouping = 6
         }
 
         public enum ShowColumnModelIds
@@ -235,6 +315,8 @@ namespace CoralTime.Common.Constants
 
         public enum DatesStaticIds
         {
+            Lifetime = 0,
+
             Today = 1,
             ThisWeek = 2,
             ThisMonth = 3,
@@ -341,7 +423,6 @@ namespace CoralTime.Common.Constants
             }
             public const string RolesScope = "roles";
             public const string WebApiScope = "WebAPI";
-            public const string RoleClaimType = "role";
             public const string AuthenticateScheme = "Bearer";
         }
 

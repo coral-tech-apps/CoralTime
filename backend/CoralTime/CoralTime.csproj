@@ -78,6 +78,5 @@
     <ProjectReference Include="..\CoralTime.Common\CoralTime.Common.csproj" />
     <ProjectReference Include="..\CoralTime.DAL\CoralTime.DAL.csproj" />
     <ProjectReference Include="..\CoralTime.MySqlMigrations\CoralTime.MySqlMigrations.csproj" />
-    <ProjectReference Include="..\CoralTime.ViewModels\CoralTime.ViewModels.csproj" />
   </ItemGroup>
 </Project>

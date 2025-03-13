@@ -205,12 +205,10 @@ namespace CoralTime.DAL.Repositories
                 _dbSet.Remove(entityToDelete);
             }
         }
-        #endregion CRUD
 
-        public int ExecuteSqlCommand(string command, params object[] parameters)
-        {
-            return _dbContext.Database.ExecuteSqlRaw(command, parameters);
-        }
+        #endregion
+
+        public int ExecuteSqlCommand(string command, params object[] parameters) => _dbContext.Database.ExecuteSqlRaw(command, parameters);
 
         private void SetInfoAboutUserThatCratedEntity(ILogChanges entityILogChange, string userId = null)
         {
