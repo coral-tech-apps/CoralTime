@@ -70,7 +70,7 @@ namespace CoralTime.DAL.Repositories
             }
 
             var userRole = user.User.Role; 
-            var roleRequirement = policy.Requirements.OfType<ClaimsAuthorizationRequirement>().Where(x=>x.ClaimType == Constants.RoleClaimType && Constants.ApplicationRoleAdmin == userRole).FirstOrDefault();
+            var roleRequirement = policy.Requirements.OfType<ClaimsAuthorizationRequirement>().Where(x=>x.ClaimType == ClaimTypes.Role && Constants.ApplicationRoleAdmin == userRole).FirstOrDefault();
             if (roleRequirement != null && roleRequirement.AllowedValues.Contains(user.User.Role))
             {
                 return true;

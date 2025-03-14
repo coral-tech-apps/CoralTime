@@ -7,6 +7,7 @@ namespace CoralTime.Common.Constants
 {
     public static class Constants
     {
+        public const string PoliciesClaimType = "policies";
         public const string RoleClaimType = "role";
 
         public const string UserTypeAdmins = "Admins";
@@ -69,8 +70,8 @@ namespace CoralTime.Common.Constants
 
         public static readonly IDictionary<string, IEnumerable<string>> RolePolicies = new Dictionary<string, IEnumerable<string>>()
         {
-            {"admin", AdminPolicies},
-            {"user", UserPolicies }
+            {ApplicationRoleAdmin, AdminPolicies},
+            {ApplicationRoleUser, UserPolicies }
         };
 
         public static readonly IEnumerable<string> ApplicationsPolicies = new[]

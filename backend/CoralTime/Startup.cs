@@ -56,6 +56,8 @@ using static CoralTime.Common.Constants.Constants.Routes.OData;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 using Duende.IdentityModel;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CoralTime
 {
@@ -341,31 +343,16 @@ namespace CoralTime
 
             services.AddAuthorization(options =>
             {
-                /*var allPolicies = Constants.ApplicationsPolicies;
-
-                foreach(var policy in allPolicies)
-                {
-                    options.AddPolicy(policy, policyBuilder =>
-                    {
-                        policyBuilder.RequireClaim(JwtClaimTypes.Role, Constants.ApplicationRoles.ToArray());
-                    });
-                }*/
-/*                var roles = new Dictionary<string, string[]>();//i had this in CONSANTS
-                var rolesSection = Configuration.GetSection("Roles");
-                foreach (var roleItem in rolesSection.GetChildren())
-                {
-                    roles.Add(roleItem.Key, roleItem.Value.Split(','));
-                }
-*/ 
-                //var policies = roles.SelectMany(x => x.Value).Distinct().ToArray(); //all policies this too
-                
                 foreach (var policyName in Constants.ApplicationsPolicies)
                 {
                     var policyRoles = Constants.RolePolicies.Where(x => x.Value.Contains(policyName)).Select(x => x.Key).ToArray();
-                    options.AddPolicy(policyName, policy =>
+                    foreach(var role in policyRoles)
                     {
-                        policy.RequireClaim(JwtClaimTypes.Role, policyRoles);
-                    });
+                        options.AddPolicy(policyName, policy =>
+                        {
+                            policy.RequireClaim(ClaimTypes.Role, role);
+                        });
+                    }
                 }
             });
         }

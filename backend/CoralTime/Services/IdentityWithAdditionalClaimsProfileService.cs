@@ -46,9 +46,7 @@ namespace CoralTime.Services
             var isAdmin = userRole == Constants.ApplicationRoleAdmin;
             var policy = isAdmin ? Constants.AdminPolicies : Constants.UserPolicies;
             var jsonPolicy = JsonConvert.SerializeObject(policy);
-            resultClaims.Add(new Claim("policies", value: jsonPolicy));
-
-            context.IssuedClaims = resultClaims;
+            resultClaims.Add(new Claim(type: Constants.PoliciesClaimType, value: jsonPolicy));
         }
 
         public async Task IsActiveAsync(IsActiveContext context)

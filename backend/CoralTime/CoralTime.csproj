@@ -6,6 +6,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>13</LangVersion>
+	<!-- PreserveCompilationReferences & PreserveCompilationContext are needed for the PDF exports.
+        Without this, the RazorLight package will throw the error "Cannot find reference assembly 'Microsoft.AspNetCore.Antiforgery.dll'".
+        This is the suggested fix on the project's GitHub page.
+        https://github.com/toddams/RazorLight -->
+	<PreserveCompilationReferences>true</PreserveCompilationReferences>
+	<PreserveCompilationContext>true</PreserveCompilationContext>
+
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="ConfigsNetCore2.0\**" />

@@ -227,7 +227,7 @@ export class UsersService {
 	}
 
 	getUnassignedProjectsWithCount(event, filterStr = '', memberId: number): Observable<PagedResult<Project>> {
-		let odata = this.odataFactory.CreateService<Project>('MemberProjectRoles(' + memberId + ')/projects');
+		let odata = this.odataFactory.CreateService<Project>('MemberProjectRoles/' + memberId + '/projects');
 
 		let filters = [];
 		let query = odata
@@ -256,7 +256,7 @@ export class UsersService {
 	}
 
 	getUnassignedUsersWithCount(event, filterStr = '', projectId: number): Observable<PagedResult<User>> {
-		let odata = this.odataFactory.CreateService<User>('MemberProjectRoles(' + projectId + ')/members');
+		let odata = this.odataFactory.CreateService<User>('MemberProjectRoles/' + projectId + '/members');
 
 		let filters = [];
 		let query = odata
