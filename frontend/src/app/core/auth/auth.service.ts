@@ -55,7 +55,6 @@ export class AuthService {
 		localStorage.setItem('APPLICATION_USER', JSON.stringify(authUser));
 		this._policies = this.authUser.policies;
 		this.roles = this.authUser.role;
-		console.log(this.policies);
 		this.onChange.emit(authUser);
 	}
 
@@ -97,7 +96,7 @@ export class AuthService {
 
 		return this.http.post('/connect/token', body, {headers: headers}).pipe(
 			map(response => {
-				this.authUser = new AuthUser(response, false);	
+				this.authUser = new AuthUser(response, false);
 				this.appInsightsService.setAuthenticatedUserContext(this.authUser.id.toString(), this.authUser.nickname);
 				return true;
 			}));
@@ -188,10 +187,10 @@ export class AuthService {
 	private objectToString(params: Object): string {
 		return Object.keys(params).map(key => `${key}=${encodeURIComponent(params[key])}`).join('&');
 	}
-	
+
 	private setupAppInsights(): void {
 		let key = localStorage.getItem('instrumentationKey');
-		
+
 		if (this.appInsightsService.config.instrumentationKey == null){
 			if (key !=null && key !=''){
                 this.appInsightsService.config = {
