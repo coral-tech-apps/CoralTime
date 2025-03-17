@@ -12,140 +12,140 @@
 }
 
 .ct-timetracker-icon {
-  background-image: url(./assets/icons/clock-copy.svg);
+  background-image: url(/assets/icons/clock-copy.svg);
 }
 
 .ct-timeactual-icon {
-  background-image: url(./assets/icons/time-white.svg);
+  background-image: url(/assets/icons/time-white.svg);
   background-size: 18px;
 }
 
 .ct-timeestimated-icon {
-  background-image: url(./assets/icons/est-time-white.svg);
+  background-image: url(/assets/icons/est-time-white.svg);
   background-size: 18px;
 }
 
 .ct-times-icon {
-  background-image: url(./assets/icons/x-circle.svg);
+  background-image: url(/assets/icons/x-circle.svg);
   width: 9px;
   height: 8px;
 }
 
 .ct-settings-icon {
-  background-image: url(./assets/icons/settings.svg);
+  background-image: url(/assets/icons/settings.svg);
 
   &:hover {
-    background-image: url(./assets/icons/settings-blue.svg);
+    background-image: url(/assets/icons/settings-blue.svg);
   }
 }
 
 .ct-admin-icon {
   top: -3px;
-  background-image: url(./assets/icons/ct.admin1.svg);
+  background-image: url(/assets/icons/ct.admin1.svg);
   background-size: 18px;
 }
 
 .ct-reports-icon {
-  background-image: url(./assets/icons/pie-chart.svg);
+  background-image: url(/assets/icons/pie-chart.svg);
 }
 
 .ct-menu-icon {
   top: 1px;
-  background-image: url(./assets/icons/menu.svg);
+  background-image: url(/assets/icons/menu.svg);
   background-position: left center;
 }
 
 .ct-menu-blue-icon {
   top: 1px;
-  background-image: url(./assets/icons/menu-blue.svg);
+  background-image: url(/assets/icons/menu-blue.svg);
   background-position: left center;
 }
 
 .ct-export-icon {
-  background-image: url(./assets/icons/export.svg);
+  background-image: url(/assets/icons/export.svg);
   background-size: 16px;
 }
 
 .ct-printer-icon {
-  background-image: url(./assets/icons/printer.svg);
+  background-image: url(/assets/icons/printer.svg);
   background-size: 20px;
 }
 
 .ct-mail-icon {
-  background-image: url(./assets/icons/mail.svg);
+  background-image: url(/assets/icons/mail.svg);
   background-size: 20px;
 }
 
 .ct-integration-icon {
-  background-image: url(./assets/icons/ct.sync1.svg);
+  background-image: url(/assets/icons/ct.sync1.svg);
 }
 
 .ct-preferences-icon {
-  background-image: url(./assets/icons/preferences.svg);
+  background-image: url(/assets/icons/preferences.svg);
 }
 
 .ct-nav-menu li:hover, .ct-menu-item:hover, .active {
   .ct-timetracker-icon {
-    background-image: url(./assets/icons/clock-copy-blue.svg);
+    background-image: url(/assets/icons/clock-copy-blue.svg);
   }
 
   .ct-admin-icon {
-    background-image: url(./assets/icons/ct.admin2.svg);
+    background-image: url(/assets/icons/ct.admin2.svg);
   }
 
   .ct-settings-icon {
-    background-image: url(./assets/icons/settings-blue.svg);
+    background-image: url(/assets/icons/settings-blue.svg);
   }
 
   .ct-reports-icon {
-    background-image: url(./assets/icons/pie-chart-blue.svg);
+    background-image: url(/assets/icons/pie-chart-blue.svg);
   }
 
   .ct-projects-icon {
-    background-image: url(./assets/icons/ct.projects2.svg);
+    background-image: url(/assets/icons/ct.projects2.svg);
   }
 
   .ct-clients-icon {
-    background-image: url(./assets/icons/ct.clients2.svg);
+    background-image: url(/assets/icons/ct.clients2.svg);
   }
 
   .ct-tasks-icon {
-    background-image: url(./assets/icons/ct.tasks2.svg);
+    background-image: url(/assets/icons/ct.tasks2.svg);
   }
 
   .ct-users-icon {
-    background-image: url(./assets/icons/ct.users2.svg);
+    background-image: url(/assets/icons/ct.users2.svg);
   }
 
   .ct-integration-icon {
-    background-image: url(./assets/icons/ct.sync2.svg);
+    background-image: url(/assets/icons/ct.sync2.svg);
   }
 
   .ct-preferences-icon {
-    background-image: url(./assets/icons/preferences-blue.svg);
+    background-image: url(/assets/icons/preferences-blue.svg);
   }
 }
 
 .ct-projects-icon {
-  background: url(./assets/icons/ct.projects1.svg) no-repeat center;
+  background: url(/assets/icons/ct.projects1.svg) no-repeat center;
   background-size: 40px;
   top: -3px;
 }
 
 .ct-clients-icon {
-  background: url(./assets/icons/ct.clients1.svg) no-repeat center;
+  background: url(/assets/icons/ct.clients1.svg) no-repeat center;
   background-size: 40px;
   top: -3px;
 }
 
 .ct-tasks-icon {
-  background: url(./assets/icons/ct.tasks1.svg) no-repeat center;
+  background: url(/assets/icons/ct.tasks1.svg) no-repeat center;
   background-size: 40px;
   top: -3px;
 }
 
 .ct-users-icon {
-  background: url(./assets/icons/ct.users1.svg) no-repeat center;
+  background: url(/assets/icons/ct.users1.svg) no-repeat center;
   background-size: 40px;
   top: -3px;
 }
@@ -170,22 +170,22 @@
 }
 
 .ct-grid-settings-icon {
-  background: url(./assets/icons/grid-settings.svg) no-repeat center;
+  background: url(/assets/icons/grid-settings.svg) no-repeat center;
   background-size: 16px;
 }
 
 .ct-edit-timesheet-icon {
-  background: url(./assets/icons/users.svg) no-repeat center;
+  background: url(/assets/icons/users.svg) no-repeat center;
   background-size: 16px;
 }
 
 tr:hover {
   .ct-grid-settings-icon {
-    background-image: url(./assets/icons/grid-settings-blue.svg);
+    background-image: url(/assets/icons/grid-settings-blue.svg);
   }
 
   .ct-edit-timesheet-icon {
-    background-image: url(./assets/icons/users.hover.svg);
+    background-image: url(/assets/icons/users.hover.svg);
   }
 }
 
@@ -226,7 +226,7 @@ tr:hover {
     border-bottom: 8px solid transparent;
     border-radius: 2px;
   }
-  
+
   @media (max-width: $calendarTabletWidth) {
     width: 36px;
     height: 36px;

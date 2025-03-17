@@ -145,7 +145,7 @@ h5 {
 .ct-nav-logo {
   height: 36px;
   width: 36px;
-  background: url(./assets/icons/logo.svg) no-repeat center center;
+  background: url(/assets/icons/logo.svg) no-repeat center center;
   display: inline-block;
   background-size: 100%;
 }
@@ -368,7 +368,7 @@ h5 {
       width: 18px;
       height: 18px;
       content: '';
-      background: url(./assets/rolling-white.gif) no-repeat center center;
+      background: url(/assets/rolling-white.gif) no-repeat center center;
       background-size: contain;
     }
   }
@@ -381,7 +381,7 @@ h5 {
   }
 
   &.ct-grid-link:after {
-    background-image: url(./assets/rolling-blue.gif);
+    background-image: url(/assets/rolling-blue.gif);
     top: 5px;
     right: -20px;
   }
@@ -393,7 +393,7 @@ h5 {
     right: -4px;
     width: 18px;
     height: 18px;
-    background: url(./assets/rolling-blue.gif) no-repeat center;
+    background: url(/assets/rolling-blue.gif) no-repeat center;
     background-size: contain;
   }
 
@@ -404,11 +404,11 @@ h5 {
     width: 18px;
     height: 18px;
     content: '';
-    background: url(./assets/rolling-white.gif) no-repeat center;
+    background: url(/assets/rolling-white.gif) no-repeat center;
     background-size: contain;
 
     tr:hover & {
-      background-image: url(./assets/rolling-blue.gif);
+      background-image: url(/assets/rolling-blue.gif);
     }
   }
 
@@ -429,7 +429,7 @@ h5 {
       transform: translateY(-8px);
       border: none;
       margin: auto;
-      background: url(./assets/rolling-white.gif) no-repeat center;
+      background: url(/assets/rolling-white.gif) no-repeat center;
       background-size: contain;
     }
   }
@@ -510,7 +510,7 @@ h5 {
 }
 
 .ct-dialog-close {
-  background: url(./assets/icons/cancel.svg) no-repeat center center;
+  background: url(/assets/icons/cancel.svg) no-repeat center center;
   position: absolute;
   display: block;
   width: 14px;

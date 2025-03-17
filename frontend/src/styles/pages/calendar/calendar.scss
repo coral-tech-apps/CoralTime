@@ -292,7 +292,7 @@ $titleDayHeight: 145px;
     height: 18px;
     top: 0;
     left: 0;
-    background: url(./assets/icons/time.svg) no-repeat center;
+    background: url(/assets/icons/time.svg) no-repeat center;
   }
 }
 
@@ -301,7 +301,7 @@ $titleDayHeight: 145px;
   float: right;
 
   &:before {
-    background: url(./assets/icons/est-time.svg) no-repeat center;
+    background: url(/assets/icons/est-time.svg) no-repeat center;
   }
 }
 
@@ -648,7 +648,7 @@ $titleDayHeight: 145px;
   z-index: 1001;
   margin: auto;
   width: 252px;
-  line-height: 44px;  
+  line-height: 44px;
   text-align: center;
 
   .ct-timer-container {
@@ -689,12 +689,12 @@ $titleDayHeight: 145px;
     color: $main-blue;
 
     &:before {
-      background: url(./assets/icons/time.svg) no-repeat center;
+      background: url(/assets/icons/time.svg) no-repeat center;
     }
 
     &.ct-timer-exist {
       &:before {
-        background-image: url(./assets/icons/time-blue.svg);
+        background-image: url(/assets/icons/time-blue.svg);
       }
     }
 
@@ -719,7 +719,7 @@ $titleDayHeight: 145px;
     opacity: .6;
 
     &:before {
-      background: url(./assets/icons/est-time.svg) no-repeat center;
+      background: url(/assets/icons/est-time.svg) no-repeat center;
     }
   }
 

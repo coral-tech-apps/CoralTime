@@ -44,7 +44,7 @@ export class DatepickerComponent implements ControlValueAccessor, AfterContentIn
 	@Output() dateClicked: EventEmitter<Moment> = new EventEmitter();
 
 	private _disabled: boolean = false;
-	@Input()
+
 	get disabled(): boolean {
 		return this._disabled;
 	}

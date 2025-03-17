@@ -54,7 +54,6 @@ export class ColorPickerComponent implements ControlValueAccessor, Validator, Af
 		this._bgColor = this.isColorValid(value) ? value : this._bgColor || GRAY_COLOR;
 	};
 
-	@Input()
 	get disabled(): boolean {
 		return this._disabled;
 	}

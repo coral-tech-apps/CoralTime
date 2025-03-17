@@ -55,7 +55,7 @@ export class InputListComponent implements ControlValueAccessor {
 	@ViewChild('slimScroll', { static: true }) slimScroll: any;
 
 	private _disabled: boolean = false;
-	@Input()
+
 	get disabled(): boolean {
 		return this._disabled;
 	}
