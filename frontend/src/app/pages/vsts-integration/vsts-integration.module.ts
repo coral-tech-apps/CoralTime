@@ -7,25 +7,21 @@ import { ProjectUsersFormComponent } from './project-users-form/project-users-fo
 import { VstsIntegrationService } from '../../services/vsts-integration.service';
 
 @NgModule({
-	imports: [
-		VstsIntegrationRoutingModule,
-		SharedModule
-	],
-	declarations: [
-		VstsIntegrationComponent,
-		VstsIntegrationFormComponent,
-		ProjectUsersFormComponent,
-	],
-	entryComponents: [
-		VstsIntegrationFormComponent,
-		ProjectUsersFormComponent,
-	],
-	providers: [
-		VstsIntegrationService
-	],
-	exports: [
-		VstsIntegrationComponent
-	]
+    imports: [
+        VstsIntegrationRoutingModule,
+        SharedModule
+    ],
+    declarations: [
+        VstsIntegrationComponent,
+        VstsIntegrationFormComponent,
+        ProjectUsersFormComponent,
+    ],
+    providers: [
+        VstsIntegrationService
+    ],
+    exports: [
+        VstsIntegrationComponent
+    ]
 })
 
 export class VstsIntegrationModule {

@@ -3,7 +3,7 @@ import {
 	ChangeDetectionStrategy, ChangeDetectorRef, ViewChild
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { MatTextareaAutosize } from '@angular/material/input';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 
 export const TEXTAREA_CONTROL_VALUE_ACCESSOR: any = {
@@ -33,7 +33,7 @@ export class TextareaComponent implements ControlValueAccessor {
 	@Output() change: EventEmitter<TextareaChange> = new EventEmitter<TextareaChange>();
 
 	@ViewChild('slimScroll', { static: true }) slimScroll: any;
-	@ViewChild('autoSizer', { static: true }) autoSizer: MatTextareaAutosize;
+	@ViewChild('autoSizer', { static: true }) autoSizer: CdkTextareaAutosize;
 
 	isFocusClassShown: boolean;
 	modelValue: any;

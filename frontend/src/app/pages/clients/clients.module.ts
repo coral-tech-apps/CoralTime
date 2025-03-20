@@ -6,22 +6,18 @@ import { SharedModule } from '../../shared/shared.module';
 import { ClientProjectAssignmentComponent } from './project-assignment/project-assignment.component';
 
 @NgModule({
-	imports: [
-		ClientsRoutingModule,
-		SharedModule
-	],
-	declarations: [
-		ClientsComponent,
-		ClientFormComponent,
-		ClientProjectAssignmentComponent
-	],
-	entryComponents: [
-		ClientFormComponent,
-		ClientProjectAssignmentComponent
-	],
-	exports: [
-		ClientsComponent
-	]
+    imports: [
+        ClientsRoutingModule,
+        SharedModule
+    ],
+    declarations: [
+        ClientsComponent,
+        ClientFormComponent,
+        ClientProjectAssignmentComponent
+    ],
+    exports: [
+        ClientsComponent
+    ]
 })
 
 export class ClientsModule {

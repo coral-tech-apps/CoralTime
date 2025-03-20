@@ -7,22 +7,18 @@ import { UsersRoutingModule } from './users-routing.module';
 import { UsersComponent } from './users.component';
 
 @NgModule({
-	imports: [
-		UsersRoutingModule,
-		SharedModule
-	],
-	declarations: [
-		UsersComponent,
-		UsersFormComponent,
-		UserProjectAssignmentComponent
-	],
-	entryComponents: [
-		UserProjectAssignmentComponent,
-		UsersFormComponent
-	],
-	exports: [
-		UsersComponent
-	]
+    imports: [
+        UsersRoutingModule,
+        SharedModule
+    ],
+    declarations: [
+        UsersComponent,
+        UsersFormComponent,
+        UserProjectAssignmentComponent
+    ],
+    exports: [
+        UsersComponent
+    ]
 })
 
 export class UsersModule {

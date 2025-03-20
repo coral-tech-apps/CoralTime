@@ -6,7 +6,7 @@
   height: 19px;
   overflow: hidden;
 
-  & + * {
+  &:has(+ *) {
     margin-left: 25px;
   }
 

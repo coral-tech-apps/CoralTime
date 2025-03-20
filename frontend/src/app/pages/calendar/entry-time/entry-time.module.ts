@@ -6,21 +6,18 @@ import { SharedModule } from '../../../shared/shared.module';
 import { MultipleDatepickerComponent } from './multiple-datepicker/multiple-datepicker.component';
 
 @NgModule({
-	imports: [
-		FormsModule,
-		SharedModule
-	],
-	declarations: [
-		EntryTimeComponent,
-		EntryTimeFormComponent,
-		MultipleDatepickerComponent
-	],
-	entryComponents: [
-		MultipleDatepickerComponent
-	],
-	exports: [
-		EntryTimeComponent
-	]
+    imports: [
+        FormsModule,
+        SharedModule
+    ],
+    declarations: [
+        EntryTimeComponent,
+        EntryTimeFormComponent,
+        MultipleDatepickerComponent
+    ],
+    exports: [
+        EntryTimeComponent
+    ]
 })
 
 export class EntryTimeModule {

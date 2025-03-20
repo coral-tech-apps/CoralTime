@@ -8,21 +8,18 @@ import { MemberActionsComponent } from './member-actions-data/member-actions.com
 
 
 @NgModule({
-	imports: [
-		CommonModule,
-		AdminRoutingModule,
-		SharedModule
-	],
-	declarations: [
-		AdminComponent,
-        MemberActionsComponent
-	],
-    entryComponents: [
+    imports: [
+        CommonModule,
+        AdminRoutingModule,
+        SharedModule
+    ],
+    declarations: [
+        AdminComponent,
         MemberActionsComponent
     ],
-	exports: [
-		AdminComponent
-	]
+    exports: [
+        AdminComponent
+    ]
 })
 
 export class AdminModule {

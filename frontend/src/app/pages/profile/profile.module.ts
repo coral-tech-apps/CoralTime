@@ -11,25 +11,22 @@ import { ImageCropperModule } from 'ngx-img-cropper';
 import { FileUploadModule } from 'ng2-file-upload';
 
 @NgModule({
-	imports: [
-		CommonModule,
-		ProfileRoutingModule,
-		FileUploadModule,
-		ImageCropperModule,
-		SharedModule
-	],
-	declarations: [
-		ProfileComponent,
-		ProfileSettingsComponent,
-		ProfilePhotoComponent
-	],
-	providers: [
-		ProfileService,
-		EnterEmailService
-	],
-	entryComponents: [
-		ProfilePhotoComponent
-	]
+    imports: [
+        CommonModule,
+        ProfileRoutingModule,
+        FileUploadModule,
+        ImageCropperModule,
+        SharedModule
+    ],
+    declarations: [
+        ProfileComponent,
+        ProfileSettingsComponent,
+        ProfilePhotoComponent
+    ],
+    providers: [
+        ProfileService,
+        EnterEmailService
+    ]
 })
 
 export class ProfileModule {

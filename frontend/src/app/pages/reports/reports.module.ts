@@ -15,33 +15,28 @@ import { ReportsQueryFormComponent } from './reports-query-form/reports-query-fo
 import { ConfirmationComponent } from '../../shared/confirmation/confirmation.component';
 
 @NgModule({
-	imports: [
-		SharedModule,
-		ReportsRoutingModule
-	],
-	declarations: [
-		ReportsComponent,
-		ReportsGridComponent,
-		RangeDatepickerComponent,
-		ReportsSendComponent,
-		ReportsSendFormComponent,
-		EmailsEqualValidatorDirective,
-		EmailInvalidValidatorDirective,
-		ReportsQueryFormComponent
-	],
-	entryComponents: [
-		ReportsSendComponent,
-		ReportsQueryFormComponent,
-		ConfirmationComponent
-	],
-	providers: [
-		CalendarService,
-		RangeDatepickerService,
-		ReportsService,
-	],
-	exports: [
-		ReportsComponent
-	]
+    imports: [
+        SharedModule,
+        ReportsRoutingModule
+    ],
+    declarations: [
+        ReportsComponent,
+        ReportsGridComponent,
+        RangeDatepickerComponent,
+        ReportsSendComponent,
+        ReportsSendFormComponent,
+        EmailsEqualValidatorDirective,
+        EmailInvalidValidatorDirective,
+        ReportsQueryFormComponent
+    ],
+    providers: [
+        CalendarService,
+        RangeDatepickerService,
+        ReportsService,
+    ],
+    exports: [
+        ReportsComponent
+    ]
 })
 
 export class ReportsModule {

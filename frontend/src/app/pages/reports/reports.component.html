@@ -166,7 +166,8 @@
             <div class="ct-reports-grid-container">
                 <div class="ct-page-header">
                     <h3 class="ct-header">Details</h3>
-                    <ct-multiselect class="ct-columns-multiselect ct-icon ct-settings-icon" title="Columns settings"
+                    <!-- TODO: fix ct-multiselect with customMultiSelect-->
+                    <p-multiSelect class="ct-columns-multiselect ct-icon ct-settings-icon" title="Columns settings"
                                     [styleClass]="'ct-reports-settings-multiselect'"
                                     [(ngModel)]="reportQuery.showColumnIds"
                                     (onSubmitAction)="submitSettings(reportQuery.showColumnIds)"
@@ -175,7 +176,7 @@
                                     [showFilterSearch]="false"
                                     [appendTo]="'body'"
                                     [options]="showColumnItems">
-                    </ct-multiselect>
+                    </p-multiSelect>
                     <div class="ct-btn-block">
                         <i class="ct-icon ct-export-icon" title="Export reports" area-hidden="true"
                            (click)="menu.toggleMenu()"></i>

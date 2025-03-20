@@ -10,28 +10,22 @@ import { ProjectTasksFormComponent } from './project-tasks-form/form/project-tas
 import { TaskEqualValidatorDirective } from './project-tasks-form/form/task-equal-validator.directive';
 
 @NgModule({
-	imports: [
-		ProjectsRoutingModule,
-		SharedModule
-	],
-	declarations: [
-		ProjectsComponent,
-		ProjectFormComponent,
-		ProjectTasksComponent,
-		ProjectTasksFormComponent,
-		ProjectSettingsFormComponent,
-		ProjectUsersComponent,
-		TaskEqualValidatorDirective
-	],
-	entryComponents: [
-		ProjectFormComponent,
-		ProjectTasksComponent,
-		ProjectUsersComponent,
-		ProjectSettingsFormComponent
-	],
-	exports: [
-		ProjectsComponent
-	]
+    imports: [
+        ProjectsRoutingModule,
+        SharedModule
+    ],
+    declarations: [
+        ProjectsComponent,
+        ProjectFormComponent,
+        ProjectTasksComponent,
+        ProjectTasksFormComponent,
+        ProjectSettingsFormComponent,
+        ProjectUsersComponent,
+        TaskEqualValidatorDirective
+    ],
+    exports: [
+        ProjectsComponent
+    ]
 })
 
 export class ProjectsModule {

@@ -5,17 +5,14 @@ import { TaskFormComponent } from './form/tasks-form.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-	imports: [
-		SharedModule,
-		TasksRoutingModule
-	],
-	declarations: [
-		TasksComponent,
-		TaskFormComponent
-	],
-	entryComponents: [
-		TaskFormComponent
-	]
+    imports: [
+        SharedModule,
+        TasksRoutingModule
+    ],
+    declarations: [
+        TasksComponent,
+        TaskFormComponent
+    ]
 })
 
 export class TasksModule {

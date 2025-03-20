@@ -14,30 +14,27 @@ import { DragDropModule } from 'primeng/dragdrop';
 import { TimerComponent } from './timer/timer.component';
 
 @NgModule({
-	imports: [
-		CalendarRoutingModule,
-		SharedModule,
-		EntryTimeModule,
-		DragDropModule
-	],
-	declarations: [
-		CalendarComponent,
-		CalendarDayComponent,
-		CalendarTaskComponent,
-		CalendarDailyViewComponent,
-		CalendarWeeklyViewComponent,
-		TimerComponent
-	],
-	entryComponents: [
-		ConfirmationComponent
-	],
-	providers: [
-		CalendarService,
-		CalendarProjectsService
-	],
-	exports: [
-		CalendarComponent
-	]
+    imports: [
+        CalendarRoutingModule,
+        SharedModule,
+        EntryTimeModule,
+        DragDropModule
+    ],
+    declarations: [
+        CalendarComponent,
+        CalendarDayComponent,
+        CalendarTaskComponent,
+        CalendarDailyViewComponent,
+        CalendarWeeklyViewComponent,
+        TimerComponent
+    ],
+    providers: [
+        CalendarService,
+        CalendarProjectsService
+    ],
+    exports: [
+        CalendarComponent
+    ]
 })
 
 export class CalendarModule {
