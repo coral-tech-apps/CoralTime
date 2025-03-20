@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Message } from 'primeng/primeng';
+import { UIMessage } from 'primeng/message';
 
 @Component({
 	selector: 'ct-unauthorized',
@@ -8,7 +8,7 @@ import { Message } from 'primeng/primeng';
 
 export class UnauthorizedComponent implements OnInit {
 	message: string;
-	msgs: Message[] = [];
+	msgs: UIMessage[] = [];
 
 	constructor() {
 		this.message = '401: Unauthorized ';
@@ -19,7 +19,6 @@ export class UnauthorizedComponent implements OnInit {
 	}
 
 	showError(): void {
-		this.msgs = [];
-		this.msgs.push({severity: 'error', summary: 'Error ', detail: this.message});
+		this.msgs.push({severity: 'error', text: this.message, escape: false, style: false, styleClass: '', icon: ''});
 	}
 }

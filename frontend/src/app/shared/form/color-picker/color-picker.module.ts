@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ColorPickerModule as ColorModule } from 'primeng/primeng';
+import { ColorPickerModule as ColorModule } from 'primeng/colorpicker';
 import { ColorPickerComponent } from './color-picker.component';
 import { TextMaskModule } from 'angular2-text-mask';
 

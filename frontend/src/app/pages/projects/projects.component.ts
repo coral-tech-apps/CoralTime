@@ -1,7 +1,7 @@
-
 import {switchMap, debounceTime} from 'rxjs/operators';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Table } from 'primeng/table';
 import { Subject } from 'rxjs';
 import { Project } from '../../models/project';
 import { PagedResult } from '../../services/odata';
@@ -30,6 +30,7 @@ export class ProjectsComponent implements OnInit {
 	resizeObservable: Subject<any> = new Subject();
 	updatingGrid: boolean = false;
 
+  @ViewChild('tableRef') tableRef!: Table;
 	@ViewChild('pageContainer', { static: true }) pageContainer: ElementRef;
 
 	private lastEvent: any;
@@ -51,6 +52,12 @@ export class ProjectsComponent implements OnInit {
 	ngOnInit() {
 		this.getProjects();
 	}
+
+  filterTable(value: string): void{
+    if(this.tableRef){
+      this.tableRef.filterGlobal(value, 'contains');
+    }
+  }
 
 	// GRID DISPLAYING
 

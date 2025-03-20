@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { ErrorsComponent } from './errors.component';
-import { MessagesModule } from 'primeng/primeng';
+import { MessagesModule } from 'primeng/messages';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 import { SharedModule } from '../../shared/shared.module';

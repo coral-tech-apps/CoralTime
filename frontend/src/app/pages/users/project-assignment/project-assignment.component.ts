@@ -13,6 +13,7 @@ import { PagedResult } from '../../../services/odata';
 import { ProjectRolesService } from '../../../services/project-roles.service';
 import { UsersService } from '../../../services/users.service';
 import { SettingsService } from '../../../services/settings.service';
+import { Table } from 'primeng/table';
 
 @Component({
 	selector: 'ct-user-project-assignment',
@@ -21,6 +22,9 @@ import { SettingsService } from '../../../services/settings.service';
 
 export class UserProjectAssignmentComponent implements OnInit {
 	@Input() user: User;
+
+  @ViewChild('assignedProjectsTable') assignedProjectsTable: Table;
+  @ViewChild('notAssignedProjectsTable') notAssignedProjectsTable: Table;
 	@ViewChild('grid', { static: true }) gridContainer: ElementRef;
 
 	defaultProjectRole: ProjectRole;
@@ -67,6 +71,11 @@ export class UserProjectAssignmentComponent implements OnInit {
 			});
 		});
 	}
+
+  filterTable(value: string): void{
+    this.assignedProjectsTable.filterGlobal(value, 'contains');
+    this.notAssignedProjectsTable.filterGlobal(value, 'contains');
+  }
 
 	// ASSIGNED PROJECTS GRID
 

@@ -1,69 +1,88 @@
 <div class="ct-grid-search-filter">
-    <input class="ct-input-element" #gb placeholder="Search connection..." [(ngModel)]="filterStr">
-    <i class="fa fa-search"></i>
+  <!-- filtration  -->
+  <input class="ct-input-element" #globalFilter placeholder="Search connection..."
+         [(ngModel)]="filterStr" (input)="dt.filterGlobal($event.target.value, 'contains')">
+  <i class="fa fa-search"></i>
 </div>
 
 <div #pageContainer class="ct-page-container ct-integration-page">
-    <div class="ct-page-header">
-        <h3 class="ct-header">Connections</h3>
-
-        <div (click)="openConnectionDialog()" class="ct-add-link">
-            <a class="ct-manage-add">Create New Connection</a>
-        </div>
-        <button mat-raised-button class="ct-blue-button" (click)="updateVstsUsers()">
-            Update VSTS Users
-        </button>
+  <div class="ct-page-header">
+    <h3 class="ct-header">Connections</h3>
+    <div (click)="openConnectionDialog()" class="ct-add-link">
+      <a class="ct-manage-add">Create New Connection</a>
     </div>
+    <button mat-raised-button class="ct-blue-button" (click)="updateVstsUsers()">
+      Update VSTS Users
+    </button>
+  </div>
 
-    <div class="ct-data-table-wrapper" (window:resize)="onResize()">
-        <p-dataTable class="ct-grid-container ct-grid-row-border"
-                     [value]="pagedResult?.data"
-                     [resizeObservable]="resizeObservable"
-                     scrollable="true" [sortField]="'projectName'"
-                     [responsive]="true" [lazy]="true"
-                     [loading]="!isAllConnections"
-                     [globalFilter]="gb"
-                     (onLazyLoad)="loadLazy($event)"
-                     (onMoreContent)="loadLazy()"
-                     (onEndScrollEvent)="onEndScroll()">
-            <p-column field="projectName" header="Project" [sortable]="true" styleClass="ct-info-col">
-                <ng-template let-col let-connection="rowData" pTemplate="body">
-                    <span (click)="openConnectionDialog(connection)" class="ct-grid-link-text" title="{{ connection.projectName }}">{{ connection.projectName }}</span>
-                </ng-template>
-            </p-column>
+  <div class="ct-data-table-wrapper" (window:resize)="onResize()">
+    <p-table #dt class="ct-grid-container ct-grid-row-border"
+             [value]="pagedResult?.data"
+             scrollable="true"
+             [sortField]="'projectName'"
+             [lazy]="true"
+             [loading]="!isAllConnections"
+             (onLazyLoad)="loadLazy($event)"
+             (onMoreContent)="loadLazy()"
+             (onEndScrollEvent)="onEndScroll()">
 
-            <p-column field="vstsProjectName" header="VSTS Project" [sortable]="true" styleClass="ct-info-col">
-                <ng-template let-col let-connection="rowData" pTemplate="body">
-                    <span>{{ connection.vstsProjectName }}</span>
-                </ng-template>
-            </p-column>
+      <!-- header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="ct-info-col">Project</th>
+          <th class="ct-info-col" *ngIf="groupById != 2">VSTS Project</th>
+          <th>VSTS Company Url</th>
+          <th style="width:300px;">VSTS Pat</th>
+          <th style="width:150px;" class="ct-info-col ct-small-padding">Team</th>
+          <th style="width:110px;" class="ct-small-padding">Actions</th>
+        </tr>
+      </ng-template>
 
-            <p-column field="vstsCompanyUrl" header="VSTS Company Url">
-                <ng-template let-col let-connection="rowData" pTemplate="body">
-                    <div markdown [data]="formatUrlForMarkdown(connection.vstsCompanyUrl)"></div>
-                </ng-template>
-            </p-column>
+      <!--body -->
+      <ng-template pTemplate="body" let-connection>
+        <tr>
+          <td class="ct-info-col">
+            <span (click)="openConnectionDialog(connection)"
+                  class="ct-grid-link-text"
+                  title="{{ connection.projectName }}">
+              {{ connection.projectName }}
+            </span>
+          </td>
+          <td *ngIf="groupById != 2" class="ct-info-col">
+            <span>{{ connection.vstsProjectName }}</span>
+          </td>
+          <td>
+            <div markdown [data]="formatUrlForMarkdown(connection.vstsCompanyUrl)"></div>
+          </td>
+          <td style="width:300px;">
+            {{ connection.vstsPat }}
+          </td>
+          <td style="width:150px;" class="ct-info-col ct-small-padding">
+            <a class="ct-grid-link ct-grid-count"
+               (click)="openProjectAssignmentDialog(connection)">
+              {{ connection.membersCount }}
+              <span class="ct-manage-text">View</span>
+            </a>
+          </td>
+          <td style="width:110px;" class="ct-small-padding">
+            <a #removeBtn class="ct-grid-link ct-grid-delete"
+               (click)="removeConnection(connection, removeBtn)">
+              <i class="material-icons">clear</i>
+            </a>
+          </td>
+        </tr>
+      </ng-template>
 
-            <p-column [style]="{'width':'300px'}" field="vstsPat" header="VSTS Pat"></p-column>
+      <!-- empty data -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            Sorry, you don't have any reports at this time period.
+          </td>
+        </tr>
+      </ng-template>
 
-            <p-column [style]="{'width':'150px'}" header="Team" styleClass="ct-info-col ct-small-padding">
-                <ng-template let-col let-connection="rowData" pTemplate="body">
-                    <a class="ct-grid-link ct-grid-count"
-                       (click)="openProjectAssignmentDialog(connection)">
-                        {{connection.membersCount}}
-                        <span class="ct-manage-text">View</span>
-                    </a>
-                </ng-template>
-            </p-column>
-
-            <p-column [style]="{'width':'110px'}" header="Actions" styleClass="ct-small-padding">
-                <ng-template let-col let-connection="rowData" pTemplate="body">
-                    <a #removeBtn class="ct-grid-link ct-grid-delete"
-                       (click)="removeConnection(connection, removeBtn)">
-                        <i class="material-icons">clear</i>
-                    </a>
-                </ng-template>
-            </p-column>
-        </p-dataTable>
-    </div>
+    </p-table>
+  </div>
 </div>

@@ -1,14 +1,14 @@
-import { DataTableModule } from './datatable/datatable';
+//import { DataTableModule } from './datatable/datatable';
+import { TableModule } from 'primeng/table';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-	PaginatorModule,
-	SharedModule as PrimeNgSharedModule,
-	ButtonModule,
-	DialogModule,
-	DropdownModule,
-	CalendarModule
-} from 'primeng/primeng';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { DropdownModule } from 'primeng/dropdown';
+import { SharedModule as PrimeNgSharedModule } from 'primeng/api';
+import { PaginatorModule } from 'primeng/paginator';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { CalendarModule } from 'primeng/calendar';
 import { ReadMoreComponent } from './read-more/read-more.component';
 import { DirectivesModule } from './directives/directives.module';
 import { DatepickerModule } from './form/datepicker/datepicker.module';
@@ -19,6 +19,7 @@ import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { ChartComponent } from './chart/chart.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
+
 
 @NgModule({
 	imports: [
@@ -31,8 +32,9 @@ import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 		CalendarModule,
 		DirectivesModule,
 		DatepickerModule,
-		DataTableModule,
+		TableModule,
 		MenuModule,
+    MultiSelectModule,
 		SharedFormModule,
 		MarkdownModule.forRoot({
 			markedOptions: {
@@ -62,8 +64,9 @@ import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 		ReadMoreComponent,
 		DirectivesModule,
 		DatepickerModule,
-		DataTableModule,
+		TableModule,
 		MenuModule,
+    MultiSelectModule,
 		SharedFormModule,
 		UserPicComponent,
 		ConfirmationComponent,

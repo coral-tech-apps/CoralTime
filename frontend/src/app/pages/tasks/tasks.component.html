@@ -1,53 +1,62 @@
 <div class="ct-grid-search-filter">
-    <input class="ct-input-element" #gb placeholder="Search tasks..." [(ngModel)]="filterStr">
-    <i class="fa fa-search"></i>
+  <input class="ct-input-element" placeholder="Search tasks..." [(ngModel)]="filterStr"
+         (input)="filterTable($event.target.value)">
+  <i class="fa fa-search"></i>
 </div>
 
 <div #pageContainer class="ct-page-container ct-tasks-page">
-    <div class="ct-page-header">
-        <h3 class="ct-header">Tasks</h3>
+  <div class="ct-page-header">
+      <h3 class="ct-header">Tasks</h3>
 
-        <div class="ct-page-tabs">
-            <a (click)="toggleTab(true)" [class.ct-active-tab]="isActiveTab">Active Tasks</a>
-            <a (click)="toggleTab(false)" [class.ct-active-tab]="!isActiveTab">Archived Tasks</a>
-        </div>
+      <div class="ct-page-tabs">
+          <a (click)="toggleTab(true)" [class.ct-active-tab]="isActiveTab">Active Tasks</a>
+          <a (click)="toggleTab(false)" [class.ct-active-tab]="!isActiveTab">Archived Tasks</a>
+      </div>
 
-        <div *ctIsGranted="'AddTask'" (click)="openTaskDialog()" class="ct-add-link">
-            <a class="ct-manage-add">Create New task</a>
-        </div>
-    </div>
+      <div *ctIsGranted="'AddTask'" (click)="openTaskDialog()" class="ct-add-link">
+          <a class="ct-manage-add">Create New Task</a>
+      </div>
+  </div>
 
-    <div class="ct-data-table-wrapper" (window:resize)="onResize()">
-        <p-dataTable class="ct-grid-container ct-grid-row-border"
-                     [value]="pagedResult?.data"
-                     [resizeObservable]="resizeObservable"
-                     scrollable="true" [sortField]="'name'"
-                     [responsive]="true" [lazy]="true"
-                     [loading]="!isAllTasks"
-                     [globalFilter]="gb"
-                     (onLazyLoad)="loadLazy($event)"
-                     (onMoreContent)="loadLazy()"
-                     (onEndScrollEvent)="onEndScroll()">
-            <p-column [style]="{'width':'450px'}" field="name" header="Task" [sortable]="true" styleClass="ct-info-col">
-                <ng-template let-col let-task="rowData" pTemplate="body">
-                    <span (click)="openTaskDialog(task)" class="ct-grid-link-text" title="{{task.name}}">{{task.name}}</span>
-                </ng-template>
-            </p-column>
+  <div class="ct-data-table-wrapper" (window:resize)="onResize()">
+      <p-table #tableRef class="ct-grid-container ct-grid-row-border"
+               [value]="pagedResult?.data"
+               scrollable="true" [sortField]="'name'"
+               [responsive]="true" [lazy]="true"
+               [loading]="!isAllTasks"
+               (onLazyLoad)="loadLazy($event)"
+               (onMoreContent)="loadLazy()"
+               (onEndScroll)="onEndScroll()">
 
-            <p-column [style]="{'width':'250px'}" field="projectId" header="Task Type" [sortable]="true">
-                <ng-template let-col let-task="rowData" pTemplate="body">
-                    <span *ngIf="task.projectId">custom</span>
-                    <span *ngIf="!task.projectId">general</span>
-                </ng-template>
-            </p-column>
+          <ng-template pTemplate="header">
+              <tr>
+                  <th pSortableColumn="name" style="width:450px;" class="ct-info-col">
+                      Task <p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="projectId" style="width:250px;">
+                      Task Type <p-sortIcon field="projectId"></p-sortIcon>
+                  </th>
+                  <th class="ct-column-description">Description</th>
+              </tr>
+          </ng-template>
 
-            <p-column field="description" header="Description" styleClass="ct-column-description">
-                <ng-template let-col let-task="rowData" pTemplate="body" let-index="rowIndex">
-                    <div class="ct-grid-description">
-                        <ct-read-more [text]="task.description"></ct-read-more>
-                    </div>
-                </ng-template>
-            </p-column>
-        </p-dataTable>
-    </div>
+          <ng-template pTemplate="body" let-task>
+              <tr>
+                  <td>
+                      <span (click)="openTaskDialog(task)" class="ct-grid-link-text"
+                            title="{{task.name}}">{{task.name}}</span>
+                  </td>
+                  <td>
+                      <span *ngIf="task.projectId">custom</span>
+                      <span *ngIf="!task.projectId">general</span>
+                  </td>
+                  <td>
+                      <div class="ct-grid-description">
+                          <ct-read-more [text]="task.description"></ct-read-more>
+                      </div>
+                  </td>
+              </tr>
+          </ng-template>
+      </p-table>
+  </div>
 </div>

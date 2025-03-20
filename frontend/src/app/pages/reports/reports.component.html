@@ -32,7 +32,8 @@
 
                         <div class="ct-report-filters-block">
                             <div>
-                                <ct-multiselect
+                              <!-- TODO: fix ct-multiselect with customMultiSelect-->
+                                <p-multiSelect
                                         [panelStyleClass]="'ct-reports-multiselect ct-clients' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.clientIds"
                                         (onSubmitAction)="toggleClient(reportQuery.clientIds)"
@@ -44,10 +45,11 @@
                                         (onExtraAction)="toggleArchivedClients()"
                                         [maxSelectedLabels]="'1'"
                                         [selectedItemsLabel]="'Clients ({0})'">
-                                </ct-multiselect>
+                                </p-multiSelect>
                             </div>
                             <div>
-                                <ct-multiselect
+                              <!-- TODO: fix ct-multiselect with customMultiSelect-->
+                                <p-multiSelect
                                         [panelStyleClass]="'ct-reports-multiselect ct-projects' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.projectIds"
                                         (onSubmitAction)="toggleProject(reportQuery.projectIds)"
@@ -59,10 +61,11 @@
                                         (onExtraAction)="toggleArchivedProjects()"
                                         [maxSelectedLabels]="'1'"
                                         [selectedItemsLabel]="'Projects ({0})'">
-                                </ct-multiselect>
+                                </p-multiSelect>
                             </div>
                             <div>
-                                <ct-multiselect
+                              <!-- TODO: fix ct-multiselect with customMultiSelect-->
+                                <p-multiSelect
                                         *ngIf="isUsersFilterShown"
                                         [panelStyleClass]="'ct-reports-multiselect ct-users' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.memberIds"
@@ -75,7 +78,7 @@
                                         (onExtraAction)="toggleArchivedUsers()"
                                         [maxSelectedLabels]="'1'"
                                         [selectedItemsLabel]="'Users ({0})'">
-                                </ct-multiselect>
+                                </p-multiSelect>
                             </div>
                         </div>
 

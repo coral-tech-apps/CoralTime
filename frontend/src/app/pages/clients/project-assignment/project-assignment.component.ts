@@ -8,6 +8,8 @@ import { ROWS_ON_PAGE } from '../../../core/constant.service';
 import { NotificationService } from '../../../core/notification.service';
 import { PagedResult } from '../../../services/odata';
 import { ProjectsService } from '../../../services/projects.service';
+import { Table } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 
 @Component({
 	selector: 'ct-client-project-assignment',
@@ -17,6 +19,8 @@ import { ProjectsService } from '../../../services/projects.service';
 export class ClientProjectAssignmentComponent implements OnInit {
 	@Input() client: Client;
 	@ViewChild('grid', { static: true }) gridContainer: ElementRef;
+  @ViewChild('assignTable') assignTable: Table;
+  @ViewChild('notAssignTable') notAssignTable: Table;
 
 	filterStr: string = '';
 	resizeObservable: Subject<any> = new Subject();
@@ -47,6 +51,14 @@ export class ClientProjectAssignmentComponent implements OnInit {
 			this.resizeObservable.next();
 		});
 	}
+
+  //filtration
+  onGlobalFilter(value: string){
+    this.assignTable.filterGlobal(value, 'contains');
+    if(this.notAssignTable){
+      this.notAssignTable.filterGlobal(value, 'contains');
+    }
+  }
 
 	// ASSIGNED PROJECTS GRID
 

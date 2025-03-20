@@ -1,61 +1,105 @@
 <div class="ct-dialog ct-data-dialog ct-small-data-dialog">
-    <div class="ct-dialog-title">
-        <span>Project assignment for</span><span>{{client?.name}}</span>
-        <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
+  <div class="ct-dialog-title">
+    <span>Project assignment for</span>
+    <span>{{ client?.name }}</span>
+    <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
+  </div>
+
+  <div class="ct-search-container">
+    <div class="ct-grid-search-filter">
+      <!-- filter -->
+      <input
+        class="ct-input-element"
+        #gbInput
+        placeholder="Search to add or remove projects"
+        [(ngModel)]="filterStr"
+        (input)="onGlobalFilter(gbInput.value)"
+      />
+      <i class="ct-search-icon"></i>
     </div>
+  </div>
 
-    <div class="ct-search-container">
-        <div class="ct-grid-search-filter">
-            <input class="ct-input-element" #gb placeholder="Search to add or remove projects" [(ngModel)]="filterStr">
-            <i class="ct-search-icon"></i>
-        </div>
+  <div class="ct-grid" #grid>
+    <div class="ct-popup-table-wrapper" (window:resize)="onResize()">
+      <!-- assignedProjects ngIf mb need to delete -->
+      <p-table
+        #assignedTable
+        *ngIf="client?.isActive"
+        class="ct-grid-container ct-grid-row-border ct-grid-blue"
+        [value]="assignedProjectsPagedResult?.data"
+        scrollable="true"
+        [sortField]="'name'"
+        [responsive]="true"
+        [lazy]="true"
+        [loading]="!isAllAssignedProjects"
+        [globalFilterFields]="['name', 'clientName', 'description']"
+        (onLazyLoad)="updateAssignedProjects($event)"
+        (onMoreContent)="updateAssignedProjects()"
+        (onEndScrollEvent)="onAssignedProjectsEndScroll()"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name" style="width:500px">
+              {{ assignedProjectsPagedResult?.count }} projects
+              <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th *ngIf="client?.isActive" class="ct-small-padding">
+              Actions
+            </th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-project>
+          <tr>
+            <td>{{ project.name }}</td>
+            <td *ngIf="client?.isActive" class="ct-small-padding">
+              <a class="ct-grid-link ct-grid-delete" #btn1 (click)="updateProjectClient(project, null, btn1)">
+                <i class="material-icons">clear</i>
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <!-- notAssignedProjects -->
+      <p-table
+        #notAssignedTable
+        *ngIf="client?.isActive"
+        class="ct-grid-container ct-grid-row-border"
+        [value]="notAssignedProjectsPagedResult?.data"
+        scrollable="true"
+        [sortField]="'name'"
+        [responsive]="true"
+        [lazy]="true"
+        [loading]="!isAllNotAssignedProjects"
+        [globalFilterFields]="['name', 'clientName', 'description']"
+        (onLazyLoad)="updateNotAssignedProjects($event)"
+        (onMoreContent)="updateNotAssignedProjects()"
+        (onEndScrollEvent)="onNotAssignedProjectsEndScroll()"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name" style="width:500px">
+              {{ notAssignedProjectsPagedResult?.count }} unassigned
+              <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th class="ct-small-padding">
+              Actions
+            </th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-project>
+          <tr>
+            <td>{{ project.name }}</td>
+            <td class="ct-small-padding">
+              <span class="ct-grid-button" #btn2 (click)="updateProjectClient(project, client, btn2)">
+                Add to Client
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
-
-    <div class="ct-grid" #grid>
-        <div class="ct-popup-table-wrapper" (window:resize)="onResize()">
-            <p-dataTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
-                         [value]="assignedProjectsPagedResult?.data"
-                         scrollable="true" [sortField]="'name'"
-                         [responsive]="true" [lazy]="true"
-                         [loading]="!isAllAssignedProjects"
-                         [globalFilter]="gb"
-                         [resizeObservable]="resizeObservable"
-                         (onLazyLoad)="updateAssignedProjects($event)"
-                         (onMoreContent)="updateAssignedProjects()"
-                         (onEndScrollEvent)="onAssignedProjectsEndScroll()">
-                <p-column field="name" header="{{assignedProjectsPagedResult?.count}} projects"
-                          [style]="{'width':'500px'}" [sortable]="true"></p-column>
-
-                <p-column *ngIf="client?.isActive" header="Actions" styleClass="ct-small-padding">
-                    <ng-template let-col let-clientProject="rowData" pTemplate="body">
-                        <a class="ct-grid-link ct-grid-delete" #btn1
-                           (click)="updateProjectClient(clientProject, null, btn1)">
-                            <i class="material-icons">clear</i>
-                        </a>
-                    </ng-template>
-                </p-column>
-            </p-dataTable>
-
-            <p-dataTable *ngIf="client.isActive" class="ct-grid-container ct-grid-row-border"
-                         [value]="notAssignedProjectsPagedResult?.data"
-                         scrollable="true" [sortField]="'name'"
-                         [responsive]="true" [lazy]="true"
-                         [loading]="!isAllNotAssignedProjects"
-                         [globalFilter]="gb"
-                         [resizeObservable]="resizeObservable"
-                         (onLazyLoad)="updateNotAssignedProjects($event)"
-                         (onMoreContent)="updateNotAssignedProjects()"
-                         (onEndScrollEvent)="onNotAssignedProjectsEndScroll()">
-                <p-column field="name" header="{{notAssignedProjectsPagedResult?.count}} unassigned"
-                          [style]="{'width':'500px'}" [sortable]="true"></p-column>
-
-                <p-column *ngIf="client?.isActive" header="Actions" styleClass="ct-small-padding">
-                    <ng-template let-col let-clientProject="rowData" pTemplate="body">
-                        <span class="ct-grid-button" #btn2
-                              (click)="updateProjectClient(clientProject, client, btn2)">Add to Client</span>
-                    </ng-template>
-                </p-column>
-            </p-dataTable>
-        </div>
-    </div>
+  </div>
 </div>

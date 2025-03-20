@@ -8,6 +8,7 @@ import { ROWS_ON_PAGE } from '../../../core/constant.service';
 import { PagedResult } from '../../../services/odata';
 import { NotificationService } from '../../../core/notification.service';
 import { TasksService } from '../../../services/tasks.service';
+import { Table } from 'primeng/table';
 
 @Component({
 	selector: 'ct-project-tasks',
@@ -18,6 +19,7 @@ export class ProjectTasksComponent implements OnInit {
 	@Input() project: Project;
 
 	@ViewChild('grid', { static: true }) gridContainer: ElementRef;
+  @ViewChild('tableRef') tableRef: Table;
 
 	filterStr: string = '';
 	isActive: boolean;
@@ -64,6 +66,12 @@ export class ProjectTasksComponent implements OnInit {
 		this.changeScrollableContainer(tasksNumber);
 		this.resizeObservable.next();
 	}
+
+  filterTable(value: string): void{
+    if(this.tableRef){
+      this.tableRef.filterGlobal(value, 'contains');
+    }
+  }
 
 	onTaskSubmitted(error): void {
 		if (error) {

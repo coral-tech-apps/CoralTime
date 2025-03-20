@@ -3,10 +3,10 @@ import {
 } from '@angular/core';
 import { trigger, state, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { SelectItem } from 'primeng/components/common/api';
-import { MultiSelect } from 'primeng/components/multiselect/multiselect';
-import { ObjectUtils } from 'primeng/components/utils/objectutils';
-import { DomHandler } from 'primeng/primeng';
+import { SelectItem } from 'primeng/api';
+import { MultiSelect } from 'primeng/multiselect';
+import { ObjectUtils } from 'primeng/utils';
+import { DomHandler } from 'primeng/dom';
 
 export class CustomSelectItem implements SelectItem {
 	isActive?: boolean;
@@ -86,10 +86,10 @@ export class MultiSelectComponent extends MultiSelect {
 		this.redrowSlimScroll();
 	}
 
-	onFilter(): void {
-		super.onFilter();
-		this.redrowSlimScroll();
-	}
+	//onFilter(): void {
+	//	super.onFilter();
+	//	this.redrowSlimScroll();
+	//}
 
 	onItemClick(event, option): void {
 		super.onOptionClick({
@@ -99,7 +99,7 @@ export class MultiSelectComponent extends MultiSelect {
 	}
 
 	selectAll(event: MouseEvent): void {
-		if (!this.isAllChecked()) {
+		if (!this.allChecked) {
 			super.toggleAll(event);
 		}
 		else {
@@ -108,7 +108,7 @@ export class MultiSelectComponent extends MultiSelect {
 	}
 
 	selectNone(event: MouseEvent): void {
-		if (this.isAllChecked()) {
+		if (this.allChecked) {
 			super.toggleAll(event);
 		}
 		else {

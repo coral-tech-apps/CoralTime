@@ -1,5 +1,5 @@
 
-import {switchMap, debounceTime} from 'rxjs/operators';
+import { switchMap, debounceTime, filter } from 'rxjs/operators';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { PagedResult } from '../../../services/odata';
@@ -9,6 +9,7 @@ import { ROWS_ON_PAGE } from '../../../core/constant.service';
 import { ImpersonationService } from '../../../services/impersonation.service';
 import { MemberActionsService } from '../../../services/member-action.service';
 import { NotificationService } from '../../../core/notification.service';
+import { Table } from 'primeng/table';
 
 @Component({
 	selector: 'ct-member-actions',
@@ -22,6 +23,7 @@ export class MemberActionsComponent implements OnInit {
 	resizeObservable: Subject<any> = new Subject();
 	updatingGrid: boolean = false;
 
+  @ViewChild('tableRef') tableRef: Table;
 	@ViewChild('pageContainer') pageContainer: ElementRef;
 
 	private lastEvent: any;
@@ -36,6 +38,12 @@ export class MemberActionsComponent implements OnInit {
 	ngOnInit() {
 		this.getMemberActions();
 	}
+
+  filterTable(value: string): void{
+    if(this.tableRef){
+      this.tableRef.filterGlobal(value, 'contains');
+    }
+  }
 
 	onEndScroll(): void {
 		if (!this.isAllActions) {

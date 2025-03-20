@@ -1,4 +1,4 @@
-import * as jwt_decode from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 export class AuthUser {
 	readonly accessToken: string;
@@ -19,7 +19,11 @@ export class AuthUser {
 		this.refreshToken = data.refresh_token;
 		this.tokenType = data.token_type;
 
-		let decodedToken = jwt_decode(data.access_token);
+    if(!data.access_token){
+      return
+    }
+		let decodedToken = jwtDecode(data.access_token) as CustomJwtToken;
+    console.log(decodedToken);
 		this.id = +decodedToken.id;
 		this.nickname = decodedToken.nickname;
 		this.refreshTokenExpiration = new Date().getTime() + decodedToken.refreshTokenLifeTime * 1000;
@@ -27,4 +31,12 @@ export class AuthUser {
 		this.role = roleName;
 		this.policies = decodedToken.policies;
 	}
+}
+
+export interface CustomJwtToken extends JwtPayload{
+  id: number;
+  nickname: string;
+  refreshTokenLifeTime: number;
+  role: string;
+  policies: string[];
 }

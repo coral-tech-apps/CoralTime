@@ -37,7 +37,7 @@ export class RangeDatepickerService {
 		}
 
 		let dateString: string;
-		let monthFormat = 'long';
+		let monthFormat: 'long' | 'short' = 'long'; 
 		let monthNameFrom = period.dateFrom.toDate().toLocaleString('en-us', {month: monthFormat});
 		let yearFrom = period.dateFrom.year();
 

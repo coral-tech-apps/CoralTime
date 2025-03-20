@@ -31,7 +31,8 @@
             </div>
 
             <div *ngIf="availablePeriod > 1" class="ct-calendar-projects">
-                <ct-multiselect
+              <!-- TODO: fix ct-multiselect with customMultiSelect-->
+                <p-multiSelect
                         [panelStyleClass]="'ct-calendar-multiselect' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                         [(ngModel)]="projectIds"
                         (onChange)="toggleProject(projectIds)"
@@ -42,7 +43,7 @@
                         (onExtraAction)="toggleArchivedProjects()"
                         [maxSelectedLabels]="1"
                         [selectedItemsLabel]="'Projects ({0})'">
-                </ct-multiselect>
+                </p-multiSelect>
             </div>
         </div>
     </div>

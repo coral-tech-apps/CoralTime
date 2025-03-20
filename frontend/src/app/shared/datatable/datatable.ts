@@ -517,7 +517,7 @@ export class ScrollableView implements AfterViewInit, AfterViewChecked, OnDestro
 }
 
 @Component({
-	selector: 'p-dataTable',
+	selector: 'p-table',
 	template: `
         <div [ngStyle]="style" [class]="styleClass" [style.width]="containerWidth"
              [ngClass]="{'ui-datatable ui-widget':true,'ui-datatable-reflow':responsive,'ui-datatable-stacked':stacked,'ui-datatable-resizable':resizableColumns,'ui-datatable-scrollable':scrollable}">

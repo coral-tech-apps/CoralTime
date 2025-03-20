@@ -2,6 +2,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MultiSelectComponent } from './multiselect/multiselect.component';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectComponent } from './select/select.component';
 import { DirectivesModule } from '../directives/directives.module';
 import { TextareaComponent } from './textarea/textarea.component';
@@ -20,6 +21,7 @@ import { ColorPickerModule } from './color-picker/color-picker.module';
 		NgSlimScrollModule,
 		ReactiveFormsModule,
 		TextMaskModule,
+    MultiSelectModule,
 		ColorPickerModule
 	],
 	declarations: [

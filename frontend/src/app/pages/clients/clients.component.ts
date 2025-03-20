@@ -1,5 +1,4 @@
-
-import {switchMap, debounceTime} from 'rxjs/operators';
+import { switchMap, debounceTime, filter } from 'rxjs/operators';
 import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -12,6 +11,7 @@ import { ImpersonationService } from '../../services/impersonation.service';
 import { ClientsService } from '../../services/clients.service';
 import { ClientFormComponent } from './form/client-form.component';
 import { ClientProjectAssignmentComponent } from './project-assignment/project-assignment.component';
+import { Table } from 'primeng/table';
 
 @Component({
 	selector: 'ct-clients',
@@ -32,6 +32,7 @@ export class ClientsComponent implements OnInit {
 	private dialogRef: MatDialogRef<ClientFormComponent>;
 	private dialogProjectAssignmentRef: MatDialogRef<ClientProjectAssignmentComponent>;
 
+  @ViewChild('tableRef') tableRef: Table;
 	@ViewChild('pageContainer', { static: true }) pageContainer: ElementRef;
 
 	constructor(private aclService: AclService,
@@ -44,6 +45,12 @@ export class ClientsComponent implements OnInit {
 	ngOnInit() {
 		this.getClients();
 	}
+
+  filterTable(value: string): void{
+    if(this.tableRef){
+      this.tableRef.filterGlobal(value, 'contains');
+    }
+  }
 
 	// GRID DISPLAYING
 

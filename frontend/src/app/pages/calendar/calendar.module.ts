@@ -10,7 +10,7 @@ import { EntryTimeModule } from './entry-time/entry-time.module';
 import { SharedModule } from '../../shared/shared.module';
 import { CalendarProjectsService } from './calendar-projects.service';
 import { ConfirmationComponent } from '../../shared/confirmation/confirmation.component';
-import { DragDropModule } from 'primeng/primeng';
+import { DragDropModule } from 'primeng/dragdrop';
 import { TimerComponent } from './timer/timer.component';
 
 @NgModule({

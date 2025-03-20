@@ -13,6 +13,7 @@ import { NotificationService } from '../../core/notification.service';
 import { ImpersonationService } from '../../services/impersonation.service';
 import { UsersService } from '../../services/users.service';
 import { UsersFormComponent } from './form/users-form.component';
+import { Table } from 'primeng/table';
 
 @Component({
 	selector: 'ct-users',
@@ -29,6 +30,7 @@ export class UsersComponent implements OnInit {
 	resizeObservable: Subject<any> = new Subject();
 	updatingGrid: boolean = false;
 
+  @ViewChild('tableRef') tableRef: Table;
 	@ViewChild('pageContainer', { static: true }) pageContainer: ElementRef;
 
 	private subject = new Subject<any>();
@@ -50,6 +52,12 @@ export class UsersComponent implements OnInit {
 		this.impersonateUserId = this.impersonationService.impersonationId;
 		this.getUsers();
 	}
+
+  filterTable(value: string){
+    if(this.tableRef){
+      this.tableRef.filterGlobal(value, 'contains');
+    }
+  }
 
 	// GRID DISPLAYING
 

@@ -5,6 +5,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ClientsService } from './services/clients.service';
 import { ErrorsModule } from './pages/errors/errors.module';
 import { SharedModule } from './shared/shared.module';
@@ -37,6 +38,7 @@ export function httpFactory(http: HttpClient) {
 		CoreModule,
 		ErrorsModule,
 		LayoutModule,
+    MultiSelectModule,
 		SharedModule,
 		TranslateModule.forRoot({
 			loader: {
@@ -57,6 +59,7 @@ export function httpFactory(http: HttpClient) {
 		ProjectsService,
 		AdminService,
 		SettingsService,
+    MultiSelectModule,
 		TasksService,
 		UsersService,
 		AppInsightsService,

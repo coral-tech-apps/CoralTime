@@ -1,7 +1,7 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, AfterContentInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { ColorPicker } from 'primeng/primeng';
+import { ColorPicker } from 'primeng/colorpicker';
 
 export class ColorPickerChange {
 	source: ColorPickerComponent;

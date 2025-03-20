@@ -11,6 +11,7 @@ import { NotificationService } from '../../core/notification.service';
 import { ImpersonationService } from '../../services/impersonation.service';
 import { TasksService } from '../../services/tasks.service';
 import { TaskFormComponent } from './form/tasks-form.component';
+import { Table } from 'primeng/table';
 
 @Component({
 	selector: 'ct-tasks',
@@ -25,6 +26,7 @@ export class TasksComponent implements OnInit {
 	resizeObservable: Subject<any> = new Subject();
 	updatingGrid: boolean = false;
 
+  @ViewChild('tableRef') tableRef: Table;
 	@ViewChild('pageContainer', { static: true }) pageContainer: ElementRef;
 
 	private lastEvent: any;
@@ -42,6 +44,12 @@ export class TasksComponent implements OnInit {
 	ngOnInit() {
 		this.getTasks();
 	}
+
+  filterTable(value: string): void{
+    if(this.tableRef){
+      this.tableRef.filterGlobal(value, 'contains');
+    }
+  }
 
 	// GRID DISPLAYING
 

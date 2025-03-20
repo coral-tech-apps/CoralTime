@@ -1,8 +1,8 @@
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { MenubarModule } from 'primeng/primeng';
-import { MenuModule } from 'primeng/primeng';
-import { ButtonModule } from 'primeng/primeng';
+import { MenubarModule } from 'primeng/menubar';
+import { MenuModule } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
 import { SharedModule } from '../../shared/shared.module';
 import { NavigationComponent } from './navigation/navigation.component';
 
@@ -13,7 +13,7 @@ import { NavigationComponent } from './navigation/navigation.component';
 		MenuModule,
 		RouterModule,
 		SharedModule,
-		
+
 	],
 	exports: [
 		NavigationComponent

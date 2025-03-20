@@ -25,59 +25,64 @@
         </span>
     </div>
 </div>
+<!--
+[emptyMessage]="'Sorry, you don\'t have any reports at this time period.'"
 
-<p-dataTable class="ct-grid-container"
-             [emptyMessage]="'Sorry, you don\'t have any reports at this time period.'"
-             [value]="gridDataRows"
-             [responsive]="true"
-             [lazy]="true" (onLazyLoad)="loadLazy($event)">
-    <p-column styleClass="ct-cell-project" field="projectName" header="Project/Client" [sortable]="true">
-        <ng-template let-item="rowData" pTemplate="body">
-            <div class="ct-grid-project">
-                <h3 *ngIf="groupById != 1">{{ item.projectName }}</h3>
-                <div *ngIf="groupById != 4">{{ item.clientName }}</div>
-            </div>
-        </ng-template>
-    </p-column>
+         [responsiveLayout]="'scroll'"
+-->
+<p-table class="ct-grid-container"
+         [value]="gridDataRows"
+         [lazy]="true"
+         (onLazyLoad)="loadLazy($event)">
 
-    <p-column *ngIf="groupById != 2" styleClass="ct-cell-user" field="memberName" header="User" [sortable]="true">
-        <ng-template let-item="rowData" pTemplate="body">
-            <ct-user-pic [urlIcon]="item.memberUrlIcon"></ct-user-pic>
-            <span>{{item.memberName}}</span>
-        </ng-template>
-    </p-column>
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="ct-cell-project">Project/Client</th>
+      <th *ngIf="groupById != 2" class="ct-cell-user">User</th>
+      <th class="ct-cell-task">Task/Notes</th>
+      <th *ngIf="groupById != 3 && showColumnIds.indexOf(2) > -1" class="ct-cell-date">Date</th>
+      <th class="ct-cell-time">Hours</th>
+    </tr>
+  </ng-template>
 
-    <p-column field="taskName" styleClass="ct-cell-task" [sortable]="true" header="Task/Notes">
-        <ng-template let-item="rowData" pTemplate="body">
-            <div class="ct-grid-description">
-                <h3 *ngIf="groupById != 5">{{ item.taskName }}</h3>
-                <div class="ct-grid-description">
-                    <ct-read-more [text]="item.notes"></ct-read-more>
-                </div>
-            </div>
-        </ng-template>
-    </p-column>
-
-    <p-column *ngIf="groupById != 3 && showColumnIds.indexOf(2) > -1" styleClass="ct-cell-date" header="Date" [sortable]="true">
-        <ng-template let-item="rowData" pTemplate="body">
-            <span>{{formatDate(item.date)}}</span>
-        </ng-template>
-    </p-column>
-
-    <p-column styleClass="ct-cell-time" field="hours" header="Hours">
-        <ng-template let-item="rowData" pTemplate="body">
-            <span *ngIf="item.timeValues.timeEstimated > 59" class="ct-calendar-hours-planned" title="Estimated hours">
-                {{getTimeString(item.timeValues.timeEstimated)}}
-            </span>
-            <span *ngIf="item.timeValues.timeActual > 59" class="ct-calendar-hours-tracked" title="Actual hours">
-                {{getTimeString(item.timeValues.timeActual)}}
-            </span>
-            <div *ngIf="showColumnIds.indexOf(4)> -1 &&
+  <ng-template pTemplate="body" let-item>
+    <tr>
+      <td class="ct-cell-project">
+        <div class="ct-grid-project">
+          <h3 *ngIf="groupById != 1">{{ item.projectName }}</h3>
+          <div *ngIf="groupById != 4">{{ item.clientName }}</div>
+        </div>
+      </td>
+      <td *ngIf="groupById != 2" class="ct-cell-user">
+        <ct-user-pic [urlIcon]="item.memberUrlIcon"></ct-user-pic>
+        <span>{{ item.memberName }}</span>
+      </td>
+      <td class="ct-cell-task">
+        <div class="ct-grid-description">
+          <h3 *ngIf="groupById != 5">{{ item.taskName }}</h3>
+          <div class="ct-grid-description">
+            <ct-read-more [text]="item.notes"></ct-read-more>
+          </div>
+        </div>
+      </td>
+      <td *ngIf="groupById != 3 && showColumnIds.indexOf(2) > -1" class="ct-cell-date">
+        <span>{{ formatDate(item.date) }}</span>
+      </td>
+      <td class="ct-cell-time">
+        <span *ngIf="item.timeValues.timeEstimated > 59" class="ct-calendar-hours-planned" title="Estimated hours">
+          {{ getTimeString(item.timeValues.timeEstimated) }}
+        </span>
+        <span *ngIf="item.timeValues.timeActual > 59" class="ct-calendar-hours-tracked" title="Actual hours">
+          {{ getTimeString(item.timeValues.timeActual) }}
+        </span>
+        <div *ngIf="showColumnIds.indexOf(4) > -1 &&
                     getTimeString(item.timeValues.timeFrom, true, user.timeFormat === 12) !==
                     getTimeString(item.timeValues.timeTo, true, user.timeFormat === 12)">
-                <span>from {{getTimeString(item.timeValues.timeFrom, true, user.timeFormat === 12)}}</span>
-                <span> to {{getTimeString(item.timeValues.timeTo, true, user.timeFormat === 12)}}</span>
-            </div>
-        </ng-template>
-    </p-column>
-</p-dataTable>
+          <span>from {{ getTimeString(item.timeValues.timeFrom, true, user.timeFormat === 12) }}</span>
+          <span> to {{ getTimeString(item.timeValues.timeTo, true, user.timeFormat === 12) }}</span>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>

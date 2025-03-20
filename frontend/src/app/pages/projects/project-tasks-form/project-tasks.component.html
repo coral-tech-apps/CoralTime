@@ -1,56 +1,62 @@
 <div class="ct-dialog ct-data-dialog ct-small-data-dialog ct-project-tasks-dialog">
-    <div class="ct-dialog-title">
-        <span>Tasks for</span><span>{{project.name}}</span>
-        <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
-    </div>
+  <div class="ct-dialog-title">
+      <span>Tasks for</span><span>{{ project.name }}</span>
+      <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
+  </div>
 
-    <div class="ct-search-container">
-        <div class="ct-grid-search-filter">
-            <input class="ct-input-element" #gb placeholder="Search task..." [(ngModel)]="filterStr">
-            <i class="ct-search-icon"></i>
-        </div>
-    </div>
+  <div class="ct-search-container">
+      <div class="ct-grid-search-filter">
+          <input class="ct-input-element" placeholder="Search task..." [(ngModel)]="filterStr"
+                 (input)="filterTable($event.target.value)">
+          <i class="ct-search-icon"></i>
+      </div>
+  </div>
 
-    <ct-project-tasks-form [project]="project" [projectTasks]="tasksPagedResult?.data"
-                           (onTaskSubmitted)="onTaskSubmitted($event)"
-                           (onHeightChanged)="onFormHeightChanged($event)"></ct-project-tasks-form>
+  <ct-project-tasks-form [project]="project" [projectTasks]="tasksPagedResult?.data"
+                         (onTaskSubmitted)="onTaskSubmitted($event)"
+                         (onHeightChanged)="onFormHeightChanged($event)"></ct-project-tasks-form>
 
-    <div class="ct-grid" #grid>
-        <div class="ct-popup-table-wrapper" (window:resize)="onResize()">
-            <p-dataTable class="ct-grid-container ct-grid-row-border"
-                         [value]="tasksPagedResult?.data"
-                         scrollable="true" [sortField]="'name'"
-                         [responsive]="true" [lazy]="true"
-                         [loading]="!isAllTasks"
-                         [globalFilter]="gb"
-                         [resizeObservable]="resizeObservable"
-                         (onLazyLoad)="updateTasks($event)"
-                         (onMoreContent)="updateTasks()"
-                         (onEndScrollEvent)="onEndScroll()">
+  <div class="ct-grid">
+      <div class="ct-popup-table-wrapper" (window:resize)="onResize()">
+          <p-table #tableRef class="ct-grid-container ct-grid-row-border"
+                   [value]="tasksPagedResult?.data"
+                   scrollable="true" [sortField]="'name'"
+                   [responsive]="true" [lazy]="true"
+                   [loading]="!isAllTasks"
+                   (onLazyLoad)="updateTasks($event)"
+                   (onMoreContent)="updateTasks()"
+                   (onEndScroll)="onEndScroll()">
 
-                <p-column field="name" header="Task" [sortable]="true" [style]="{'width':'400px'}" styleClass="ct-info-col">
-                    <ng-template let-col let-projectTask="rowData" pTemplate="body">
-                        <span class="ct-grid-link-text">{{projectTask.name}}</span>
-                    </ng-template>
-                </p-column>
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th pSortableColumn="name" class="ct-info-col" style="width:400px;">
+                          Task <p-sortIcon field="name"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="projectId" style="width:100px;">
+                          Task Type <p-sortIcon field="projectId"></p-sortIcon>
+                      </th>
+                      <th class="ct-small-padding">Actions</th>
+                  </tr>
+              </ng-template>
 
-                <p-column field="projectId" header="Task Type" [sortable]="true" [style]="{'width':'100px'}">
-                    <ng-template let-col let-projectTask="rowData" pTemplate="body">
-                        <span *ngIf="projectTask.projectId">custom</span>
-                        <span *ngIf="!projectTask.projectId">general</span>
-                    </ng-template>
-                </p-column>
-
-                <p-column field="projectDel" header="Actions" styleClass="ct-small-padding">
-                    <ng-template let-col let-projectTask="rowData" pTemplate="body">
-                        <a *ngIf="projectTask.projectId" #removeBtn
-                           class="ct-grid-link ct-grid-delete"
-                           (click)="removeTask(projectTask, removeBtn)">
-                            <i class="material-icons" aria-hidden="true">clear</i>
-                        </a>
-                    </ng-template>
-                </p-column>
-            </p-dataTable>
-        </div>
-    </div>
+              <ng-template pTemplate="body" let-projectTask>
+                  <tr>
+                      <td>
+                          <span class="ct-grid-link-text">{{ projectTask.name }}</span>
+                      </td>
+                      <td>
+                          <span *ngIf="projectTask.projectId">custom</span>
+                          <span *ngIf="!projectTask.projectId">general</span>
+                      </td>
+                      <td>
+                          <a *ngIf="projectTask.projectId" class="ct-grid-link ct-grid-delete"
+                             (click)="removeTask(projectTask)">
+                              <i class="material-icons" aria-hidden="true">clear</i>
+                          </a>
+                      </td>
+                  </tr>
+              </ng-template>
+          </p-table>
+      </div>
+  </div>
 </div>
