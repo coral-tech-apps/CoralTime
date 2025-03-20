@@ -55,6 +55,7 @@ export class EnterNewPasswordFormComponent implements OnInit {
 			} else {
 				this.errorMessage = ERRORS_PASSWORD_CHANGING[passwordChangeStatus.message];
 			}
+      return 0;
 		});
 	}
 }

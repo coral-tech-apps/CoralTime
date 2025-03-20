@@ -3,7 +3,7 @@ import {map} from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { TimeEntry, CalendarDay, DateUtils, TimerResponse } from '../models/calendar';
 import { ArrayUtils } from '../core/object-utils';
 import { ConstantService } from '../core/constant.service';
@@ -25,7 +25,7 @@ export class CalendarService {
 	}
 
 	getTimeEntries(dateFrom: string, dif?: number): Observable<TimeEntry[]> {
-		const dateTo = moment(this.moveDate(dateFrom, dif || 1)).toDate();
+		const dateTo = dayjs(this.moveDate(dateFrom, dif || 1)).toDate();
 		const newDateTo = DateUtils.formatDateToString(dateTo.setDate(dateTo.getDate() - 1));
 
 		const params = {
@@ -56,7 +56,7 @@ export class CalendarService {
 
 	getDayInfoByDate(timeEntryDate: string): CalendarDay {
 		return this.calendar.find((day: CalendarDay) => {
-			return moment(day.date).toDate().getDate() === moment(timeEntryDate).toDate().getDate();
+			return dayjs(day.date).toDate().getDate() === dayjs(timeEntryDate).toDate().getDate();
 		});
 	}
 
@@ -76,14 +76,14 @@ export class CalendarService {
 	}
 
 	getWeekBeginning(date: string, firstDayOfWeek: number): string {
-		const thisDate = moment(date).toDate();
+		const thisDate = dayjs(date).toDate();
 		const firstDayCorrection = (thisDate.getDay() < firstDayOfWeek) ? -7 : 0;
 		const dayCorrection = thisDate.setDate(thisDate.getDate() - thisDate.getDay() + firstDayOfWeek + firstDayCorrection);
 		return DateUtils.formatDateToString(new Date(dayCorrection));
 	}
 
 	private moveDate(date: string, dif: number): string {
-		const newDate = moment(date).toDate();
+		const newDate = dayjs(date).toDate();
 		return DateUtils.formatDateToString(newDate.setDate(newDate.getDate() + dif));
 	}
 

@@ -4,10 +4,11 @@ import {
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { IDatePickerDirectiveConfig, DatePickerComponent } from 'ng2-date-picker';
-import { IDay } from 'ng2-date-picker/day-calendar/day.model';
-import { WeekDays } from 'ng2-date-picker/common/types/week-days.type';
-import * as moment from 'moment';
-import Moment = moment.Moment;
+import { IDay } from 'ng2-date-picker';
+import { WeekDays } from 'ng2-date-picker/lib/common/types/week-days.type';
+import * as dayjs from 'dayjs';
+import DayJs =  dayjs.Dayjs;
+//import Moment = moment.Moment;
 import { DateUtils } from '../../../models/calendar';
 
 const WEEK_DAYS: WeekDays[] = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
@@ -40,8 +41,8 @@ export class DatepickerComponent implements ControlValueAccessor, AfterContentIn
 	@ViewChild('dayPicker', { static: true }) datePicker: DatePickerComponent;
 	@Output() closed: EventEmitter<void> = new EventEmitter<void>();
 	@Output() dateAPI: EventEmitter<DatePickerComponent> = new EventEmitter();
-	@Output() dateChanged: EventEmitter<string[] | Moment[]> = new EventEmitter();
-	@Output() dateClicked: EventEmitter<Moment> = new EventEmitter();
+	@Output() dateChanged: EventEmitter<string[] | DayJs[]> = new EventEmitter();
+	@Output() dateClicked: EventEmitter<DayJs> = new EventEmitter();
 
 	private _disabled: boolean = false;
 
@@ -108,7 +109,7 @@ export class DatepickerComponent implements ControlValueAccessor, AfterContentIn
 
 		let result: boolean = false;
 		disabledList.forEach((date: string) => {
-			if (moment(day.date).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')) {
+			if (dayjs(day.date).format('YYYY-MM-DD') === dayjs(date).format('YYYY-MM-DD')) {
 				result = true;
 			}
 		});

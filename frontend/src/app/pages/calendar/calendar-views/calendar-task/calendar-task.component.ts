@@ -3,10 +3,10 @@ import {forkJoin as observableForkJoin,  Observable } from 'rxjs';
 import {
 	Component, Input, ViewChild, EventEmitter, Output, OnInit, QueryList, ViewChildren, ElementRef
 } from '@angular/core';
-import { MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialogRef as MatDialogRef, MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ActivatedRoute } from '@angular/router';
-import * as moment from 'moment';
-import Moment = moment.Moment;
+import * as dayjs from 'dayjs';
+import DayJs = dayjs.Dayjs;
 import { TimeEntry, DateUtils, CalendarDay } from '../../../../models/calendar';
 import { User } from '../../../../models/user';
 import { AclService } from '../../../../core/auth/acl.service';
@@ -45,7 +45,7 @@ export class CalendarTaskComponent implements OnInit {
 	selectedDate: string;
 	timeFormat: number;
 
-	constructor(private aclService: AclService,              
+	constructor(private aclService: AclService,
 	            private route: ActivatedRoute,
 	            private calendarService: CalendarService,
 	            private dialog: MatDialog,
@@ -118,8 +118,8 @@ export class CalendarTaskComponent implements OnInit {
 		this.menuList.forEach((menu) => menu.closeMenu());
 	}
 
-	dateOnChange(date: Moment[] | string[]): void {
-		if (date instanceof moment) {
+	dateOnChange(date: DayJs[] | string[]): void {
+		if (date instanceof DayJs) {
 			return;
 		}
 
@@ -236,7 +236,7 @@ export class CalendarTaskComponent implements OnInit {
 
 		if (formatToAmPm) {
 			let t = new Date().setHours(0, 0, s);
-			return moment(t).format('hh:mm A');
+			return dayjs(t).format('hh:mm A');
 		}
 
 		return (('00' + h).slice(-2) + ':' + ('00' + m).slice(-2));

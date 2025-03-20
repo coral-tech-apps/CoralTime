@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { ReportGridView, ReportItem } from '../../../models/reports';
 import { User } from '../../../models/user';
 import { ArrayUtils } from '../../../core/object-utils';
@@ -42,9 +42,9 @@ export class ReportsGridComponent implements OnChanges {
 
 	formatDate(utcDate: string): string {
 		if (!utcDate) {
-			return;
+			return '';
 		}
-		let date = moment(utcDate);
+		let date = dayjs(utcDate);
 		return this.user.dateFormat ? date.format(this.user.dateFormat) : date.toDate().toLocaleDateString();
 	}
 
@@ -59,7 +59,7 @@ export class ReportsGridComponent implements OnChanges {
 
 		if (formatToAmPm) {
 			let t = new Date().setHours(0, 0, time);
-			return moment(t).format('hh:mm A');
+			return dayjs(t).format('hh:mm A');
 		}
 
 		return (((h > 99) ? ('' + h) : ('00' + h).slice(-2)) + ':' + ('00' + m).slice(-2));

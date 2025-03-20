@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ConstantService } from '../core/constant.service';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export class DateFormat {
 	dateFormatId: number;
@@ -18,7 +18,7 @@ export class DateFormat {
 	}
 
 	toString(): string {
-		return `${this.dateFormat} (Ex: ${moment().format(this.dateFormat)})`;
+		return `${this.dateFormat} (Ex: ${dayjs().format(this.dateFormat)})`;
 	}
 }
 

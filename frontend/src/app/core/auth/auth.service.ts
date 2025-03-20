@@ -4,12 +4,12 @@ import {of as observableOf, throwError as observableThrowError,  Observable } fr
 import {mergeMap, catchError, map} from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Router } from '@angular/router';
 import { AuthUser } from './auth-user';
 import { ImpersonationService } from '../../services/impersonation.service';
 import { NotificationService } from '../notification.service';
-import { AppInsightsService } from '@markpieszak/ng-application-insights';
+import { AppInsightsService } from 'src/app/app-insights.service';
 
 @Injectable()
 export class AuthService {
@@ -97,7 +97,7 @@ export class AuthService {
 		return this.http.post('/connect/token', body, {headers: headers}).pipe(
 			map(response => {
 				this.authUser = new AuthUser(response, false);
-				this.appInsightsService.setAuthenticatedUserContext(this.authUser.id.toString(), this.authUser.nickname);
+				this.appInsightsService.setAuthenticatedUser(this.authUser.id.toString(), this.authUser.nickname);
 				return true;
 			}));
 	}
@@ -119,7 +119,7 @@ export class AuthService {
 			map(response => {
 				this.authUser = new AuthUser(response, true);
                 this.setupAppInsights();
-                this.appInsightsService.setAuthenticatedUserContext(this.authUser.id.toString(), this.authUser.nickname);
+                this.appInsightsService.setAuthenticatedUser(this.authUser.id.toString(), this.authUser.nickname);
 				return true;
 			}),catchError(() => this.router.navigate(['/error'])),);
 	}
@@ -163,7 +163,7 @@ export class AuthService {
 		localStorage.removeItem('APPLICATION_USER');
 		this.onChange.emit(null);
 		this.impersonateService.stopImpersonation(true);
-        this.appInsightsService.clearAuthenticatedUserContext();
+    this.appInsightsService.clearAuthenticatedUser();
 		if (!ignoreRedirect) {
 			this.router.navigate(['/login']);
 		}
@@ -191,14 +191,15 @@ export class AuthService {
 	private setupAppInsights(): void {
 		let key = localStorage.getItem('instrumentationKey');
 
-		if (this.appInsightsService.config.instrumentationKey == null){
+		//if (this.appInsightsService.config.instrumentationKey == null){
 			if (key !=null && key !=''){
-                this.appInsightsService.config = {
-                    instrumentationKey: key
-                };
-                this.appInsightsService.init();
-                this.appInsightsService.setAuthenticatedUserContext(this.authUser.id.toString(), this.authUser.nickname);
+                /*this.appInsightsService.config = {
+                  instrumentationKey: key
+                }
+                this.appInsightsService.loadAppInsights();*/
+                this.appInsightsService.addInstrumentationKey(key);
+                this.appInsightsService.setAuthenticatedUser(this.authUser.id.toString(), this.authUser.nickname);
 			}
-		}
+		//}
 	}
 }

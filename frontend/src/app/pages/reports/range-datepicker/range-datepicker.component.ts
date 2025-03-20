@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
-import * as moment from 'moment';
-import Moment = moment.Moment;
+import * as dayjs from 'dayjs';
+import DayJs = dayjs.Dayjs;
 import { DateStatic } from '../../../models/reports';
 import { DatePeriod, DateResponse } from './range-datepicker.service';
 
@@ -28,16 +28,16 @@ export class RangeDatepickerComponent {
 	@Output() closed: EventEmitter<void> = new EventEmitter<void>();
 	@Output() onPeriodChanged: EventEmitter<DateResponse> = new EventEmitter();
 
-	displayDate: Moment;
-	selectedRange: Moment[] = [];
+	displayDate: DayJs;
+	selectedRange: DayJs[] = [];
 
-	private clickedDay: Moment;
-	private dateFrom: Moment;
-	private dateTo: Moment;
+	private clickedDay: DayJs;
+	private dateFrom: DayJs;
+	private dateTo: DayJs;
 	private daySelectedNumber: number = 0;
 	private oldDateResponse: DateResponse;
 
-	dateOnClick(day: Moment): void {
+	dateOnClick(day: DayJs): void {
 		this.clickedDay = day;
 		this.daySelectedNumber++;
 
@@ -75,7 +75,7 @@ export class RangeDatepickerComponent {
 	setPeriod(period: DateStatic): void {
 		this.selectedRange = this.getRangeBetweenDates(new Date(period.dateFrom), new Date(period.dateTo));
 		this.onPeriodChanged.emit({
-			datePeriod: new DatePeriod(moment(period.dateFrom), moment(period.dateTo)),
+			datePeriod: new DatePeriod(dayjs(period.dateFrom), dayjs(period.dateTo)),
 			dateStaticId: period.id
 		});
 		this.closed.emit();
@@ -88,14 +88,14 @@ export class RangeDatepickerComponent {
 		}
 	}
 
-	private getRangeBetweenDates(dateFrom: Date, dateTo: Date): Moment[] {
+	private getRangeBetweenDates(dateFrom: Date, dateTo: Date): DayJs[] {
 		const listDate = [];
 		const dateMove = dateFrom;
 		let strDate = dateFrom;
 
 		while (strDate.getTime() <= dateTo.getTime()) {
 			strDate = dateMove;
-			listDate.push(moment(strDate));
+			listDate.push(dayjs(strDate));
 			dateMove.setDate(dateMove.getDate() + 1);
 		}
 

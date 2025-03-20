@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { DateUtils } from '../../models/calendar';
 import { User } from '../../models/user';
 import { AuthService } from '../../core/auth/auth.service';
@@ -74,7 +74,6 @@ export class CalendarComponent implements OnInit, OnDestroy {
 		this.projectIds = route.params['projectIds'] ? route.params['projectIds'].split(',') : [];
 		this.projectIds.forEach((id, index) => { this.projectIds[index] = +id; });
 		this.projectsService.filteredProjects = this.projectIds;
-
 		if (route.url.length) {
 			this.isWeekViewActive = route.url[0].path !== 'day';
 		} else {
@@ -187,13 +186,12 @@ export class CalendarComponent implements OnInit, OnDestroy {
 	}
 
 	private formatDate(date: string): string {
-		let d = moment(date).toDate();
+    let d = dayjs(date).toDate();
 		return MONTHS[d.getMonth()] + ' ' + (d.getDate());
 	}
 
 	private formatDateToUrlString(date: string): string {
-		let d = moment(date).toDate();
-		return (d.getMonth() + 1) + '-' + d.getDate() + '-' + d.getFullYear();
+		return dayjs(date).format('MM-DD-YYYY');
 	}
 
 	private loadProjects(showOnlyActive: boolean = true): void {
@@ -221,8 +219,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
 			let date = this.moveDate(this.getWeekBeginning(this.date), i);
 			newDay = {
 				date,
-				dayName: moment(date).format('dd'),
-				dayNumber: moment(date).toDate().getDate()
+				dayName: dayjs(date).format('dd'),
+				dayNumber: dayjs(date).toDate().getDate()
 			};
 
 			this.calendarDays.push(newDay);
@@ -230,7 +228,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
 	}
 
 	private moveDate(date: string, dif: number): string {
-		let newDate = moment(date).toDate();
+		let newDate = dayjs(date).toDate();
 		return DateUtils.formatDateToString(newDate.setDate(newDate.getDate() + dif));
 	}
 

@@ -1,7 +1,7 @@
 
 import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { ActivatedRoute } from '@angular/router';
 import { ArrayUtils } from '../../../core/object-utils';
 import { User } from '../../../models/user';

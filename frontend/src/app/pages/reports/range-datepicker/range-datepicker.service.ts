@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { DateStatic } from '../../../models/reports';
-import * as moment from 'moment';
-import Moment = moment.Moment;
+import * as dayjs from 'dayjs';
+import DayJs = dayjs.Dayjs;
 
 export class DatePeriod {
-	dateFrom: Moment;
-	dateTo: Moment;
+	dateFrom: DayJs;
+	dateTo: DayJs;
 
-	constructor(dateFrom: Moment, dateTo?: Moment) {
+	constructor(dateFrom: DayJs, dateTo?: DayJs) {
 		this.dateFrom = dateFrom;
 		this.dateTo = dateTo || dateFrom;
 	}
@@ -37,7 +37,7 @@ export class RangeDatepickerService {
 		}
 
 		let dateString: string;
-		let monthFormat: 'long' | 'short' = 'long'; 
+		let monthFormat: 'long' | 'short' = 'long';
 		let monthNameFrom = period.dateFrom.toDate().toLocaleString('en-us', {month: monthFormat});
 		let yearFrom = period.dateFrom.year();
 

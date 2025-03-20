@@ -1,6 +1,6 @@
 import { HttpResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppInsightsService } from '@markpieszak/ng-application-insights';
+import { AppInsightsService } from 'src/app/app-insights.service';
 import { PagedResult } from './query';
 
 
@@ -20,7 +20,7 @@ export class ODataConfiguration {
 
     constructor(private appInsightsService: AppInsightsService) {
     }
-	
+
 	getEntityUri(entityKey: string, _typeName: string): string {
 		// check if string is a GUID (UUID) type
 		if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(entityKey)) {

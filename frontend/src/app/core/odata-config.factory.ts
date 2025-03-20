@@ -1,4 +1,4 @@
-import { AppInsightsService } from '@markpieszak/ng-application-insights';
+import { AppInsightsService } from '../app-insights.service';
 import { ODataConfiguration } from '../services/odata';
 
 export function ODataConfigFactory(appInsightsService: AppInsightsService) {

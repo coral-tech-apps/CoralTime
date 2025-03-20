@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { Observable } from 'rxjs';
 import { CalendarDay, DateUtils, TimeEntry } from '../../../../models/calendar';
 import { User } from '../../../../models/user';
@@ -180,7 +180,7 @@ export class CalendarDayComponent implements OnInit {
 	}
 
 	getDateString(date: string): string {
-		return moment(date).format('dddd');
+		return dayjs(date).format('dddd');
 	}
 
 	isAltPressed(): boolean {

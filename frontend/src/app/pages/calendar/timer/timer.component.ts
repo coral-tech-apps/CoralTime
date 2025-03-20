@@ -115,6 +115,8 @@ export class TimerComponent implements OnInit, OnDestroy {
 		if (!this.isTimerActivated()) {
 			return 'Resume timer'
 		}
+
+    return '';
 	}
 
 	getTotalTime(timeField: string): string {

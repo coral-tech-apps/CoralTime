@@ -2,7 +2,7 @@
 import {switchMap, debounceTime} from 'rxjs/operators';
 import { UserProjectAssignmentComponent } from './project-assignment/project-assignment.component';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { Subject } from 'rxjs';
 import { User } from '../../models/user';
 import { PagedResult } from '../../services/odata';

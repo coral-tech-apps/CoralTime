@@ -1,6 +1,7 @@
-import * as moment from 'moment';
-import Moment = moment.Moment;
+import * as dayjs from 'dayjs';;
+import DayJs = dayjs.Dayjs;
 import { GRAY_COLOR, hexToNumber } from '../shared/form/color-picker/color-picker.component';
+import { OUTPUT_DATE_FORMAT } from '../core/constant.service';
 
 export class CalendarDay {
 	date: string;
@@ -104,13 +105,13 @@ export class TimerResponse {
 }
 
 export class DateUtils {
+
 	static isToday(date: Date | string): boolean {
-		return moment().format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD');
+		return dayjs().format(OUTPUT_DATE_FORMAT) === dayjs(date).format(OUTPUT_DATE_FORMAT);
 	}
 
 	static getSecondsFromStartDay(isUTC?: boolean): number {
 		let d = new Date();
-
 		if (isUTC) {
 			return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds() + d.getTimezoneOffset() * 60;
 		}
@@ -118,24 +119,24 @@ export class DateUtils {
 		return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
 	}
 
-	static convertMomentToUTC(moment: Moment): Date {
-		let date = moment.toDate();
+	static convertMomentToUTC(dayjs: DayJs): Date {
+		let date = dayjs.toDate();
 		return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 	}
 
-	static convertMomentToUTCMoment(m: Moment): Moment {
-		return moment(this.convertMomentToUTC(m));
+	static convertMomentToUTCMoment(m: DayJs): DayJs {
+		return dayjs(this.convertMomentToUTC(m));
 	}
 
 	static formatDateToString(d: any): string {
-		return moment(d).format('YYYY-MM-DD');
+		return dayjs(d).format(OUTPUT_DATE_FORMAT);
 	}
 
 	static formatStringToDate(d: string): Date {
-		return moment(d).toDate();
+		return dayjs(d).toDate();
 	}
 
-	static reformatDate(d: string, format: string): string {
-		return moment(d, format).format('YYYY-MM-DD');
-	}
+  static reformatDate(d: string, format: string): string {
+		return dayjs(d, format).format(OUTPUT_DATE_FORMAT);
+  }
 }

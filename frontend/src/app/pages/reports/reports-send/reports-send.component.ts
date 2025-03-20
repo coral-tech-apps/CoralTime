@@ -2,7 +2,7 @@
 import {finalize} from 'rxjs/operators';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { Client } from '../../../models/client';
 import { ReportQuery } from '../../../models/reports';
 import { User } from '../../../models/user';
@@ -121,10 +121,10 @@ export class ReportsSendComponent implements OnInit {
 
 	private formatDate(utcDate: Date | string): string {
 		if (!utcDate) {
-			return;
+			return '';
 		}
 
-		const date = moment(utcDate);
+		const date = dayjs(utcDate);
 		return this.dateFormat ? date.format(this.dateFormat) : date.toDate().toLocaleDateString();
 	}
 }

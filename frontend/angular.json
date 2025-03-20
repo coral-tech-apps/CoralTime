@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "sourceMap": true,
             "progress": false,
             "outputPath": "dist",
             "index": "src/index.html",
@@ -31,15 +32,21 @@
             ],
             "scripts": [
               "node_modules/marked/bin/marked.js",
-              "node_modules/chart.js/dist/chart.js",
+              "node_modules/chart.js/dist/chart.js"
             ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
                 }
               ],
               "fileReplacements": [
@@ -55,21 +62,34 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
-          "defaultConfiguration": ""
+
+          "defaultConfiguration": "development"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "CoralTime:build"
+            "builder": "@angular-devkit/build-angular:dev-server",
+            "options": {
+              "open": true
+            },
+            "configurations": {
+              "production": {
+                "browserTarget": "CoralTime:build:production"
+              },
+              "development": {
+                "browserTarget": "CoralTime:build:development"
+              }
+            },
+            "defaultConfiguration": "development"
           },
-          "configurations": {
-            "production": {
-              "browserTarget": "CoralTime:build:production"
-            }
-          }
-        },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
@@ -92,7 +112,7 @@
             ],
             "scripts": [
               "node_modules/marked/bin/marked.js",
-              "node_modules/chart.js/dist/chart.js",
+              "node_modules/chart.js/dist/chart.js"
             ],
             "assets": ["src/assets"]
           }
@@ -112,5 +132,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

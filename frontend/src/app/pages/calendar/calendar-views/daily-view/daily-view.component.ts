@@ -10,6 +10,7 @@ import { CalendarService } from '../../../../services/calendar.service';
 import { LoadingMaskService } from '../../../../shared/loading-indicator/loading-mask.service';
 import { CalendarDayComponent } from '../calendar-day/calendar-day.component';
 import { ctCalendarAnimation } from '../../calendar.animation';
+import * as dayjs from 'dayjs';
 
 @Component({
 	templateUrl: 'daily-view.component.html',

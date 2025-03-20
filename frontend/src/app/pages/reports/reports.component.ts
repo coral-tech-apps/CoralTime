@@ -1,10 +1,10 @@
 import { Subscription } from 'rxjs';
 import {finalize} from 'rxjs/operators';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { ActivatedRoute } from '@angular/router';
-import * as moment from 'moment';
-import Moment = moment.Moment;
+import * as dayjs from 'dayjs';
+import DayJs = dayjs.Dayjs;
 import { DateUtils } from '../../models/calendar';
 import {
 	ProjectDetail,
@@ -162,7 +162,7 @@ export class ReportsComponent implements OnInit {
 		this.showColumnIds = this.reportQuery.showColumnIds || [];
 
 		this.datePeriodOnChange({
-			datePeriod: new DatePeriod(moment(reportFilters.dateFrom), moment(reportFilters.dateTo)),
+			datePeriod: new DatePeriod(dayjs(reportFilters.dateFrom), dayjs(reportFilters.dateTo)),
 			dateStaticId: reportFilters.dateStaticId
 		});
 	}
@@ -399,14 +399,14 @@ export class ReportsComponent implements OnInit {
 		if (this.rangeDatepickerService.isIntegerNumberOfMonths(this.dateResponse.datePeriod)) {
 			let monthInPeriod = isNext ? dateTo.diff(dateFrom, 'month') + 1 : -(dateTo.diff(dateFrom, 'month') + 1);
 			this.dateResponse.datePeriod = new DatePeriod(
-				moment().year(dateFrom.year()).month(dateFrom.month() + monthInPeriod).date(1),
-				moment().year(dateTo.year()).month(dateTo.month() + monthInPeriod + 1).date(0)
+				dayjs().year(dateFrom.year()).month(dateFrom.month() + monthInPeriod).date(1),
+				dayjs().year(dateTo.year()).month(dateTo.month() + monthInPeriod + 1).date(0)
 			);
 		} else {
 			let daysInPeriod = isNext ? dateTo.diff(dateFrom, 'days') + 1 : -(dateTo.diff(dateFrom, 'days') + 1);
 			this.dateResponse.datePeriod = new DatePeriod(
-				moment().year(dateFrom.year()).month(dateFrom.month()).date(dateFrom.date() + daysInPeriod),
-				moment().year(dateTo.year()).month(dateTo.month()).date(dateTo.date() + daysInPeriod)
+				dayjs().year(dateFrom.year()).month(dateFrom.month()).date(dateFrom.date() + daysInPeriod),
+				dayjs().year(dateTo.year()).month(dateTo.month()).date(dateTo.date() + daysInPeriod)
 			);
 		}
 
@@ -420,7 +420,7 @@ export class ReportsComponent implements OnInit {
 		setTimeout(() => this.canToggleDatepicker = true, 300);
 	}
 
-	private static convertMomentToString(moment: Moment): string {
+	private static convertMomentToString(moment: DayJs): string {
 		return moment ? DateUtils.formatDateToString(moment) : null;
 	}
 
@@ -517,12 +517,12 @@ export class ReportsComponent implements OnInit {
 			.subscribe();
 	}
 
-	formatDate(utcDate: Moment): string {
+	formatDate(utcDate: DayJs): string {
 		if (!utcDate) {
-			return;
+			return '';
 		}
 
-		const date = moment(utcDate);
+		const date = dayjs(utcDate);
 		return this.dateFormat ? date.format(this.dateFormat) : date.toDate().toLocaleDateString();
 	}
 
@@ -531,9 +531,9 @@ export class ReportsComponent implements OnInit {
 		this.reportQuery = new ReportQuery({});
 		const defaultDateStaticId = 2;
 		const period = this.reportDropdowns.values.dateStatic.find(x=> x.id === defaultDateStaticId);
-		
+
 		const dateResponse = {
-			datePeriod: new DatePeriod(moment(period.dateFrom), moment(period.dateTo)),
+			datePeriod: new DatePeriod(dayjs(period.dateFrom), dayjs(period.dateTo)),
 			dateStaticId: defaultDateStaticId
 		};
 		this.datePeriodOnChange(dateResponse);
@@ -592,7 +592,7 @@ export class ReportsComponent implements OnInit {
 			if (day.day() !== 0 && day.day() !== 6) {
 				result++;
 			}
-			day.add(1, 'days');
+			day = day.add(1, 'days');
 		}
 
 		return result;
@@ -727,6 +727,7 @@ export class ReportsComponent implements OnInit {
 				this[key] = true;
 				return true;
 			}
+      return false;
 		}, Object.create(null));
 	}
 }

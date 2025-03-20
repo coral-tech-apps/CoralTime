@@ -3,7 +3,7 @@ import {finalize} from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { TimeEntry, CalendarDay, DateUtils } from '../../../../models/calendar';
 import { Project } from '../../../../models/project';
 import { User } from '../../../../models/user';
@@ -139,7 +139,7 @@ export class CalendarWeeklyViewComponent implements OnInit, OnDestroy {
 		} else {
 			this.startDay = this.getWeekBeginning(this.date);
 		}
-		this.endDay = this.moveDate(moment(this.startDay).format('YYYY-MM-DD'), this.daysInCalendar - 1);
+		this.endDay = this.moveDate(dayjs(this.startDay).format('YYYY-MM-DD'), this.daysInCalendar - 1);
 	}
 
 	setEmptyWeek(): CalendarDay[] {
@@ -159,7 +159,7 @@ export class CalendarWeeklyViewComponent implements OnInit, OnDestroy {
 
 		this.projectTimeEntries.forEach((timeEntry: TimeEntry) => {
 			newCalendar.forEach((day: CalendarDay) => {
-				if (moment(day.date).toDate().getDate() === moment(timeEntry.date).toDate().getDate()) {
+				if (dayjs(day.date).toDate().getDate() === dayjs(timeEntry.date).toDate().getDate()) {
 					day.timeEntries.push(timeEntry);
 				}
 			});
@@ -175,7 +175,7 @@ export class CalendarWeeklyViewComponent implements OnInit, OnDestroy {
 	}
 
 	private moveDate(date: string, dif: number): string {
-		let newDate = moment(date).toDate();
+		let newDate = dayjs(date).toDate();
 		return DateUtils.formatDateToString(newDate.setDate(newDate.getDate() + dif));
 	}
 

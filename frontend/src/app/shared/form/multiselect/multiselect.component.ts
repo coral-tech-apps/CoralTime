@@ -48,7 +48,7 @@ export const MULTISELECT_VALUE_ACCESSOR: any = {
 
 export class MultiSelectComponent extends MultiSelect {
 	@Input() extraActionTitle: string;
-	@Input() scrollHeight: string = '306px';
+	//@Input() scrollHeight: string = '306px';
 	@Input() showSubmitButton: boolean = false;
 	@Input() showFilterSearch: boolean = true;
 	@Input() showActionsPanel: boolean = true;
@@ -61,7 +61,7 @@ export class MultiSelectComponent extends MultiSelect {
 	isSubmitted: boolean = false;
 	oldValue: any[];
 
-	show(): void {
+	override show(): void {
 		super.show();
 		this.redrowSlimScroll();
 
@@ -71,7 +71,7 @@ export class MultiSelectComponent extends MultiSelect {
 		}
 	}
 
-	hide(): void {
+	override hide(): void {
 		super.hide();
 		this.clearFilter();
 
@@ -133,7 +133,7 @@ export class MultiSelectComponent extends MultiSelect {
 		this.close($event);
 	}
 
-	toString(value: string): string {
+	override toString(value: string): string {
 		return value !== null + '' ? value : this.defaultLabel.slice(4) + ' (1)';
 	}
 

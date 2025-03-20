@@ -1,7 +1,7 @@
 
 import {finalize, switchMap, debounceTime} from 'rxjs/operators';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { Subject } from 'rxjs';
 import { PagedResult } from '../../services/odata';
 import { VstsProjectConnection } from '../../models/vsts-project-connection';

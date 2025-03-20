@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { DateUtils, TimeEntry } from '../../../../models/calendar';
-import * as moment from 'moment';
-import Moment = moment.Moment;
+import * as dayjs from 'dayjs';
+import DayJs = dayjs.Dayjs;
 
 @Component({
 	selector: 'ct-multiple-datepicker',
@@ -17,9 +17,9 @@ export class MultipleDatepickerComponent {
 	dateList: string[];
 	isCalendarShown: boolean = true;
 
-	dateOnChange(date: Moment[]): void {
+	dateOnChange(date: DayJs[]): void {
 		this.dateList = [];
-		date.forEach((m: Moment) => {
+		date.forEach((m: DayJs) => {
 			this.dateList.push(DateUtils.formatDateToString(m));
 		});
 	}

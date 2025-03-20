@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
-import { AppInsightsService } from '@markpieszak/ng-application-insights';
+import { AppInsightsService } from '../app-insights.service';
 import { Observable} from 'rxjs';
 
 @Injectable()
@@ -9,7 +9,18 @@ export class AppInsightsInterceptor implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        this.appInsightsService.trackEvent(req.url, req.body);
+      try{
+        if(this.appInsightsService){
+          this.appInsightsService.trackEvent(
+            req.url,
+            { body: req.body }
+          );
+        }else{
+          console.warn("not initialized")
+        }
+      } catch(e){
+        console.error(e);
+      }
         return next.handle(req);
     }
 }

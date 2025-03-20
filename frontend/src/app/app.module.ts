@@ -20,7 +20,10 @@ import { UsersService } from './services/users.service';
 import { SettingsService } from './services/settings.service';
 import { ImpersonationService } from './services/impersonation.service';
 import { AdminService } from './services/admin.service';
-import { ApplicationInsightsModule, AppInsightsService } from '@markpieszak/ng-application-insights';
+import { AppInsightsService } from './app-insights.service';
+import { HttpClientModule } from '@angular/common/http';
+import { ErrorHandler } from '@angular/core';
+import { CustomErrorHandler } from './core/raven-error-handler';
 import { MemberActionsService } from './services/member-action.service';
 
 export function httpFactory(http: HttpClient) {
@@ -40,6 +43,7 @@ export function httpFactory(http: HttpClient) {
 		LayoutModule,
     MultiSelectModule,
 		SharedModule,
+    HttpClientModule,
 		TranslateModule.forRoot({
 			loader: {
 				provide: TranslateLoader,
@@ -47,23 +51,21 @@ export function httpFactory(http: HttpClient) {
 				deps: [HttpClient]
 			}
 		}),
-		ApplicationInsightsModule.forRoot({
-			instrumentationKeySetLater: true
-		})
 	],
 	bootstrap: [AppComponent],
 	providers: [
+    ErrorHandler,
 		ClientsService,
 		ImpersonationService,
 		ProjectRolesService,
 		ProjectsService,
 		AdminService,
 		SettingsService,
-    MultiSelectModule,
 		TasksService,
 		UsersService,
-		AppInsightsService,
-		MemberActionsService
+		MemberActionsService,
+    AppInsightsService,
+    { provide: ErrorHandler, useClass: CustomErrorHandler }
 	]
 })
 
