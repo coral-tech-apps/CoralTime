@@ -1,6 +1,6 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, AfterContentInit } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { ColorPicker } from 'primeng/colorpicker';
 
 export class ColorPickerChange {
@@ -124,7 +124,7 @@ export class ColorPickerComponent implements ControlValueAccessor, Validator, Af
 	/**
 	 * Implemented as part of Validator.
 	 */
-	validate(c: FormControl): { [key: string]: any } {
+	validate(c: UntypedFormControl): { [key: string]: any } {
 		return (this.isColorValid(this.modelValue)) ? null : {
 			colorInvalid: true
 		};

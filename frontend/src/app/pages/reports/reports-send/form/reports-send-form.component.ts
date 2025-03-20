@@ -1,4 +1,4 @@
-import { FormArray, FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Component, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { Client } from '../../../../models/client';
 import { Subscription } from 'rxjs';
@@ -16,13 +16,13 @@ export class ReportsSendFormComponent implements OnDestroy {
 
 	@Output() formChanged = new EventEmitter();
 
-	form: FormGroup;
+	form: UntypedFormGroup;
 	private subscription: Subscription;
 
-	constructor(private fb: FormBuilder) {
+	constructor(private fb: UntypedFormBuilder) {
 		this.form = this.fb.group({
-			emails: new FormArray([
-				new FormControl('', Validators.required)
+			emails: new UntypedFormArray([
+				new UntypedFormControl('', Validators.required)
 			])
 		});
 		this.subscription = this.form.valueChanges.subscribe(() => {
@@ -31,18 +31,18 @@ export class ReportsSendFormComponent implements OnDestroy {
 	}
 
 	addNewEmail(): void {
-		const arrayControl = <FormArray>this.form.controls['emails'];
-		let newControl = new FormControl('', Validators.required);
+		const arrayControl = <UntypedFormArray>this.form.controls['emails'];
+		let newControl = new UntypedFormControl('', Validators.required);
 		arrayControl.push(newControl);
 	}
 
 	delEmail(index: number): void {
-		const arrayControl = <FormArray>this.form.controls['emails'];
+		const arrayControl = <UntypedFormArray>this.form.controls['emails'];
 		arrayControl.removeAt(index);
 		this.emailValues.splice(index, 1);
 	}
 
-	get emails(): FormArray { return this.form.get('emails') as FormArray; }
+	get emails(): UntypedFormArray { return this.form.get('emails') as UntypedFormArray; }
 
 	ngOnDestroy() {
 		this.subscription.unsubscribe();

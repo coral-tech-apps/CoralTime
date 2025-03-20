@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormControlName, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl, FormControlName, UntypedFormGroup, Validators } from '@angular/forms';
 import { Project } from '../../../../models/project';
 import { Task } from '../../../../models/task';
 import { NotificationService } from '../../../../core/notification.service';
@@ -17,13 +17,13 @@ export class ProjectTasksFormComponent {
 	@Output() onTaskSubmitted = new EventEmitter();
 	@Output() onHeightChanged: EventEmitter<any> = new EventEmitter();
 
-	form: FormGroup;
+	form: UntypedFormGroup;
 
-	constructor(private fb: FormBuilder,
+	constructor(private fb: UntypedFormBuilder,
 	            private notificationService: NotificationService,
 	            private tasksService: TasksService) {
 		this.form = this.fb.group({
-			tasks: new FormArray([])
+			tasks: new UntypedFormArray([])
 		});
 
 		const originFormControlNameNgOnChanges = FormControlName.prototype.ngOnChanges;
@@ -41,8 +41,8 @@ export class ProjectTasksFormComponent {
 			return;
 		}
 
-		const arrayControl = <FormArray>this.form.controls['tasks'];
-		let newControl = new FormControl('', Validators.required);
+		const arrayControl = <UntypedFormArray>this.form.controls['tasks'];
+		let newControl = new UntypedFormControl('', Validators.required);
 		arrayControl.push(newControl);
 		this.onFormHeightChanged();
 
@@ -50,12 +50,12 @@ export class ProjectTasksFormComponent {
 	}
 
 	delTask(index: number): void {
-		const arrayControl = <FormArray>this.form.controls['tasks'];
+		const arrayControl = <UntypedFormArray>this.form.controls['tasks'];
 		arrayControl.removeAt(index);
 		this.onFormHeightChanged();
 	}
 
-	submitTask(index: number, control: FormControl, target: HTMLElement): void {
+	submitTask(index: number, control: UntypedFormControl, target: HTMLElement): void {
 		if (control.hasError('ctTaskInvalid')) {
 			this.notificationService.danger('Task can\'t be empty.');
 			return;
@@ -84,7 +84,7 @@ export class ProjectTasksFormComponent {
 				});
 	}
 
-	get tasks(): FormArray { return this.form.get('tasks') as FormArray; }
+	get tasks(): UntypedFormArray { return this.form.get('tasks') as UntypedFormArray; }
 
 	private isTaskAlreadyExist(inputValue: string): boolean {
 		let assignedTask = this.projectTasks.filter((compareTask: Task) => {
