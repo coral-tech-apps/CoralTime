@@ -148,7 +148,7 @@ export class ClientsComponent implements OnInit {
 	// GENERAL
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 
 	toggleTab(isActiveTab: boolean): void {

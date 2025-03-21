@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { AuthUser } from './auth-user';
 import { ImpersonationService } from '../../services/impersonation.service';
 import { NotificationService } from '../notification.service';
-import { AppInsightsService } from 'src/app/app-insights.service';
+import { AppInsightsService } from 'src/app/services/app-insights.service';
 
 @Injectable()
 export class AuthService {

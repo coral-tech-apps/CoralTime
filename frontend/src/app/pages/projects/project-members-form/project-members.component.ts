@@ -63,7 +63,7 @@ export class ProjectUsersComponent implements OnInit {
 
 		this.wrapperHeightObservable.pipe(debounceTime(100)).subscribe(() => {
 			this.changeScrollableContainer();
-			this.resizeObservable.next();
+			this.resizeObservable.next(null);
 		});
 	}
 
@@ -96,7 +96,7 @@ export class ProjectUsersComponent implements OnInit {
 
 					this.assignedUsersLastEvent.first = this.assignedUsersPagedResult.data.length;
 					this.updatingAssignedUsersGrid = false;
-					this.wrapperHeightObservable.next();
+					this.wrapperHeightObservable.next(null);
 					this.checkIsAllAssignedUsers();
 				},
 				() => this.notificationService.danger('Error loading users.')
@@ -154,7 +154,7 @@ export class ProjectUsersComponent implements OnInit {
 
 					this.notAssignedUsersLastEvent.first = this.notAssignedUsersPagedResult.data.length;
 					this.updatingNotAssignedUsersGrid = false;
-					this.wrapperHeightObservable.next();
+					this.wrapperHeightObservable.next(null);
 					this.checkIsAllUnassignedUsers();
 				},
 				() => this.notificationService.danger('Error loading users.')
@@ -260,7 +260,7 @@ export class ProjectUsersComponent implements OnInit {
 	}
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 
 	private changeScrollableContainer(): void {

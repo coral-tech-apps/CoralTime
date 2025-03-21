@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
-import { AppInsightsService } from '../app-insights.service';
+import { AppInsightsService } from '../services/app-insights.service';
 import { Observable} from 'rxjs';
 
 @Injectable()

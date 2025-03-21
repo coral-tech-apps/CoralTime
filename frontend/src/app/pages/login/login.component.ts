@@ -7,7 +7,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { AuthGuard } from '../../core/auth/auth-guard.service';
 import { AzureSettings, LoginSettings } from './login.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
-import { AppInsightsService } from 'src/app/app-insights.service';
+import { AppInsightsService } from 'src/app/services/app-insights.service';
 
 @Component({
 	templateUrl: 'login.component.html'

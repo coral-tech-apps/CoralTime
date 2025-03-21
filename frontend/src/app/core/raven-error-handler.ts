@@ -1,5 +1,5 @@
 import { ErrorHandler, Injectable, Injector  } from '@angular/core';
-import { AppInsightsService } from '../app-insights.service';
+import { AppInsightsService } from '../services/app-insights.service';
 import { environment } from '../../environments/environment';
 
 @Injectable({

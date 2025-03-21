@@ -20,7 +20,7 @@ import { UsersService } from './services/users.service';
 import { SettingsService } from './services/settings.service';
 import { ImpersonationService } from './services/impersonation.service';
 import { AdminService } from './services/admin.service';
-import { AppInsightsService } from './app-insights.service';
+import { AppInsightsService } from './services/app-insights.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
 import { CustomErrorHandler } from './core/raven-error-handler';

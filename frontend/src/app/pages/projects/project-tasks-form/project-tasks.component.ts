@@ -64,7 +64,7 @@ export class ProjectTasksComponent implements OnInit {
 
 	onFormHeightChanged(tasksNumber: number): void {
 		this.changeScrollableContainer(tasksNumber);
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 
   filterTable(value: string): void{
@@ -130,7 +130,7 @@ export class ProjectTasksComponent implements OnInit {
 	}
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 
 	private changeScrollableContainer(tasksNumber: number): void {

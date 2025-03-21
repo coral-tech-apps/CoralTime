@@ -15,7 +15,7 @@ import { ApplyTokenInterceptor } from './apply-token.interceptor';
 import { RefreshTokenInterceptor } from './refresh-token.interceptor';
 import { LoadingMaskModule } from '../shared/loading-indicator/loading-mask.module';
 import { AppInsightsInterceptor } from './app-insights.interceptor';
-import { AppInsightsService } from '../app-insights.service';
+import { AppInsightsService } from '../services/app-insights.service';
 
 
 @NgModule({

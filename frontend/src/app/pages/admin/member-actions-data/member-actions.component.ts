@@ -101,6 +101,6 @@ export class MemberActionsComponent implements OnInit {
 	}
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 }

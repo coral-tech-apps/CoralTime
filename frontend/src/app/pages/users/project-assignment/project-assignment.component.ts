@@ -58,7 +58,7 @@ export class UserProjectAssignmentComponent implements OnInit {
 
 		this.wrapperHeightObservable.pipe(debounceTime(100)).subscribe(() => {
 			this.changeScrollableContainer();
-			this.resizeObservable.next();
+			this.resizeObservable.next(null);
 		});
 	}
 
@@ -96,7 +96,7 @@ export class UserProjectAssignmentComponent implements OnInit {
 
 					this.assignedProjectsLastEvent.first = this.assignedProjectsPagedResult.data.length;
 					this.updatingAssignedProjectsGrid = false;
-					this.wrapperHeightObservable.next();
+					this.wrapperHeightObservable.next(null);
 					this.checkIsAllAssignedProjects();
 				},
 				() => this.notificationService.danger('Error loading projects.')
@@ -154,7 +154,7 @@ export class UserProjectAssignmentComponent implements OnInit {
 
 					this.notAssignedProjectsLastEvent.first = this.notAssignedProjectsPagedResult.data.length;
 					this.updatingNotAssignedProjectsGrid = false;
-					this.wrapperHeightObservable.next();
+					this.wrapperHeightObservable.next(null);
 					this.checkIsAllUnassignedProjects();
 				},
 				() => this.notificationService.danger('Error loading projects.')
@@ -258,7 +258,7 @@ export class UserProjectAssignmentComponent implements OnInit {
 	}
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 
 	private changeScrollableContainer(): void {

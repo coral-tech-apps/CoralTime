@@ -1,13 +1,13 @@
 
 import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SetPasswordService } from './set-password.service';
 import { LoadingMaskService } from '../../../shared/loading-indicator/loading-mask.service';
 
 @Injectable()
-export class ValidateRestoreCodeResolve implements Resolve<boolean> {
+export class ValidateRestoreCodeResolve  {
 	constructor(private loadingService: LoadingMaskService,
 	            private service: SetPasswordService) {
 	}

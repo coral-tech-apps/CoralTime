@@ -171,7 +171,7 @@ export class ProjectsComponent implements OnInit {
 	// GENERAL
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 
 	numberToHex(value: number): string {

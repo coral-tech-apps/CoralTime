@@ -16,7 +16,8 @@
                     <input matInput name="daysBeforeStopEditJobs"
                            placeholder="0"
                            [(ngModel)]="model.daysBeforeStopEditTimeEntries"
-                           [textMask]="{mask: numberMask, guide: false, keepCharPositions: true}"
+                           mask = "numberMask"
+                           dropSpecialCharacters = "false"
                            [required]="model.isTimeLockEnabled"
                            [disabled]="!model.isTimeLockEnabled"/>
                 </mat-form-field>
@@ -43,7 +44,8 @@
                     <input matInput name="notificationDay"
                            placeholder="0"
                            [(ngModel)]="model.notificationDay"
-                           [textMask]="{mask: numberMask, guide: false, keepCharPositions: true}"
+                           mask = "numberMask"
+                           dropSpecialCharacters = "false"
                            [required]="model.isNotificationEnabled"
                            [disabled]="!model.isNotificationEnabled">
                 </mat-form-field>

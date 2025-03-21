@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { User } from '../../models/user';
 import { AuthService } from './auth.service';
 import { UsersService } from '../../services/users.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 
 @Injectable()
-export class UserInfoResolve implements Resolve<User> {
+export class UserInfoResolve  {
 	constructor(private authService: AuthService,
 	            private loadingService: LoadingMaskService,
 	            private usersService: UsersService) {

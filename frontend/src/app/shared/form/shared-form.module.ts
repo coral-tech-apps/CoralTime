@@ -7,7 +7,8 @@ import { SelectComponent } from './select/select.component';
 import { DirectivesModule } from '../directives/directives.module';
 import { TextareaComponent } from './textarea/textarea.component';
 import { InputListComponent } from './input-list/input-list.component';
-import { TextMaskModule } from 'angular2-text-mask';
+//import { TextMaskModule } from 'angular2-text-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { NgSlimScrollModule } from 'ngx-slimscroll';
 import { MaterialModule } from '../material.module';
 import { ColorPickerModule } from './color-picker/color-picker.module';
@@ -20,10 +21,14 @@ import { ColorPickerModule } from './color-picker/color-picker.module';
 		MaterialModule,
 		NgSlimScrollModule,
 		ReactiveFormsModule,
-		TextMaskModule,
+		//TextMaskModule,
     MultiSelectModule,
-		ColorPickerModule
+		ColorPickerModule,
+    NgxMaskDirective
 	],
+    providers: [
+      provideNgxMask()
+    ],
 	declarations: [
 		InputListComponent,
 		MultiSelectComponent,
@@ -38,7 +43,7 @@ import { ColorPickerModule } from './color-picker/color-picker.module';
 		MultiSelectComponent,
 		SelectComponent,
 		TextareaComponent,
-		TextMaskModule,
+		//TextMaskModule,
 		ColorPickerModule,
 		NgSlimScrollModule
 	]

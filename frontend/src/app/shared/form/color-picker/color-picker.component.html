@@ -5,6 +5,7 @@
            [name]="name"
            [disabled]="disabled"
            [(ngModel)]="modelValue"
-           [textMask]="{mask: colorMask, guide: false, keepCharPositions: true}"
+           mask = "numberMask"
+           dropSpecialCharacters = "false"
            (ngModelChange)="writeValue(modelValue)">
 </div>

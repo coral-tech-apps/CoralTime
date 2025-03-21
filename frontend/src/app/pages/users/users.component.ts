@@ -162,7 +162,7 @@ export class UsersComponent implements OnInit {
 	}
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 
 	toggleTab(isActiveTab: boolean): void {

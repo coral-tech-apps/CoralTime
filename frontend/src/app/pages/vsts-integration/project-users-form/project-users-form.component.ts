@@ -36,7 +36,7 @@ export class ProjectUsersFormComponent implements OnInit {
 		this.loadAssignedUsers();
 
 		this.wrapperHeightObservable.pipe(debounceTime(100)).subscribe(() => {
-			this.resizeObservable.next();
+			this.resizeObservable.next(null);
 		});
 	}
 
@@ -59,7 +59,7 @@ export class ProjectUsersFormComponent implements OnInit {
 
 					this.assignedUsersLastEvent.first = this.assignedUsersPagedResult.data.length;
 					this.updatingAssignedUsersGrid = false;
-					this.wrapperHeightObservable.next();
+					this.wrapperHeightObservable.next(null);
 					this.checkIsAllAssignedUsers();
 				},
 				() => this.notificationService.danger('Error loading users.')
@@ -105,6 +105,6 @@ export class ProjectUsersFormComponent implements OnInit {
 	// GENERAL
 
 	onResize(): void {
-		this.resizeObservable.next();
+		this.resizeObservable.next(null);
 	}
 }

@@ -1,6 +1,6 @@
 import { HttpResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppInsightsService } from 'src/app/app-insights.service';
+import { AppInsightsService } from 'src/app/services/app-insights.service';
 import { PagedResult } from './query';
 
 
