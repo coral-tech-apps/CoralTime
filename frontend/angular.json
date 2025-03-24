@@ -82,10 +82,10 @@
             },
             "configurations": {
               "production": {
-                "browserTarget": "CoralTime:build:production"
+                "buildTarget": "CoralTime:build:production"
               },
               "development": {
-                "browserTarget": "CoralTime:build:development"
+                "buildTarget": "CoralTime:build:development"
               }
             },
             "defaultConfiguration": "development"
@@ -93,7 +93,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "CoralTime:build"
+            "buildTarget": "CoralTime:build"
           }
         },
         "test": {

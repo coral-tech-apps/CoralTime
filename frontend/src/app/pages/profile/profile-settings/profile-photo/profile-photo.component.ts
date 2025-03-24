@@ -1,7 +1,7 @@
 
 import {finalize} from 'rxjs/operators';
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Bounds, CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 import { NotificationService } from '../../../../core/notification.service';
 import { UserPicService } from '../../../../services/user-pic.service';

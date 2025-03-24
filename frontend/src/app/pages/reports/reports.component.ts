@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs';
 import {finalize} from 'rxjs/operators';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import * as dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;

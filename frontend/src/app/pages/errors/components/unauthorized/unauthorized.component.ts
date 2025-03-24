@@ -19,6 +19,6 @@ export class UnauthorizedComponent implements OnInit {
 	}
 
 	showError(): void {
-		this.msgs.push({severity: 'error', text: this.message, escape: false, style: false, styleClass: '', icon: ''});
+		this.msgs.push({severity: 'error', text: this.message, escape: false, style: {}, styleClass: '', icon: ''});
 	}
 }

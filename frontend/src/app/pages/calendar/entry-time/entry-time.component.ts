@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, Input, EventEmitter, Output, OnDestroy, AfterContentInit } from '@angular/core';
 import { TimeEntry } from '../../../models/calendar';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationComponent } from '../../../shared/confirmation/confirmation.component';
 import { CalendarService } from '../../../services/calendar.service';
 import { ObjectUtils } from '../../../core/object-utils';

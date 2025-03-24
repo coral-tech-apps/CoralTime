@@ -4,7 +4,7 @@ import {
 import { trigger, state, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SelectItem } from 'primeng/api';
-import { MultiSelect } from 'primeng/multiselect';
+import { MultiSelect, MultiSelectSelectAllChangeEvent } from 'primeng/multiselect';
 import { ObjectUtils } from 'primeng/utils';
 import { DomHandler } from 'primeng/dom';
 
@@ -77,7 +77,7 @@ export class MultiSelectComponent extends MultiSelect {
 
 		if (this.showSubmitButton && !this.isSubmitted) {
 			this.value = this.oldValue;
-			this.updateLabel();
+			//this.updateLabel();
 		}
 	}
 
@@ -91,16 +91,53 @@ export class MultiSelectComponent extends MultiSelect {
 	//	this.redrowSlimScroll();
 	//}
 
+  findSelectionIndex(val: any): number {
+      //Mostly copied from the 'findSelectionIndex' function here.
+			//https://github.com/primefaces/primeng/blob/15.4.1/src/app/components/multiselect/multiselect.ts
+    let index = -1;
+
+    if (this.value) {
+        for (let i = 0; i < this.value.length; i++) {
+            if (ObjectUtils.equals(this.value[i], val, this.dataKey)) {
+                index = i;
+                break;
+            }
+        }
+    }
+
+    return index;
+  }
+
 	onItemClick(event, option): void {
-		super.onOptionClick({
-			originalEvent: event,
-			option: option
-    	});
+      //Mostly copied from the 'onOptionClick' function here.
+			//https://github.com/primefaces/primeng/blob/15.4.1/src/app/components/multiselect/multiselect.ts
+      if (this.isOptionDisabled(option)) {
+          return;
+      }
+
+      const optionValue = this.getOptionValue(option);
+      const selectionIndex = this.findSelectionIndex(optionValue);
+
+      if (selectionIndex !== -1) {
+          this.value = this.value.filter((_, i) => i !== selectionIndex);
+          this.onRemove.emit({ newValue: this.value, removed: optionValue });
+          if (this.selectionLimit) {
+              this.maxSelectionLimitReached = false;
+          }
+      } else {
+          if (!this.selectionLimit || !this.value || this.value.length < this.selectionLimit) {
+              this.value = [...(this.value || []), optionValue];
+          }
+          this.checkSelectionLimit();
+      }
+
+      this.onModelChange(this.value);
+      this.onChange.emit({ originalEvent: event, value: this.value, itemValue: optionValue });
 	}
 
-	selectAll(event: MouseEvent): void {
-		if (!this.allChecked) {
-			super.toggleAll(event);
+	selectAllItems(event: MouseEvent): void {
+		if (!this.selectAll) {
+			super.onToggleAll(event);
 		}
 		else {
 			//They're already all checked, we don't need to do anything
@@ -108,8 +145,8 @@ export class MultiSelectComponent extends MultiSelect {
 	}
 
 	selectNone(event: MouseEvent): void {
-		if (this.allChecked) {
-			super.toggleAll(event);
+		if (this.selectAll) {
+			super.onToggleAll(event);
 		}
 		else {
 			//Mostly copied from the 'toggleall' function here.
@@ -117,8 +154,8 @@ export class MultiSelectComponent extends MultiSelect {
 			this.value = [];
 			this.onModelChange(this.value);
 			this.onChange.emit({ originalEvent: event, value: this.value });
-			this.updateFilledState();
-			this.updateLabel();
+			//this.updateFilledState();
+			//this.updateLabel();
 		}
 	}
 
@@ -143,8 +180,12 @@ export class MultiSelectComponent extends MultiSelect {
 		}, 0);
 	}
 
+  onMouseclick(event: any, input: any): void{
+
+  }
+
 	@HostListener('document:keydown', ['$event'])
-	onKeyDown(event: KeyboardEvent) {
+	override onKeyDown(event: KeyboardEvent) {
 		if (this.overlayVisible && event.key === 'Enter') {
 			this.submit(event);
 		}

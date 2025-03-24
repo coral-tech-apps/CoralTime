@@ -8,7 +8,6 @@ import { IDay } from 'ng2-date-picker';
 import { WeekDays } from 'ng2-date-picker/lib/common/types/week-days.type';
 import * as dayjs from 'dayjs';
 import DayJs =  dayjs.Dayjs;
-//import Moment = moment.Moment;
 import { DateUtils } from '../../../models/calendar';
 
 const WEEK_DAYS: WeekDays[] = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];

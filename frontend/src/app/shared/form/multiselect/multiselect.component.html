@@ -5,7 +5,7 @@
                [disabled]="disabled" [attr.tabindex]="tabindex"
                (focus)="onInputFocus($event)"
                (blur)="onInputBlur($event)"
-               (keydown)="onKeydown($event)">
+               (keydown)="onKeyDown($event)">
     </div>
 
     <div class="ct-select" [title]="toString(valuesAsString)">
@@ -29,7 +29,7 @@
             <div class="ui-multiselect-select-all-container" *ngIf="showActionsPanel">
                 <ul>
                     <li *ngIf="value?.length"><a (click)="selectNone($event)">Deselect All</a></li>
-                    <li *ngIf="!value?.length"><a (click)="selectAll($event)">Select All</a></li>
+                    <li *ngIf="!value?.length"><a (click)="selectAllItems($event)">Select All</a></li>
                     <li *ngIf="extraActionTitle"><a (click)="doExtraAction($event)">{{extraActionTitle}}</a></li>
                 </ul>
             </div>

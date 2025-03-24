@@ -4,7 +4,7 @@ import {of as observableOf, throwError as observableThrowError,  Observable } fr
 import {mergeMap, catchError, map} from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AuthUser } from './auth-user';
 import { ImpersonationService } from '../../services/impersonation.service';

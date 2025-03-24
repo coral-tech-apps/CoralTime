@@ -3,7 +3,7 @@ import {forkJoin as observableForkJoin,  Observable } from 'rxjs';
 import {
 	Component, Input, ViewChild, EventEmitter, Output, OnInit, QueryList, ViewChildren, ElementRef
 } from '@angular/core';
-import { MatLegacyDialogRef as MatDialogRef, MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import * as dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
