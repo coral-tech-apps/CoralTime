@@ -27,23 +27,24 @@ export const MULTISELECT_VALUE_ACCESSOR: any = {
 };
 
 @Component({
-	selector: 'ct-multiselect',
-	templateUrl: 'multiselect.component.html',
-  animations: [
-    trigger('overlayAnimation', [
-      state('void', style({
-        transform: 'translateY(5%)',
-        opacity: 0
-      })),
-      state('visible', style({
-        transform: 'translateY(0)',
-        opacity: 1
-      })),
-      transition('void => visible', animate('{{showTransitionParams}}')),
-      transition('visible => void', animate('{{hideTransitionParams}}'))
-    ])
-  ],
-	providers: [DomHandler, ObjectUtils, MULTISELECT_VALUE_ACCESSOR]
+    selector: 'ct-multiselect',
+    templateUrl: 'multiselect.component.html',
+    animations: [
+        trigger('overlayAnimation', [
+            state('void', style({
+                transform: 'translateY(5%)',
+                opacity: 0
+            })),
+            state('visible', style({
+                transform: 'translateY(0)',
+                opacity: 1
+            })),
+            transition('void => visible', animate('{{showTransitionParams}}')),
+            transition('visible => void', animate('{{hideTransitionParams}}'))
+        ])
+    ],
+    providers: [DomHandler, ObjectUtils, MULTISELECT_VALUE_ACCESSOR],
+    standalone: false
 })
 
 export class MultiSelectComponent extends MultiSelect {

@@ -36,9 +36,10 @@ class FormTask {
 }
 
 @Component({
-	selector: 'ct-task-form',
-	templateUrl: 'tasks-form.component.html',
-	providers: [TranslatePipe]
+    selector: 'ct-task-form',
+    templateUrl: 'tasks-form.component.html',
+    providers: [TranslatePipe],
+    standalone: false
 })
 
 export class TaskFormComponent implements OnInit {

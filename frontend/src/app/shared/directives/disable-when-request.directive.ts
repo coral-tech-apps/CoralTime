@@ -1,7 +1,8 @@
 import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Directive({
-	selector: '[disableWhenRequest][disabled]'
+    selector: '[disableWhenRequest][disabled]',
+    standalone: false
 })
 
 export class DisableWhenRequestDirective implements OnChanges {

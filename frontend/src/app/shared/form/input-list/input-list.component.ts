@@ -16,13 +16,14 @@ export class InputChange {
 }
 
 @Component({
-	selector: 'ct-input-list',
-	templateUrl: 'input-list.component.html',
-	providers: [INPUT_CONTROL_VALUE_ACCESSOR],
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	host: {
-		'(document:keydown)': 'onKeyDown($event)'
-	}
+    selector: 'ct-input-list',
+    templateUrl: 'input-list.component.html',
+    providers: [INPUT_CONTROL_VALUE_ACCESSOR],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    host: {
+        '(document:keydown)': 'onKeyDown($event)'
+    },
+    standalone: false
 })
 
 export class InputListComponent implements ControlValueAccessor {

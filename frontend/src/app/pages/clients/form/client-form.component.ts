@@ -41,9 +41,10 @@ class FormClient {
 }
 
 @Component({
-	selector: 'ct-client-form',
-	templateUrl: 'client-form.component.html',
-	providers: [TranslatePipe]
+    selector: 'ct-client-form',
+    templateUrl: 'client-form.component.html',
+    providers: [TranslatePipe],
+    standalone: false
 })
 
 export class ClientFormComponent implements OnInit {

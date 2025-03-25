@@ -19,12 +19,13 @@ export const INPUT_CONTROL_VALUE_ACCESSOR: any = {
 };
 
 @Component({
-	selector: 'ct-datepicker',
-	templateUrl: 'datepicker.component.html',
-	providers: [INPUT_CONTROL_VALUE_ACCESSOR],
-	host: {
-		'(document:keydown)': 'onKeyDown($event)'
-	}
+    selector: 'ct-datepicker',
+    templateUrl: 'datepicker.component.html',
+    providers: [INPUT_CONTROL_VALUE_ACCESSOR],
+    host: {
+        '(document:keydown)': 'onKeyDown($event)'
+    },
+    standalone: false
 })
 
 export class DatepickerComponent implements ControlValueAccessor, AfterContentInit {

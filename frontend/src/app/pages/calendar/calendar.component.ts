@@ -19,8 +19,9 @@ interface WeekDay {
 }
 
 @Component({
-	selector: 'ct-calendar',
-	templateUrl: 'calendar.component.html'
+    selector: 'ct-calendar',
+    templateUrl: 'calendar.component.html',
+    standalone: false
 })
 
 export class CalendarComponent implements OnInit, OnDestroy {

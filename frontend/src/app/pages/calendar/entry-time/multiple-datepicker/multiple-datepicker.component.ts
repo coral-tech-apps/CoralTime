@@ -4,8 +4,9 @@ import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 
 @Component({
-	selector: 'ct-multiple-datepicker',
-	templateUrl: 'multiple-datepicker.component.html'
+    selector: 'ct-multiple-datepicker',
+    templateUrl: 'multiple-datepicker.component.html',
+    standalone: false
 })
 
 export class MultipleDatepickerComponent {

@@ -25,20 +25,21 @@ export function numberToHex(value: number, showOriginal?: boolean): string {
 }
 
 @Component({
-	selector: 'ct-color-picker',
-	templateUrl: 'color-picker.component.html',
-	providers: [
-		{
-			provide: NG_VALUE_ACCESSOR,
-			useExisting: forwardRef(() => ColorPickerComponent),
-			multi: true
-		},
-		{
-			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => ColorPickerComponent),
-			multi: true
-		}
-	]
+    selector: 'ct-color-picker',
+    templateUrl: 'color-picker.component.html',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => ColorPickerComponent),
+            multi: true
+        },
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => ColorPickerComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class ColorPickerComponent implements ControlValueAccessor, Validator, AfterContentInit {

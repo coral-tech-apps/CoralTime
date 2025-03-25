@@ -7,8 +7,9 @@ import { ReportsService } from '../../../services/reposts.service';
 import { LoadingMaskService } from '../../../shared/loading-indicator/loading-mask.service';
 
 @Component({
-	selector: 'ct-reports-query-form',
-	templateUrl: 'reports-query-form.component.html'
+    selector: 'ct-reports-query-form',
+    templateUrl: 'reports-query-form.component.html',
+    standalone: false
 })
 
 export class ReportsQueryFormComponent {

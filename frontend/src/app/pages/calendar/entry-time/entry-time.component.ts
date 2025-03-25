@@ -6,8 +6,9 @@ import { CalendarService } from '../../../services/calendar.service';
 import { ObjectUtils } from '../../../core/object-utils';
 
 @Component({
-	selector: 'ct-entry-time',
-	templateUrl: 'entry-time.component.html'
+    selector: 'ct-entry-time',
+    templateUrl: 'entry-time.component.html',
+    standalone: false
 })
 
 export class EntryTimeComponent implements AfterContentInit, OnDestroy {

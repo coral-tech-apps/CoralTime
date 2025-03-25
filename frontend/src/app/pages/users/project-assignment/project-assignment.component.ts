@@ -16,8 +16,9 @@ import { SettingsService } from '../../../services/settings.service';
 import { Table } from 'primeng/table';
 
 @Component({
-	selector: 'ct-user-project-assignment',
-	templateUrl: 'project-assignment.component.html'
+    selector: 'ct-user-project-assignment',
+    templateUrl: 'project-assignment.component.html',
+    standalone: false
 })
 
 export class UserProjectAssignmentComponent implements OnInit {

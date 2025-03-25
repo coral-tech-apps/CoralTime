@@ -6,8 +6,9 @@ import { AdminService } from '../../services/admin.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 
 @Component({
-	selector: 'ct-admin',
-	templateUrl: 'admin.component.html'
+    selector: 'ct-admin',
+    templateUrl: 'admin.component.html',
+    standalone: false
 })
 
 export class AdminComponent {

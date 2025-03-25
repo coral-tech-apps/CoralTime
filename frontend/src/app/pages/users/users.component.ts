@@ -16,8 +16,9 @@ import { UsersFormComponent } from './form/users-form.component';
 import { Table } from 'primeng/table';
 
 @Component({
-	selector: 'ct-users',
-	templateUrl: 'users.component.html'
+    selector: 'ct-users',
+    templateUrl: 'users.component.html',
+    standalone: false
 })
 
 export class UsersComponent implements OnInit {

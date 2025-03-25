@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { EmailSendingStatus } from './enter-email.service';
 
 @Component({
-	selector: 'ct-enter-email',
-	templateUrl: 'enter-email.component.html'
+    selector: 'ct-enter-email',
+    templateUrl: 'enter-email.component.html',
+    standalone: false
 })
 
 export class EnterEmailComponent {

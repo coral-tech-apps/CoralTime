@@ -36,8 +36,9 @@ import { ReportsQueryFormComponent } from './reports-query-form/reports-query-fo
 const ROWS_TOTAL_NUMBER = 50;
 
 @Component({
-	selector: 'ct-reports',
-	templateUrl: 'reports.component.html'
+    selector: 'ct-reports',
+    templateUrl: 'reports.component.html',
+    standalone: false
 })
 
 export class ReportsComponent implements OnInit {

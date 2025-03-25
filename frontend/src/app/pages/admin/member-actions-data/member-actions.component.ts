@@ -12,8 +12,9 @@ import { NotificationService } from '../../../core/notification.service';
 import { Table } from 'primeng/table';
 
 @Component({
-	selector: 'ct-member-actions',
-	templateUrl: 'member-actions-grid.component.html'
+    selector: 'ct-member-actions',
+    templateUrl: 'member-actions-grid.component.html',
+    standalone: false
 })
 
 export class MemberActionsComponent implements OnInit {

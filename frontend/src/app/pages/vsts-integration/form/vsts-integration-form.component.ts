@@ -50,8 +50,9 @@ export class FormConnection {
 }
 
 @Component({
-	selector: 'ct-vsts-integration-form',
-	templateUrl: 'vsts-integration-form.component.html'
+    selector: 'ct-vsts-integration-form',
+    templateUrl: 'vsts-integration-form.component.html',
+    standalone: false
 })
 
 export class VstsIntegrationFormComponent implements OnInit {

@@ -12,8 +12,9 @@ import { Table } from 'primeng/table';
 import { TableModule } from 'primeng/table';
 
 @Component({
-	selector: 'ct-client-project-assignment',
-	templateUrl: 'project-assignment.component.html'
+    selector: 'ct-client-project-assignment',
+    templateUrl: 'project-assignment.component.html',
+    standalone: false
 })
 
 export class ClientProjectAssignmentComponent implements OnInit {

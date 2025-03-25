@@ -60,8 +60,9 @@ const FULL_MANAGE_ITEMS = [
 ];
 
 @Component({
-	selector: 'ct-navigation',
-	templateUrl: 'navigation.component.html'
+    selector: 'ct-navigation',
+    templateUrl: 'navigation.component.html',
+    standalone: false
 })
 
 export class NavigationComponent implements OnInit, OnDestroy {

@@ -1,8 +1,9 @@
 import { Component, Output, EventEmitter, HostListener, Input } from '@angular/core';
 
 @Component({
-	selector: 'ct-menu-item',
-	templateUrl: 'menu-item.component.html'
+    selector: 'ct-menu-item',
+    templateUrl: 'menu-item.component.html',
+    standalone: false
 })
 
 export class MenuItemComponent {

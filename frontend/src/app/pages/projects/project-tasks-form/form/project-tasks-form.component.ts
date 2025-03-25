@@ -6,8 +6,9 @@ import { NotificationService } from '../../../../core/notification.service';
 import { TasksService } from '../../../../services/tasks.service';
 
 @Component({
-	selector: 'ct-project-tasks-form',
-	templateUrl: 'project-tasks-form.component.html'
+    selector: 'ct-project-tasks-form',
+    templateUrl: 'project-tasks-form.component.html',
+    standalone: false
 })
 
 export class ProjectTasksFormComponent {

@@ -5,11 +5,12 @@ import { DateStatic } from '../../../models/reports';
 import { DatePeriod, DateResponse } from './range-datepicker.service';
 
 @Component({
-	selector: 'ct-range-datepicker',
-	templateUrl: 'range-datepicker.component.html',
-	host: {
-		'(document:keydown)': 'onKeyDown($event)'
-	}
+    selector: 'ct-range-datepicker',
+    templateUrl: 'range-datepicker.component.html',
+    host: {
+        '(document:keydown)': 'onKeyDown($event)'
+    },
+    standalone: false
 })
 
 export class RangeDatepickerComponent {

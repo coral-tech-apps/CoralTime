@@ -8,8 +8,9 @@ import { UserPicService } from '../../../../services/user-pic.service';
 import { LoadingMaskService } from '../../../../shared/loading-indicator/loading-mask.service';
 
 @Component({
-	selector: 'ct-profile-photo-dialog',
-	templateUrl: 'profile-photo.component.html'
+    selector: 'ct-profile-photo-dialog',
+    templateUrl: 'profile-photo.component.html',
+    standalone: false
 })
 
 export class ProfilePhotoComponent {

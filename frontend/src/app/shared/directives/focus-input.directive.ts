@@ -1,7 +1,8 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
-	selector: '[ctFocus]'
+    selector: '[ctFocus]',
+    standalone: false
 })
 
 export class FocusInputDirective {

@@ -7,8 +7,9 @@ import { AuthGuard } from '../../core/auth/auth-guard.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 
 @Component({
-	selector: 'ct-signin-oidc',
-	templateUrl: 'signin-oidc.component.html'
+    selector: 'ct-signin-oidc',
+    templateUrl: 'signin-oidc.component.html',
+    standalone: false
 })
 
 export class SignInOidcComponent implements OnInit {

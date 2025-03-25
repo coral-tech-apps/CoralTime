@@ -25,15 +25,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
 import { CustomErrorHandler } from './core/raven-error-handler';
 import { MemberActionsService } from './services/member-action.service';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 
 export function httpFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, 'assets/translate/i18n', '.json');
 }
 
-@NgModule({ declarations: [
+@NgModule({
+    declarations: [
         AppComponent
     ],
-    bootstrap: [AppComponent], imports: [AppRoutingModule,
+    bootstrap: [AppComponent],
+    imports: [AppRoutingModule,
         BrowserModule,
         BrowserAnimationsModule,
         CoreModule,
@@ -47,7 +52,14 @@ export function httpFactory(http: HttpClient) {
                 useFactory: httpFactory,
                 deps: [HttpClient]
             }
-        })], providers: [
+        })],
+        providers: [
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: {
+                preset: Aura
+            }
+        }),
         ErrorHandler,
         ClientsService,
         ImpersonationService,

@@ -2,14 +2,15 @@ import { Directive, forwardRef } from '@angular/core';
 import { Validator, AbstractControl, NG_VALIDATORS } from '@angular/forms';
 
 @Directive({
-	selector: '[notEmptyInputListValidator]',
-	providers: [
-		{
-			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => NotEmptyInputListValidator),
-			multi: true
-		}
-	]
+    selector: '[notEmptyInputListValidator]',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => NotEmptyInputListValidator),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class NotEmptyInputListValidator implements Validator {

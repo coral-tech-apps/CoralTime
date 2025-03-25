@@ -10,7 +10,8 @@ import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.
 import { AppInsightsService } from 'src/app/services/app-insights.service';
 
 @Component({
-	templateUrl: 'login.component.html'
+    templateUrl: 'login.component.html',
+    standalone: false
 })
 
 export class LoginComponent implements OnInit {

@@ -1,14 +1,15 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
-	selector: 'ct-read-more',
-	template: `
+    selector: 'ct-read-more',
+    template: `
         <div *ngIf="text">
             <div class="ct-screen-mode" markdown [data]="currentText"></div>
             <div class="ct-print-mode" markdown [data]="text"></div>
             <span *ngIf='showButton' (click)="showText()" class="ct-see-more">{{linkText}}</span>
         </div>
-	`
+	`,
+    standalone: false
 })
 
 export class ReadMoreComponent implements OnChanges {

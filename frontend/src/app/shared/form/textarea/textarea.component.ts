@@ -18,10 +18,11 @@ export class TextareaChange {
 }
 
 @Component({
-	selector: 'ct-textarea',
-	templateUrl: 'textarea.component.html',
-	providers: [TEXTAREA_CONTROL_VALUE_ACCESSOR],
-	changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ct-textarea',
+    templateUrl: 'textarea.component.html',
+    providers: [TEXTAREA_CONTROL_VALUE_ACCESSOR],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class TextareaComponent implements ControlValueAccessor {

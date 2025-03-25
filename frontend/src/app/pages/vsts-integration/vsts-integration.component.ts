@@ -13,8 +13,9 @@ import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.
 import { ProjectUsersFormComponent } from './project-users-form/project-users-form.component';
 
 @Component({
-	selector: 'ct-vsts-integration',
-	templateUrl: 'vsts-integration.component.html'
+    selector: 'ct-vsts-integration',
+    templateUrl: 'vsts-integration.component.html',
+    standalone: false
 })
 
 export class VstsIntegrationComponent implements OnInit {

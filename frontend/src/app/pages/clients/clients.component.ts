@@ -14,8 +14,9 @@ import { ClientProjectAssignmentComponent } from './project-assignment/project-a
 import { Table } from 'primeng/table';
 
 @Component({
-	selector: 'ct-clients',
-	templateUrl: 'clients.component.html'
+    selector: 'ct-clients',
+    templateUrl: 'clients.component.html',
+    standalone: false
 })
 
 export class ClientsComponent implements OnInit {

@@ -2,8 +2,9 @@ import { Component, ContentChildren, QueryList, AfterContentInit, Input, Output,
 import { MenuItemComponent } from './menu-item/menu-item.component';
 
 @Component({
-	selector: 'ct-menu',
-	templateUrl: 'menu.component.html'
+    selector: 'ct-menu',
+    templateUrl: 'menu.component.html',
+    standalone: false
 })
 
 export class MenuComponent implements AfterContentInit {

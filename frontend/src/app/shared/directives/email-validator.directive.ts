@@ -7,10 +7,11 @@ import { UsersService } from '../../services/users.service';
 import { User } from '../../models/user';
 
 @Directive({
-	selector: '[ctEmailValidator][formControlEmail],[ctEmailValidator][formControl],[ctEmailValidator][ngModel]',
-	providers: [
-		{provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => EmailValidator), multi: true}
-	]
+    selector: '[ctEmailValidator][formControlEmail],[ctEmailValidator][formControl],[ctEmailValidator][ngModel]',
+    providers: [
+        { provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => EmailValidator), multi: true }
+    ],
+    standalone: false
 })
 
 export class EmailValidator implements Validator {

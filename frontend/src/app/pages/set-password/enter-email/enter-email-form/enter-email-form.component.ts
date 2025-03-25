@@ -13,8 +13,9 @@ const ERRORS_EMAIL_SENDING = [
 ];
 
 @Component({
-	selector: 'ct-enter-email-form',
-	templateUrl: 'enter-email-form.component.html'
+    selector: 'ct-enter-email-form',
+    templateUrl: 'enter-email-form.component.html',
+    standalone: false
 })
 
 export class EnterEmailFormComponent implements OnInit, OnDestroy {

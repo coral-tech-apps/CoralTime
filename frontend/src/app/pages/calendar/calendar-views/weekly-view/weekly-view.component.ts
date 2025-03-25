@@ -14,9 +14,10 @@ import { LoadingMaskService } from '../../../../shared/loading-indicator/loading
 import { ctCalendarAnimation } from '../../calendar.animation';
 
 @Component({
-	selector: 'ct-calendar-weekly-view',
-	templateUrl: 'weekly-view.component.html',
-	animations: [ctCalendarAnimation.slideCalendar]
+    selector: 'ct-calendar-weekly-view',
+    templateUrl: 'weekly-view.component.html',
+    animations: [ctCalendarAnimation.slideCalendar],
+    standalone: false
 })
 
 export class CalendarWeeklyViewComponent implements OnInit, OnDestroy {

@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PasswordChangingStatus, SetPasswordService } from './set-password.service';
 
 @Component({
-	selector: 'ct-enter-new-password',
-	templateUrl: 'enter-new-password.component.html'
+    selector: 'ct-enter-new-password',
+    templateUrl: 'enter-new-password.component.html',
+    standalone: false
 })
 
 export class EnterNewPasswordComponent implements OnInit {

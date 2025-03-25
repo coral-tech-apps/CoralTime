@@ -7,8 +7,9 @@ import { UserPicService } from '../../services/user-pic.service';
 import { numberToHex } from '../../shared/form/color-picker/color-picker.component';
 
 @Component({
-	selector: 'ct-profile',
-	templateUrl: 'profile.component.html'
+    selector: 'ct-profile',
+    templateUrl: 'profile.component.html',
+    standalone: false
 })
 
 export class ProfileComponent implements OnInit {

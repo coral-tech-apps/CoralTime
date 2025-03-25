@@ -1,7 +1,8 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
 
 @Directive({
-	selector: '[ctClickClose]'
+    selector: '[ctClickClose]',
+    standalone: false
 })
 
 export class ClickCloseDirective {

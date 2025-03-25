@@ -21,8 +21,9 @@ import { numberToHex } from '../../../../shared/form/color-picker/color-picker.c
 import { MAX_TIMER_VALUE } from '../../timer/timer.component';
 
 @Component({
-	selector: 'ct-entry-time-form',
-	templateUrl: 'entry-time-form.component.html'
+    selector: 'ct-entry-time-form',
+    templateUrl: 'entry-time-form.component.html',
+    standalone: false
 })
 
 export class EntryTimeFormComponent implements OnInit {

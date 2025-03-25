@@ -2,14 +2,15 @@ import { Directive, forwardRef } from '@angular/core';
 import { Validator, AbstractControl, NG_VALIDATORS } from '@angular/forms';
 
 @Directive({
-	selector: 'form[ctEntryTimeFilled]',
-	providers: [
-		{
-			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => EntryTimeFilledValidator),
-			multi: true
-		}
-	]
+    selector: 'form[ctEntryTimeFilled]',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => EntryTimeFilledValidator),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 //This is no longer being used by "entry-time-form.component.html" so it can probably be deleted at some point.

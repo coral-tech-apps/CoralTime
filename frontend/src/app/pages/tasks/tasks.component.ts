@@ -14,8 +14,9 @@ import { TaskFormComponent } from './form/tasks-form.component';
 import { Table } from 'primeng/table';
 
 @Component({
-	selector: 'ct-tasks',
-	templateUrl: 'tasks.component.html'
+    selector: 'ct-tasks',
+    templateUrl: 'tasks.component.html',
+    standalone: false
 })
 
 export class TasksComponent implements OnInit {

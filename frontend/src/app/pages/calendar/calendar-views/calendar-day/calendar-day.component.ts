@@ -13,9 +13,10 @@ import { EntryTimeComponent } from '../../entry-time/entry-time.component';
 import { MAX_TIMER_VALUE } from '../../timer/timer.component';
 
 @Component({
-	selector: 'ct-calendar-day',
-	templateUrl: 'calendar-day.component.html',
-	animations: [ctCalendarDayAnimation.slideCalendarTask]
+    selector: 'ct-calendar-day',
+    templateUrl: 'calendar-day.component.html',
+    animations: [ctCalendarDayAnimation.slideCalendarTask],
+    standalone: false
 })
 
 export class CalendarDayComponent implements OnInit {

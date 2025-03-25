@@ -41,7 +41,7 @@ import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 				provide: MARKED_OPTIONS,
 				useValue: {
 					breaks: true,
-					headerIds: false,
+					//headerIds: false,
 					pedantic: true,
 				},
 			},

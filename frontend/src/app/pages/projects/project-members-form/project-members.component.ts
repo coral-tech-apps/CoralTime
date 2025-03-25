@@ -18,8 +18,9 @@ import { ArrayUtils } from '../../../core/object-utils';
 import { ROWS_ON_PAGE } from '../../../core/constant.service';
 
 @Component({
-	selector: 'ct-project-members',
-	templateUrl: 'project-members.component.html'
+    selector: 'ct-project-members',
+    templateUrl: 'project-members.component.html',
+    standalone: false
 })
 
 export class ProjectUsersComponent implements OnInit {

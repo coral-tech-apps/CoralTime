@@ -13,9 +13,10 @@ import { ctCalendarAnimation } from '../../calendar.animation';
 import dayjs from 'dayjs';
 
 @Component({
-	templateUrl: 'daily-view.component.html',
-	selector: 'ct-calendar-daily-view',
-	animations: [ctCalendarAnimation.slideCalendar]
+    templateUrl: 'daily-view.component.html',
+    selector: 'ct-calendar-daily-view',
+    animations: [ctCalendarAnimation.slideCalendar],
+    standalone: false
 })
 
 export class CalendarDailyViewComponent implements OnInit, OnDestroy {

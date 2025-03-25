@@ -12,8 +12,9 @@ export interface ReportGridData {
 }
 
 @Component({
-	selector: 'ct-reports-grid',
-	templateUrl: 'reports-grid.component.html'
+    selector: 'ct-reports-grid',
+    templateUrl: 'reports-grid.component.html',
+    standalone: false
 })
 
 export class ReportsGridComponent implements OnChanges {

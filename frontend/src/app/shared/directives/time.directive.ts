@@ -1,7 +1,8 @@
 import { Directive, ElementRef, HostListener, Output, EventEmitter, Input } from '@angular/core';
 
 @Directive({
-	selector: '[ctTime]'
+    selector: '[ctTime]',
+    standalone: false
 })
 
 export class TimeDirective {

@@ -2,7 +2,8 @@ import { Directive, ElementRef, Input, HostListener, Output, EventEmitter, Rende
 import { LIST_ITEM_HEIGHT } from '../form/select/select.component';
 
 @Directive({
-	selector: '[ctSlimScrollArrows][slimScroll]'
+    selector: '[ctSlimScrollArrows][slimScroll]',
+    standalone: false
 })
 
 export class SlimscrollArrowsDirective {

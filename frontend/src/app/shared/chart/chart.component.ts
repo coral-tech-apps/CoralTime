@@ -1,14 +1,15 @@
 import { Component, HostBinding, Input } from '@angular/core';
 
 @Component({
-	selector: 'ct-chart',
-	template: `
+    selector: 'ct-chart',
+    template: `
         <div class="ct-chart-block">
             <div class="ct-chart-bar"
                  [class.ct-chart-over]="isWorkingHoursOver()"
                  [style.width]="calcWorkingHours() + '%'"></div>
         </div>
-	`
+	`,
+    standalone: false
 })
 
 export class ChartComponent {

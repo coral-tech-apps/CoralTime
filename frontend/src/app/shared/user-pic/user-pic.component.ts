@@ -1,8 +1,9 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core';
 
 @Component({
-	selector: 'ct-user-pic',
-	template: '<img *ngIf="urlIcon" src="{{urlIcon}}">'
+    selector: 'ct-user-pic',
+    template: '<img *ngIf="urlIcon" src="{{urlIcon}}">',
+    standalone: false
 })
 
 export class UserPicComponent implements OnInit {

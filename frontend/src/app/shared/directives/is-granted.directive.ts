@@ -3,7 +3,10 @@ import { AclService } from '../../core/auth/acl.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { ImpersonationService } from '../../services/impersonation.service';
 
-@Directive({selector: '[ctIsGranted]'})
+@Directive({
+    selector: '[ctIsGranted]',
+    standalone: false
+})
 export class IsGrantedDirective {
 	private isGranded: boolean = false;
 	private policy: string;

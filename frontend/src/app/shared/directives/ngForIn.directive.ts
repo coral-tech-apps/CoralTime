@@ -2,7 +2,8 @@ import { NgForOf } from '@angular/common';
 import { Directive, Input, OnChanges, SimpleChange } from '@angular/core';
 
 @Directive({
-	selector: '[ngFor][ngForIn]'
+    selector: '[ngFor][ngForIn]',
+    standalone: false
 })
 
 export class NgForIn<T> extends NgForOf<T> implements OnChanges {

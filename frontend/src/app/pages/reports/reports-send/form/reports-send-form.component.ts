@@ -4,8 +4,9 @@ import { Client } from '../../../../models/client';
 import { Subscription } from 'rxjs';
 
 @Component({
-	selector: 'ct-reports-send-form',
-	templateUrl: 'reports-send-form.component.html'
+    selector: 'ct-reports-send-form',
+    templateUrl: 'reports-send-form.component.html',
+    standalone: false
 })
 
 export class ReportsSendFormComponent implements OnDestroy {

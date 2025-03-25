@@ -4,14 +4,15 @@ import { NG_VALIDATORS, Validator, AbstractControl } from '@angular/forms';
 const EMAIL_REGEXP = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/;
 
 @Directive({
-	selector: '[ctEmailsInvalidValidator]',
-	providers: [
-		{
-			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => EmailInvalidValidatorDirective),
-			multi: true
-		}
-	]
+    selector: '[ctEmailsInvalidValidator]',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => EmailInvalidValidatorDirective),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class EmailInvalidValidatorDirective implements Validator {

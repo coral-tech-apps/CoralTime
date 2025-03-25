@@ -3,9 +3,10 @@ import { LoadingMaskService } from './loading-mask.service';
 import { ImpersonationService } from '../../services/impersonation.service';
 
 @Component({
-	selector: 'ct-loading-mask',
-	templateUrl: 'loading-mask.component.html',
-	changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ct-loading-mask',
+    templateUrl: 'loading-mask.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class LoadingMaskComponent implements OnInit {

@@ -14,8 +14,9 @@ const ERRORS_PASSWORD_CHANGING = [
 ];
 
 @Component({
-	selector: 'ct-enter-new-password-form',
-	templateUrl: 'enter-new-password-form.component.html'
+    selector: 'ct-enter-new-password-form',
+    templateUrl: 'enter-new-password-form.component.html',
+    standalone: false
 })
 
 export class EnterNewPasswordFormComponent implements OnInit {

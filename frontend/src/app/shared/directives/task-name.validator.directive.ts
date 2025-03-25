@@ -7,14 +7,15 @@ import { Observable } from 'rxjs';
 import { TasksService } from '../../services/tasks.service';
 
 @Directive({
-	selector: '[ctTaskNameValidator][formControlName],[ctTaskNameValidator][formControl],[ctTaskNameValidator][ngModel]',
-	providers: [
-		{
-			provide: NG_ASYNC_VALIDATORS,
-			useExisting: forwardRef(() => TaskNameValidator),
-			multi: true
-		}
-	]
+    selector: '[ctTaskNameValidator][formControlName],[ctTaskNameValidator][formControl],[ctTaskNameValidator][ngModel]',
+    providers: [
+        {
+            provide: NG_ASYNC_VALIDATORS,
+            useExisting: forwardRef(() => TaskNameValidator),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class TaskNameValidator implements Validator {

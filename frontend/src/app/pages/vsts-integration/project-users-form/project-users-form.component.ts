@@ -10,8 +10,9 @@ import { VstsProjectConnection } from '../../../models/vsts-project-connection';
 import { VstsIntegrationService } from '../../../services/vsts-integration.service';
 
 @Component({
-	selector: 'ct-project-users-form',
-	templateUrl: 'project-users-form.component.html'
+    selector: 'ct-project-users-form',
+    templateUrl: 'project-users-form.component.html',
+    standalone: false
 })
 
 export class ProjectUsersFormComponent implements OnInit {

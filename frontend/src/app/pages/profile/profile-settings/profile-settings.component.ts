@@ -34,8 +34,9 @@ const TWELVE_CLOCK_TIME_ARRAY = [
 ];
 
 @Component({
-	selector: 'ct-profile-settings',
-	templateUrl: 'profile-settings.component.html'
+    selector: 'ct-profile-settings',
+    templateUrl: 'profile-settings.component.html',
+    standalone: false
 })
 
 export class ProfileSettingsComponent implements OnInit {

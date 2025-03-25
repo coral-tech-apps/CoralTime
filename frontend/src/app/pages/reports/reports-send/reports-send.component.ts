@@ -58,8 +58,9 @@ const EXPORT_FILE_LIST: ExportFile[] = [
 ];
 
 @Component({
-	selector: 'ct-reports-send',
-	templateUrl: 'reports-send.component.html'
+    selector: 'ct-reports-send',
+    templateUrl: 'reports-send.component.html',
+    standalone: false
 })
 
 export class ReportsSendComponent implements OnInit {

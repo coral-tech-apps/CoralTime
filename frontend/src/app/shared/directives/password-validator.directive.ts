@@ -2,14 +2,15 @@ import { Directive, forwardRef } from '@angular/core';
 import { Validator, AbstractControl, NG_VALIDATORS } from '@angular/forms';
 
 @Directive({
-	selector: '[ctPasswordValidator][formControlName],[ctPasswordValidator][formControl],[ctPasswordValidator][ngModel]',
-	providers: [
-		{
-			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => PasswordValidator),
-			multi: true
-		}
-	]
+    selector: '[ctPasswordValidator][formControlName],[ctPasswordValidator][formControl],[ctPasswordValidator][ngModel]',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => PasswordValidator),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class PasswordValidator implements Validator {

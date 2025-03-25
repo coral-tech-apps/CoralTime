@@ -11,8 +11,9 @@ import { TasksService } from '../../../services/tasks.service';
 import { Table } from 'primeng/table';
 
 @Component({
-	selector: 'ct-project-tasks',
-	templateUrl: 'project-tasks.component.html'
+    selector: 'ct-project-tasks',
+    templateUrl: 'project-tasks.component.html',
+    standalone: false
 })
 
 export class ProjectTasksComponent implements OnInit {

@@ -43,9 +43,10 @@ class ProjectSettingsModel {
 }
 
 @Component({
-	selector: 'ct-project-settings-form',
-	templateUrl: 'project-settings-form.component.html',
-	changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ct-project-settings-form',
+    templateUrl: 'project-settings-form.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class ProjectSettingsFormComponent implements OnInit {

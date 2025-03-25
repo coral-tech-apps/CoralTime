@@ -56,9 +56,10 @@ export class FormProject {
 }
 
 @Component({
-	selector: 'ct-project-form',
-	templateUrl: 'project-form.component.html',
-	providers: [TranslatePipe]
+    selector: 'ct-project-form',
+    templateUrl: 'project-form.component.html',
+    providers: [TranslatePipe],
+    standalone: false
 })
 
 export class ProjectFormComponent implements OnInit {

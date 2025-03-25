@@ -1,8 +1,9 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
-	selector: 'ct-confirmation-dialog',
-	templateUrl: 'confirmation.component.html'
+    selector: 'ct-confirmation-dialog',
+    templateUrl: 'confirmation.component.html',
+    standalone: false
 })
 
 export class ConfirmationComponent {

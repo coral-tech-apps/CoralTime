@@ -3,14 +3,15 @@ import { NG_VALIDATORS, Validator, AbstractControl } from '@angular/forms';
 import { Task } from '../../../../models/task';
 
 @Directive({
-	selector: '[ctTaskEqualValidator]',
-	providers: [
-		{
-			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => TaskEqualValidatorDirective),
-			multi: true
-		}
-	]
+    selector: '[ctTaskEqualValidator]',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => TaskEqualValidatorDirective),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class TaskEqualValidatorDirective implements Validator {

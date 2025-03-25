@@ -7,14 +7,15 @@ import { ProjectsService } from '../../services/projects.service';
 import { Project } from '../../models/project';
 
 @Directive({
-	selector: '[ctProjectNameValidator][formControlName],[ctProjectNameValidator][formControl],[ctProjectNameValidator][ngModel]',
-	providers: [
-		{
-			provide: NG_ASYNC_VALIDATORS,
-			useExisting: forwardRef(() => ProjectNameValidator),
-			multi: true
-		}
-	]
+    selector: '[ctProjectNameValidator][formControlName],[ctProjectNameValidator][formControl],[ctProjectNameValidator][ngModel]',
+    providers: [
+        {
+            provide: NG_ASYNC_VALIDATORS,
+            useExisting: forwardRef(() => ProjectNameValidator),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class ProjectNameValidator implements Validator {

@@ -7,14 +7,15 @@ import { Observable } from 'rxjs';
 import { ClientsService } from '../../services/clients.service';
 
 @Directive({
-	selector: '[ctClientNameValidator][formControlName],[ctClientNameValidator][formControl],[ctClientNameValidator][ngModel]',
-	providers: [
-		{
-			provide: NG_ASYNC_VALIDATORS,
-			useExisting: forwardRef(() => ClientNameValidator),
-			multi: true
-		}
-	]
+    selector: '[ctClientNameValidator][formControlName],[ctClientNameValidator][formControl],[ctClientNameValidator][ngModel]',
+    providers: [
+        {
+            provide: NG_ASYNC_VALIDATORS,
+            useExisting: forwardRef(() => ClientNameValidator),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class ClientNameValidator implements Validator {

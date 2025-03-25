@@ -20,8 +20,9 @@ import { SettingsService } from '../../../services/settings.service';
 export const MAX_TIMER_VALUE = 86399;
 
 @Component({
-	selector: 'ct-timer',
-	templateUrl: 'timer.component.html'
+    selector: 'ct-timer',
+    templateUrl: 'timer.component.html',
+    standalone: false
 })
 
 export class TimerComponent implements OnInit, OnDestroy {

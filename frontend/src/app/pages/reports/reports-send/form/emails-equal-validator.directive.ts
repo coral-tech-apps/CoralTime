@@ -2,14 +2,15 @@ import { Directive, forwardRef } from '@angular/core';
 import { NG_VALIDATORS, Validator, AbstractControl } from '@angular/forms';
 
 @Directive({
-	selector: '[ctEmailsEqualValidator]',
-	providers: [
-		{
-			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => EmailsEqualValidatorDirective),
-			multi: true
-		}
-	]
+    selector: '[ctEmailsEqualValidator]',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => EmailsEqualValidatorDirective),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 
 export class EmailsEqualValidatorDirective implements Validator {

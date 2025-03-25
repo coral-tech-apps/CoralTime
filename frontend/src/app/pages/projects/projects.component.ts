@@ -18,8 +18,9 @@ import { ProjectSettingsFormComponent } from './project-settings-form/project-se
 import { numberToHex } from '../../shared/form/color-picker/color-picker.component';
 
 @Component({
-	selector: 'ct-projects',
-	templateUrl: 'projects.component.html'
+    selector: 'ct-projects',
+    templateUrl: 'projects.component.html',
+    standalone: false
 })
 
 export class ProjectsComponent implements OnInit {

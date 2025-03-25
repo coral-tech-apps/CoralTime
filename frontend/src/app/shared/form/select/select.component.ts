@@ -16,13 +16,15 @@ export class SelectChange {
 }
 
 @Component({
-	selector: 'ct-select',
-	templateUrl: 'select.component.html',
-	providers: [SELECT_CONTROL_VALUE_ACCESSOR],
-	host: {
-		'(document:keydown)': 'onKeyDown($event)'
-	},
-	changeDetection: ChangeDetectionStrategy.OnPush  // Fixed in newest version https://github.com/angular/material2/pull/2894
+    selector: 'ct-select',
+    templateUrl: 'select.component.html',
+    providers: [SELECT_CONTROL_VALUE_ACCESSOR],
+    host: {
+        '(document:keydown)': 'onKeyDown($event)'
+    },
+    changeDetection: ChangeDetectionStrategy.OnPush // Fixed in newest version https://github.com/angular/material2/pull/2894
+    ,
+    standalone: false
 })
 
 export class SelectComponent implements ControlValueAccessor {

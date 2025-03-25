@@ -1,7 +1,8 @@
 import { Directive, ElementRef, Output, EventEmitter, Input, Renderer2, OnChanges, OnDestroy } from '@angular/core';
 
 @Directive({
-	selector: '[clickOutside]'
+    selector: '[clickOutside]',
+    standalone: false
 })
 
 export class ClickOutsideDirective implements OnChanges, OnDestroy {

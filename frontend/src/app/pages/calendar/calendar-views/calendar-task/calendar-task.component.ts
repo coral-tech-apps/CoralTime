@@ -20,8 +20,9 @@ import { MenuComponent } from '../../../../shared/menu/menu.component';
 import { MAX_TIMER_VALUE } from '../../timer/timer.component';
 
 @Component({
-	selector: 'ct-calendar-task',
-	templateUrl: 'calendar-task.component.html'
+    selector: 'ct-calendar-task',
+    templateUrl: 'calendar-task.component.html',
+    standalone: false
 })
 
 export class CalendarTaskComponent implements OnInit {

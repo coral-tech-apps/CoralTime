@@ -58,9 +58,10 @@ class FormUser {
 }
 
 @Component({
-	selector: 'ct-user-form',
-	templateUrl: 'users-form.component.html',
-	providers: [TranslatePipe]
+    selector: 'ct-user-form',
+    templateUrl: 'users-form.component.html',
+    providers: [TranslatePipe],
+    standalone: false
 })
 
 export class UsersFormComponent implements OnInit {
