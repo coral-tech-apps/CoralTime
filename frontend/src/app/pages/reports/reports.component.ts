@@ -3,7 +3,7 @@ import {finalize} from 'rxjs/operators';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 import { DateUtils } from '../../models/calendar';
 import {

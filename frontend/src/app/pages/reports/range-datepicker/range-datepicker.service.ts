@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DateStatic } from '../../../models/reports';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 
 export class DatePeriod {

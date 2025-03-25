@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs';;
+import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 import { GRAY_COLOR, hexToNumber } from '../shared/form/color-picker/color-picker.component';
 import { OUTPUT_DATE_FORMAT } from '../core/constant.service';

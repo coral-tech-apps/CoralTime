@@ -23,7 +23,6 @@ export class AuthUser {
       return
     }
 		let decodedToken = jwtDecode(data.access_token) as CustomJwtToken;
-    console.log(decodedToken);
 		this.id = +decodedToken.id;
 		this.nickname = decodedToken.nickname;
 		this.refreshTokenExpiration = new Date().getTime() + decodedToken.refreshTokenLifeTime * 1000;

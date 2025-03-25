@@ -3,7 +3,7 @@ import {finalize} from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { TimeEntry, CalendarDay, DateUtils } from '../../../../models/calendar';
 import { Project } from '../../../../models/project';
 import { User } from '../../../../models/user';

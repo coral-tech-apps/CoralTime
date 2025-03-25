@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -30,44 +30,38 @@ export function httpFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, 'assets/translate/i18n', '.json');
 }
 
-@NgModule({
-	declarations: [
-		AppComponent
-	],
-	imports: [
-		AppRoutingModule,
-		BrowserModule,
-		BrowserAnimationsModule,
-		CoreModule,
-		ErrorsModule,
-		LayoutModule,
-    MultiSelectModule,
-		SharedModule,
-    HttpClientModule,
-		TranslateModule.forRoot({
-			loader: {
-				provide: TranslateLoader,
-				useFactory: httpFactory,
-				deps: [HttpClient]
-			}
-		}),
-	],
-	bootstrap: [AppComponent],
-	providers: [
-    ErrorHandler,
-		ClientsService,
-		ImpersonationService,
-		ProjectRolesService,
-		ProjectsService,
-		AdminService,
-		SettingsService,
-		TasksService,
-		UsersService,
-		MemberActionsService,
-    AppInsightsService,
-    { provide: ErrorHandler, useClass: CustomErrorHandler }
-	]
-})
+@NgModule({ declarations: [
+        AppComponent
+    ],
+    bootstrap: [AppComponent], imports: [AppRoutingModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        CoreModule,
+        ErrorsModule,
+        LayoutModule,
+        MultiSelectModule,
+        SharedModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: httpFactory,
+                deps: [HttpClient]
+            }
+        })], providers: [
+        ErrorHandler,
+        ClientsService,
+        ImpersonationService,
+        ProjectRolesService,
+        ProjectsService,
+        AdminService,
+        SettingsService,
+        TasksService,
+        UsersService,
+        MemberActionsService,
+        AppInsightsService,
+        { provide: ErrorHandler, useClass: CustomErrorHandler },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 
 export class AppModule {
 }

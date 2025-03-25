@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { ReportGridView, ReportItem } from '../../../models/reports';
 import { User } from '../../../models/user';
 import { ArrayUtils } from '../../../core/object-utils';

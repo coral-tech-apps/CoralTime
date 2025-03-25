@@ -122,13 +122,13 @@ export class MultiSelectComponent extends MultiSelect {
           this.value = this.value.filter((_, i) => i !== selectionIndex);
           this.onRemove.emit({ newValue: this.value, removed: optionValue });
           if (this.selectionLimit) {
-              this.maxSelectionLimitReached = false;
+              this.maxSelectionLimitReached();
           }
       } else {
           if (!this.selectionLimit || !this.value || this.value.length < this.selectionLimit) {
               this.value = [...(this.value || []), optionValue];
           }
-          this.checkSelectionLimit();
+          this.selectionLimit;
       }
 
       this.onModelChange(this.value);

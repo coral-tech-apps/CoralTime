@@ -2,7 +2,7 @@
 import {finalize} from 'rxjs/operators';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { Client } from '../../../models/client';
 import { ReportQuery } from '../../../models/reports';
 import { User } from '../../../models/user';

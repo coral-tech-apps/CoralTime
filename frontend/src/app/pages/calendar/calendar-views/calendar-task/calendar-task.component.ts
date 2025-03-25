@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 import { TimeEntry, DateUtils, CalendarDay } from '../../../../models/calendar';
 import { User } from '../../../../models/user';

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { DateUtils, TimeEntry } from '../../../../models/calendar';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 
 @Component({

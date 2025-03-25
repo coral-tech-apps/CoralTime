@@ -61,7 +61,11 @@ export class AuthService {
 	get roles(): object {
 		if (this._roles == null) {
 			if (localStorage.hasOwnProperty('ROLES')) {
-				this._roles = JSON.parse(localStorage.getItem('ROLES'));
+        try{
+          this._roles = JSON.parse(localStorage.getItem('ROLES'));
+        }catch(error){
+          //this erro drops when launching site, when in the roles is not valid value
+        }
 			}
 		}
 		return this._roles;

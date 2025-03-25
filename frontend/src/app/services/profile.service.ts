@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ConstantService } from '../core/constant.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 export class DateFormat {
 	dateFormatId: number;

@@ -18,7 +18,7 @@ import { UserPicComponent } from './user-pic/user-pic.component';
 import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { ChartComponent } from './chart/chart.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
+import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 
 
 @NgModule({
@@ -38,7 +38,7 @@ import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 		SharedFormModule,
 		MarkdownModule.forRoot({
 			markedOptions: {
-				provide: MarkedOptions,
+				provide: MARKED_OPTIONS,
 				useValue: {
 					breaks: true,
 					headerIds: false,

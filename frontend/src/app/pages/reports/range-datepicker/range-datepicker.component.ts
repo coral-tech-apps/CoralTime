@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 import { DateStatic } from '../../../models/reports';
 import { DatePeriod, DateResponse } from './range-datepicker.service';

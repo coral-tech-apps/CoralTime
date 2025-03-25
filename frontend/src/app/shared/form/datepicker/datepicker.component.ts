@@ -6,7 +6,7 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { IDatePickerDirectiveConfig, DatePickerComponent } from 'ng2-date-picker';
 import { IDay } from 'ng2-date-picker';
 import { WeekDays } from 'ng2-date-picker/lib/common/types/week-days.type';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import DayJs =  dayjs.Dayjs;
 import { DateUtils } from '../../../models/calendar';
 

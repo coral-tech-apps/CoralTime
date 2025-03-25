@@ -1,5 +1,5 @@
 import { NgModule, ErrorHandler, Injector } from '@angular/core';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import * as ODataConfig from './odata-config.factory';
 import { ODataServiceFactory, ODataConfiguration } from '../services/odata';
@@ -18,52 +18,46 @@ import { AppInsightsInterceptor } from './app-insights.interceptor';
 import { AppInsightsService } from '../services/app-insights.service';
 
 
-@NgModule({
-	imports: [
-		HttpClientModule,
-		LoadingMaskModule
-	],
-	exports: [
-		HttpClientModule,
-		LoadingMaskModule
-	],
-	providers: [
-		{
-			provide: ErrorHandler,
-			useClass: CustomErrorHandler,
-			deps: [Injector]
-		},
-		{
-			provide: ODataConfiguration,
-			useFactory: ODataConfig.ODataConfigFactory,
-			deps: [AppInsightsService]
-		},
-		{
-			provide: HTTP_INTERCEPTORS,
-			useClass: ApplyTokenInterceptor,
-			multi: true
-		},
-		{
-			provide: HTTP_INTERCEPTORS,
-			useClass: RefreshTokenInterceptor,
-			multi: true
-		},
+@NgModule({ exports: [
+        //HttpClientModule,
+        LoadingMaskModule
+    ], imports: [LoadingMaskModule], providers: [
+        {
+            provide: ErrorHandler,
+            useClass: CustomErrorHandler,
+            deps: [Injector]
+        },
+        {
+            provide: ODataConfiguration,
+            useFactory: ODataConfig.ODataConfigFactory,
+            deps: [AppInsightsService]
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: ApplyTokenInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: RefreshTokenInterceptor,
+            multi: true
+        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AppInsightsInterceptor,
             multi: true
         },
-		AclService,
-		AuthService,
-		AuthGuard,
-		ConstantService,
-		LoadingBarService,
-		NotAuthGuard,
-		NotificationService,
-		ODataServiceFactory,
-		UserPicService
-	]
-})
+        AclService,
+        AuthService,
+        AuthGuard,
+        ConstantService,
+        LoadingBarService,
+        NotAuthGuard,
+        NotificationService,
+        ODataServiceFactory,
+        UserPicService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 
 export class CoreModule {
 }
