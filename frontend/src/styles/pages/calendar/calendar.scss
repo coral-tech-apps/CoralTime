@@ -32,10 +32,6 @@ $titleDayHeight: 145px;
       white-space: nowrap;
       text-align: center;
 
-      @media (min-width: $calendarPhoneWidth) {
-        width: 90px;
-      }
-
       i {
         position: absolute;
         top: 5px;

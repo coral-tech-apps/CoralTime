@@ -1,10 +1,10 @@
 import {
-	Component, Input, Output, EventEmitter, forwardRef, ViewChild, HostListener
+	Component, Input, Output, EventEmitter, forwardRef, ViewChild, HostListener,
 } from '@angular/core';
 import { trigger, state, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SelectItem } from 'primeng/api';
-import { MultiSelect, MultiSelectSelectAllChangeEvent } from 'primeng/multiselect';
+import { MultiSelect, MultiSelectFilterEvent, MultiSelectSelectAllChangeEvent, MultiSelectStyle } from 'primeng/multiselect';
 import { ObjectUtils } from 'primeng/utils';
 import { DomHandler } from 'primeng/dom';
 
@@ -43,7 +43,7 @@ export const MULTISELECT_VALUE_ACCESSOR: any = {
             transition('visible => void', animate('{{hideTransitionParams}}'))
         ])
     ],
-    providers: [DomHandler, ObjectUtils, MULTISELECT_VALUE_ACCESSOR],
+    providers: [DomHandler, ObjectUtils, MULTISELECT_VALUE_ACCESSOR, MultiSelectStyle],
     standalone: false
 })
 
@@ -62,7 +62,16 @@ export class MultiSelectComponent extends MultiSelect {
 	isSubmitted: boolean = false;
 	oldValue: any[];
 
+  override ngAfterViewInit(): void {
+    this.renderer.removeClass(this.el.nativeElement, 'p-component');
+    this.renderer.removeClass(this.el.nativeElement, 'p-multiselect');
+    this.renderer.removeClass(this.el.nativeElement, 'p-inputwrapper');
+    this.renderer.removeClass(this.el.nativeElement, 'p-inputwrapper-focus');
+    this.renderer.removeClass(this.el.nativeElement, 'p-multiselect-open');
+  }
+
 	override show(): void {
+    console.log('show: ', this.overlayVisible)
 		super.show();
 		this.redrowSlimScroll();
 
@@ -73,6 +82,7 @@ export class MultiSelectComponent extends MultiSelect {
 	}
 
 	override hide(): void {
+    console.log('hide: ', this.overlayVisible)
 		super.hide();
 		this.clearFilter();
 
@@ -87,10 +97,9 @@ export class MultiSelectComponent extends MultiSelect {
 		this.redrowSlimScroll();
 	}
 
-	//onFilter(): void {
-	//	super.onFilter();
-	//	this.redrowSlimScroll();
-	//}
+  onFilter1(): void {
+    this.redrowSlimScroll();
+  }
 
   findSelectionIndex(val: any): number {
       //Mostly copied from the 'findSelectionIndex' function here.
@@ -109,56 +118,59 @@ export class MultiSelectComponent extends MultiSelect {
     return index;
   }
 
-	onItemClick(event, option): void {
-      //Mostly copied from the 'onOptionClick' function here.
-			//https://github.com/primefaces/primeng/blob/15.4.1/src/app/components/multiselect/multiselect.ts
-      if (this.isOptionDisabled(option)) {
-          return;
-      }
+	onItemClick(event: any, option: any): void {
+    if (this.isOptionDisabled(option)) {
+        return;
+    }
 
-      const optionValue = this.getOptionValue(option);
-      const selectionIndex = this.findSelectionIndex(optionValue);
+    if (!event) {
+        event = new MouseEvent('click');
+    }
 
-      if (selectionIndex !== -1) {
-          this.value = this.value.filter((_, i) => i !== selectionIndex);
-          this.onRemove.emit({ newValue: this.value, removed: optionValue });
-          if (this.selectionLimit) {
-              this.maxSelectionLimitReached();
-          }
-      } else {
-          if (!this.selectionLimit || !this.value || this.value.length < this.selectionLimit) {
-              this.value = [...(this.value || []), optionValue];
-          }
-          this.selectionLimit;
-      }
+    const optionValue = this.getOptionValue(option);
+    const selectionIndex = this.findSelectionIndex(optionValue);
 
-      this.onModelChange(this.value);
-      this.onChange.emit({ originalEvent: event, value: this.value, itemValue: optionValue });
-	}
+    if (selectionIndex !== -1) {
+        this.value = this.value.filter((_, i) => i !== selectionIndex);
+        //this.onModelChange(this.value);
+        //this.onChange.emit({ originalEvent: event, value: this.value, itemValue: optionValue });
+    } else {
+        if (!this.selectionLimit || !this.value || this.value.length < this.selectionLimit) {
+            this.value = [...(this.value || []), optionValue];
 
-	selectAllItems(event: MouseEvent): void {
-		if (!this.selectAll) {
-			super.onToggleAll(event);
-		}
-		else {
-			//They're already all checked, we don't need to do anything
-		}
-	}
+        }
+    }
+    this.onModelChange(this.value);
+    this.onChange.emit({ originalEvent: event, value: this.value, itemValue: optionValue });
+  }
 
-	selectNone(event: MouseEvent): void {
-		if (this.selectAll) {
-			super.onToggleAll(event);
-		}
-		else {
-			//Mostly copied from the 'toggleall' function here.
-			//https://github.com/primefaces/primeng/blob/7.1.3/src/app/components/multiselect/multiselect.ts
-			this.value = [];
-			this.onModelChange(this.value);
-			this.onChange.emit({ originalEvent: event, value: this.value });
-			//this.updateFilledState();
-			//this.updateLabel();
-		}
-	}
+	selectAllItems(event: any): void {
+    if (!this.selectAll) {
+        const toggleEvent: MultiSelectSelectAllChangeEvent = event ?
+            { originalEvent: event, checked: true } :
+            { originalEvent: new MouseEvent('click'), checked: true };
+
+        super.onToggleAll(toggleEvent);
+    }
+    else {
+    }
+}
+
+  selectNone(event: any): void {
+    if (this.selectAll) {
+        const toggleEvent: MultiSelectSelectAllChangeEvent = event ?
+            { originalEvent: event, checked: false } :
+            { originalEvent: new MouseEvent('click'), checked: false };
+
+        super.onToggleAll(toggleEvent);
+    }
+    else {
+        const safeEvent = event || new MouseEvent('click');
+        this.value = [];
+        this.onModelChange(this.value);
+        this.onChange.emit({ originalEvent: safeEvent, value: this.value });
+    }
+  }
 
 	doExtraAction(event): void {
 		this.onExtraAction.emit(event);
@@ -181,9 +193,9 @@ export class MultiSelectComponent extends MultiSelect {
 		}, 0);
 	}
 
-  onMouseclick(event: any, input: any): void{
+  onMouseclick(event,input) {
 
-  }
+}
 
 	@HostListener('document:keydown', ['$event'])
 	override onKeyDown(event: KeyboardEvent) {

@@ -148,7 +148,7 @@ $fieldHeight: 42px;
 }
 
 .ct-reports-multiselect {
-  .ui-multiselect-panel {    
+  .ui-multiselect-panel {
     margin-left: -11px;
   }
 }
@@ -297,6 +297,7 @@ $fieldHeight: 42px;
   }
 
   .ct-reports-grid {
+    width: 100%;
     display: inline-block;
     background-color: #fff;
     margin-bottom: 20px;
