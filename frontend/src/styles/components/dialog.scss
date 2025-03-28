@@ -392,7 +392,7 @@
     width: 600px;
 
     &:before {
-      width: 660px;
+      width: 600px;
     }
 
     .ct-grid-row-border tbody td:first-child:after {
@@ -403,7 +403,7 @@
   &:before {
     position: absolute;
     content: '';
-    width: 960px;
+    width: 900px;
     height: 100%;
     top: 0;
     left: 0;
