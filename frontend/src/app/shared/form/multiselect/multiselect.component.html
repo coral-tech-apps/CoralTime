@@ -8,21 +8,21 @@
                (keydown)="onKeyDown($event)">
     </div>
 
-    <div class="ct-select" [title]="toString(valuesAsString)">
+    <div class="ct-select" [title]="getTitle()">
         <label class="mat-select-value-text">
-            {{toString(valuesAsString)}}
+            {{getTitle()}}
             <i [ngClass]="overlayVisible ? 'fa fa-angle-up' : 'fa fa-angle-down'"></i>
         </label>
     </div>
 
-    <div *ngIf="overlayVisible" [ngClass]="['ui-multiselect-panel']" [@overlayAnimation]="{value: 'visible', params: {showTransitionParams: showTransitionOptions, hideTransitionParams: hideTransitionOptions}}" (@overlayAnimation.start)="onOverlayAnimationStart($event)"
-         [ngStyle]="panelStyle" [class]="panelStyleClass" (click)="panelClick = true">
+    <div *ngIf="overlayVisible" [ngClass]="['ui-multiselect-panel']" [@overlayAnimation]="{value: 'visible', params: {showTransitionParams: showTransition, hideTransitionParams: hideTransition}}" (@overlayAnimation.start)="onOverlayAnimationStart($event)"
+         [ngStyle]="panelStyle" [class]="panelStyleClass" (click)="panelClick = true"  (click) = "$event.stopPropagation()">
         <div class="ui-multiselect-panel ui-widget ui-widget-content ui-shadow">
             <div class="ct-search-filter" *ngIf="showFilterSearch">
                 <input #filterInput [value]="filterValue||''" [attr.aria-label]="ariaFilterLabel"
                        [attr.placeholder]="'Search'"
                        [(ngModel)]="filterValue"
-                       (input)="onFilter()">
+                       (input)="onFilterInput($event)">
                 <i class="fa fa-search"></i>
                 <i class="fa fa-times" (click)="clearFilter()"></i>
             </div>
@@ -36,7 +36,7 @@
 
             <div #slimScroll="slimScroll" slimScroll [ctSlimScrollArrows]="slimScroll" [style.max-height]="scrollHeight||'auto'">
                 <ul class="ui-multiselect-items ui-helper-reset">
-                    <li *ngFor="let option of options; let i = index" class="ui-multiselect-item" (click)="onItemClick($event,option)"
+                    <li *ngFor="let option of _filteredOptions; let i = index" class="ui-multiselect-item" (click)="onItemClick($event,option)"
                         [style.display]="isItemVisible(option) ? 'block' : 'none'" [ngClass]="{'selected':isSelected(option.value), 'ui-state-disabled': option.disabled || (maxSelectionLimitReached && !isSelected(option.value))}">
                         <div class="ui-chkbox">
                             <div class="ui-helper-hidden-accessible">

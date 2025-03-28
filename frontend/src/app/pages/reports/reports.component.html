@@ -33,7 +33,7 @@
                         <div class="ct-report-filters-block">
                             <div>
                               <!-- TODO: fix ct-multiselect with customMultiSelect-->
-                                <p-multiSelect
+                                <ct-multiselect
                                         [panelStyleClass]="'ct-reports-multiselect ct-clients' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.clientIds"
                                         (onSubmitAction)="toggleClient(reportQuery.clientIds)"
@@ -44,12 +44,13 @@
                                         [extraActionTitle]="showOnlyActiveClients ? 'Show archived' : 'Hide archived'"
                                         (onExtraAction)="toggleArchivedClients()"
                                         [maxSelectedLabels]="'1'"
-                                        [selectedItemsLabel]="'Clients ({0})'">
-                                </p-multiSelect>
+                                        [selectedItemsLabel]="'Clients ({0})'"
+                                        >
+                                </ct-multiselect>
                             </div>
                             <div>
                               <!-- TODO: fix ct-multiselect with customMultiSelect-->
-                                <p-multiSelect
+                                <ct-multiselect
                                         [panelStyleClass]="'ct-reports-multiselect ct-projects' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.projectIds"
                                         (onSubmitAction)="toggleProject(reportQuery.projectIds)"
@@ -61,11 +62,11 @@
                                         (onExtraAction)="toggleArchivedProjects()"
                                         [maxSelectedLabels]="'1'"
                                         [selectedItemsLabel]="'Projects ({0})'">
-                                </p-multiSelect>
+                                </ct-multiselect>
                             </div>
                             <div>
                               <!-- TODO: fix ct-multiselect with customMultiSelect-->
-                                <p-multiSelect
+                                <ct-multiselect
                                         *ngIf="isUsersFilterShown"
                                         [panelStyleClass]="'ct-reports-multiselect ct-users' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.memberIds"
@@ -78,7 +79,7 @@
                                         (onExtraAction)="toggleArchivedUsers()"
                                         [maxSelectedLabels]="'1'"
                                         [selectedItemsLabel]="'Users ({0})'">
-                                </p-multiSelect>
+                                </ct-multiselect>
                             </div>
                         </div>
 
@@ -167,7 +168,7 @@
                 <div class="ct-page-header">
                     <h3 class="ct-header">Details</h3>
                     <!-- TODO: fix ct-multiselect with customMultiSelect-->
-                    <p-multiSelect class="ct-columns-multiselect ct-icon ct-settings-icon" title="Columns settings"
+                    <ct-multiselect class="ct-columns-multiselect ct-icon ct-settings-icon" title="Columns settings"
                                     [styleClass]="'ct-reports-settings-multiselect'"
                                     [(ngModel)]="reportQuery.showColumnIds"
                                     (onSubmitAction)="submitSettings(reportQuery.showColumnIds)"
@@ -176,7 +177,7 @@
                                     [showFilterSearch]="false"
                                     [appendTo]="'body'"
                                     [options]="showColumnItems">
-                    </p-multiSelect>
+                    </ct-multiselect>
                     <div class="ct-btn-block">
                         <i class="ct-icon ct-export-icon" title="Export reports" area-hidden="true"
                            (click)="menu.toggleMenu()"></i>

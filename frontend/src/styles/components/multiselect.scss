@@ -37,6 +37,12 @@ $linkColor: #0099cf;
   }
 }
 
+.ui-helper-hidden-accessible{
+  position: absolute;
+  overflow: hidden;
+  display: none;
+}
+
 .ui-multiselect-panel {
   width: 260px;
 
@@ -53,6 +59,8 @@ $linkColor: #0099cf;
   }
 
   .ui-multiselect-item {
+    display: flex !important;
+    align-items: center;
     padding: 7px 5px 7px 10px;
     height: 34px;
     margin: 0 15px 0 0;
@@ -184,5 +192,6 @@ $linkColor: #0099cf;
 .ui-widget input,
 .ui-widget select,
 .ui-widget textarea {
+  user-select: none;
   font-family: inherit;
 }

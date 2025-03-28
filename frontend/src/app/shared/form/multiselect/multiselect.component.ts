@@ -48,6 +48,9 @@ export const MULTISELECT_VALUE_ACCESSOR: any = {
 })
 
 export class MultiSelectComponent extends MultiSelect {
+  showTransition = '300ms ease-out';
+  hideTransition = '300ms ease-in'
+
 	@Input() extraActionTitle: string;
 	//@Input() scrollHeight: string = '306px';
 	@Input() showSubmitButton: boolean = false;
@@ -61,8 +64,10 @@ export class MultiSelectComponent extends MultiSelect {
 
 	isSubmitted: boolean = false;
 	oldValue: any[];
+  title: string;
 
   override ngAfterViewInit(): void {
+    this._filteredOptions = this.options;
     this.renderer.removeClass(this.el.nativeElement, 'p-component');
     this.renderer.removeClass(this.el.nativeElement, 'p-multiselect');
     this.renderer.removeClass(this.el.nativeElement, 'p-inputwrapper');
@@ -71,7 +76,6 @@ export class MultiSelectComponent extends MultiSelect {
   }
 
 	override show(): void {
-    console.log('show: ', this.overlayVisible)
 		super.show();
 		this.redrowSlimScroll();
 
@@ -118,6 +122,14 @@ export class MultiSelectComponent extends MultiSelect {
     return index;
   }
 
+  isItemVisible(option: any): boolean{
+    if(option.isActive){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
 	onItemClick(event: any, option: any): void {
     if (this.isOptionDisabled(option)) {
         return;
@@ -132,8 +144,6 @@ export class MultiSelectComponent extends MultiSelect {
 
     if (selectionIndex !== -1) {
         this.value = this.value.filter((_, i) => i !== selectionIndex);
-        //this.onModelChange(this.value);
-        //this.onChange.emit({ originalEvent: event, value: this.value, itemValue: optionValue });
     } else {
         if (!this.selectionLimit || !this.value || this.value.length < this.selectionLimit) {
             this.value = [...(this.value || []), optionValue];
@@ -154,14 +164,26 @@ export class MultiSelectComponent extends MultiSelect {
     }
     else {
     }
-}
+  }
+
+  onFilterInput(): void{
+    console.log('filter value :' + this.filterValue);
+    console.log('original options: ' + this.options[0].label);
+    console.log('filtered options: ' + JSON.stringify(this._filteredOptions, null, 2));
+    this._filteredOptions = this.options.filter(option =>
+      option.label.toLowerCase().includes(this.filterValue.toLowerCase())
+    );
+  }
+
+  override isSelected(option: any): boolean{
+    return this.value?.some(val => val === option);
+  }
 
   selectNone(event: any): void {
     if (this.selectAll) {
         const toggleEvent: MultiSelectSelectAllChangeEvent = event ?
             { originalEvent: event, checked: false } :
             { originalEvent: new MouseEvent('click'), checked: false };
-
         super.onToggleAll(toggleEvent);
     }
     else {
@@ -183,8 +205,22 @@ export class MultiSelectComponent extends MultiSelect {
 		this.close($event);
 	}
 
-	override toString(value: string): string {
-		return value !== null + '' ? value : this.defaultLabel.slice(4) + ' (1)';
+	getTitle(){
+    const quantity = this.value?.length;
+    const selectItem = this.selectedItemsLabel;
+
+    if(selectItem){
+      if(quantity == 1){
+        return this.getLabelByValue(this.value[0]);
+      }
+      if(quantity > 1){
+        return selectItem.replace('{0}', quantity.toString());
+      }else{
+        return this.defaultLabel;
+      }
+    }else{
+      return this.defaultLabel;
+    }
 	}
 
 	private redrowSlimScroll(): void {
@@ -194,8 +230,7 @@ export class MultiSelectComponent extends MultiSelect {
 	}
 
   onMouseclick(event,input) {
-
-}
+  }
 
 	@HostListener('document:keydown', ['$event'])
 	override onKeyDown(event: KeyboardEvent) {

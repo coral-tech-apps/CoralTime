@@ -101,6 +101,11 @@ div.ui-shadow {
 }
 
 .ui-multiselect-panel {
+  border-radius: 5px;
+  background-color: white;
+  position: relative;
+  z-index: 9999;
+
   .slimscroll-wrapper {
     margin: 0 -10px !important;
     width: calc(100% + 24px) !important;
