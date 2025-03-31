@@ -40,35 +40,35 @@
           </ng-template>
 
           <ng-template pTemplate="body" let-project>
-              <tr>
-                  <td>
-                      <span class="ct-grid-label ct-color" [ngStyle]="{color: numberToHex(project.color)}"></span>
-                      <span (click)="openProjectDialog(project)" class="ct-grid-link-text"
-                            title="{{ project.name }}">{{ project.name }}</span>
-                  </td>
-                  <td>{{ project.clientName }}</td>
-                  <td>
-                      <div class="ct-grid-description">
-                          <ct-read-more [text]="project.description"></ct-read-more>
-                      </div>
-                  </td>
-                  <td>
-                      <span class="ct-user-circle-icon"></span>
-                      <a (click)="openProjectUsersDialog(project)" class="ct-grid-link ct-grid-count">
-                          {{project.membersCount}}
-                          <span class="ct-manage-text">Manage</span>
-                      </a>
-                  </td>
-                  <td>
-                      <a (click)="openProjectTasksDialog(project)" class="ct-grid-link ct-grid-count">
-                          {{project.tasksCount}}
-                          <span class="ct-manage-text">Manage</span>
-                      </a>
-                  </td>
-                  <td>
-                      <a (click)="openProjectSettingsDialog(project)" class="ct-grid-settings-icon"></a>
-                  </td>
-              </tr>
+            <tr>
+              <td class="ct-info-col">
+                <span class="ct-grid-label ct-color" [ngStyle]="{ color: numberToHex(project.color) }"></span>
+                <span (click)="openProjectDialog(project)" class="ct-grid-link-text"
+                      title="{{ project.name }}">{{ project.name }}</span>
+              </td>
+              <td class="ct-info-col">{{ project.clientName }}</td>
+              <td class="ct-description-col">
+                <div class="ct-grid-description">
+                  <ct-read-more [text]="project.description"></ct-read-more>
+                </div>
+              </td>
+              <td class="ct-info-col ct-small-padding" style="width: 140px;">
+                <span class="ct-user-circle-icon"></span>
+                <a (click)="openProjectUsersDialog(project)" class="ct-grid-link ct-grid-count">
+                  {{ project.membersCount }}
+                  <span class="ct-manage-text">Manage</span>
+                </a>
+              </td>
+              <td class="ct-info-col ct-small-padding" style="width: 130px;">
+                <a (click)="openProjectTasksDialog(project)" class="ct-grid-link ct-grid-count">
+                  {{ project.tasksCount }}
+                  <span class="ct-manage-text">Manage</span>
+                </a>
+              </td>
+              <td class="ct-small-padding" style="width: 90px;">
+                <a (click)="openProjectSettingsDialog(project)" class="ct-grid-settings-icon"></a>
+              </td>
+            </tr>
           </ng-template>
       </p-table>
   </div>

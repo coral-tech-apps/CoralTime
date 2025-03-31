@@ -271,7 +271,14 @@ h5 {
   position: absolute;
 }
 
+.p-datatable-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
 p-table div div{
+  --p-datatable-header-cell-selected-background: white !important;
+  --p-datatable-header-cell-selected-color: black !important;
   overflow: visible !important;
 }
 

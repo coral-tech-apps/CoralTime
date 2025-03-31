@@ -71,7 +71,7 @@ export class SelectComponent implements ControlValueAccessor {
 	}
 
 	getSelectedOptionsText() {
-		return this.selectedObject ? this.getDisplayedName(this.selectedObject) : this.defaultValue;
+    return this.selectedObject ? this.getDisplayedName(this.selectedObject) : this.defaultValue;
 	}
 
 	selectOption(option: any, close: boolean = true) {
@@ -111,7 +111,8 @@ export class SelectComponent implements ControlValueAccessor {
 	}
 
 	getDisplayedName(option: any) {
-		return option ? (this.displayName ? option[this.displayName] : option) : '';
+    const result = option ? (this.displayName ? option[this.displayName] : option) : '';
+		return result.name;
 	}
 
 	trackByFn(index: number, item: any) {

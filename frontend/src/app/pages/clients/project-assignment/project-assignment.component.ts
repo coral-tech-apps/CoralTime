@@ -216,7 +216,7 @@ export class ClientProjectAssignmentComponent implements OnInit {
 	private changeScrollableContainer(): void {
 		const HEIGHT = 325;
 		let grid = this.gridContainer.nativeElement;
-		let wrappers = grid.querySelectorAll('.ui-datatable-scrollable-body');
+		let wrappers = grid.querySelectorAll('.p-datatable-tbody');
 
 		if (wrappers.length === 1) {
 			return;

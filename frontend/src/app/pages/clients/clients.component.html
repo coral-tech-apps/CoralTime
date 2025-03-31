@@ -43,7 +43,7 @@
 
           <ng-template pTemplate="body" let-client>
               <tr>
-                  <td>
+                  <td class="ct-info-col">
                       <span (click)="openClientDialog(client)" class="ct-grid-link-text"
                             title="{{ client.name }}">{{ client.name }}</span>
                   </td>
@@ -53,7 +53,7 @@
                           <ct-read-more [text]="client.description"></ct-read-more>
                       </div>
                   </td>
-                  <td>
+                  <td class="ct-info-col">
                       <a (click)="openProjectAssignmentDialog(client)" class="ct-grid-link ct-grid-count">
                           {{ client.projectsCount }}
                           <span class="ct-manage-text">Manage</span>

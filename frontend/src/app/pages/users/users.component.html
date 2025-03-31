@@ -46,7 +46,7 @@
 
           <ng-template pTemplate="body" let-user>
               <tr>
-                  <td>
+                  <td class="ct-info-col">
                       <span (click)="openUserDialog(user)" class="ct-grid-userpic">
                           <ct-user-pic [urlIcon]="user.urlIcon"></ct-user-pic>
                       </span>
@@ -55,9 +55,9 @@
                       </span>
                   </td>
                   <td>{{user.email}}</td>
-                  <td>{{user.userName}}</td>
-                  <td><span class="ct-lowercase">{{user.role}}</span></td>
-                  <td>
+                  <td class="ct-info-col">{{user.userName}}</td>
+                  <td class="ct-info-col"><span class="ct-lowercase">{{user.role}}</span></td>
+                  <td class="ct-info-col">
                       <a *ctIsGranted="'EditMember'" class="ct-grid-link ct-grid-count" (click)="openProjectAssignmentDialog(user)">
                           {{user.projectsCount}}
                           <span class="ct-manage-text">Manage</span>

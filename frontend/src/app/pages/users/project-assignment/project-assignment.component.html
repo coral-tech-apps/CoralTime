@@ -12,7 +12,7 @@
       </div>
   </div>
 
-  <div class="ct-grid">
+  <div class="ct-grid" #grid>
       <div class="ct-popup-table-wrapper" (window:resize)="onResize()">
           <!-- Assigned Projects -->
           <p-table #assignedProjectsTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
@@ -35,7 +35,7 @@
                   <tr>
                       <td>{{ userProject.projectName }}</td>
                       <td>
-                          <ct-select *ngIf="userProject.id" [(ngModel)]="userProject.role"
+                          <ct-select class="ct-users-project-edit-role ct-select-ellipse ng-untouched ng-valid ng-star-inserted ng-dirty" *ngIf="userProject.id" [(ngModel)]="userProject.role"
                                      [options]="projectRoles" (change)="changeRole(userProject)">
                           </ct-select>
                           <ct-select *ngIf="!userProject.id" [(ngModel)]="userProject.role"

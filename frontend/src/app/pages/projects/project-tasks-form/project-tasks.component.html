@@ -16,7 +16,7 @@
                          (onTaskSubmitted)="onTaskSubmitted($event)"
                          (onHeightChanged)="onFormHeightChanged($event)"></ct-project-tasks-form>
 
-  <div class="ct-grid">
+  <div class="ct-grid" #grid>
       <div class="ct-popup-table-wrapper" (window:resize)="onResize()">
           <p-table #tableRef class="ct-grid-container ct-grid-row-border"
                    [value]="tasksPagedResult?.data"
