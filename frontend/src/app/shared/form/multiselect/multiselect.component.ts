@@ -1,5 +1,7 @@
 import {
 	Component, Input, Output, EventEmitter, forwardRef, ViewChild, HostListener,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { trigger, state, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -47,7 +49,7 @@ export const MULTISELECT_VALUE_ACCESSOR: any = {
     standalone: false
 })
 
-export class MultiSelectComponent extends MultiSelect {
+export class MultiSelectComponent extends MultiSelect implements OnChanges {
   showTransition = '300ms ease-out';
   hideTransition = '300ms ease-in'
 
@@ -65,6 +67,12 @@ export class MultiSelectComponent extends MultiSelect {
 	isSubmitted: boolean = false;
 	oldValue: any[];
   title: string;
+
+  override ngOnChanges(changes: SimpleChanges): void {
+    if(changes['options'] && this.options && this.options.length){
+      this._filteredOptions = this.options;
+    }
+  }
 
   override ngAfterViewInit(): void {
     this._filteredOptions = this.options;
@@ -86,13 +94,11 @@ export class MultiSelectComponent extends MultiSelect {
 	}
 
 	override hide(): void {
-    console.log('hide: ', this.overlayVisible)
 		super.hide();
 		this.clearFilter();
 
 		if (this.showSubmitButton && !this.isSubmitted) {
 			this.value = this.oldValue;
-			//this.updateLabel();
 		}
 	}
 
@@ -167,9 +173,6 @@ export class MultiSelectComponent extends MultiSelect {
   }
 
   onFilterInput(): void{
-    console.log('filter value :' + this.filterValue);
-    console.log('original options: ' + this.options[0].label);
-    console.log('filtered options: ' + JSON.stringify(this._filteredOptions, null, 2));
     this._filteredOptions = this.options.filter(option =>
       option.label.toLowerCase().includes(this.filterValue.toLowerCase())
     );

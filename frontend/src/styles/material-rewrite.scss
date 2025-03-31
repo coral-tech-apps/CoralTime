@@ -85,7 +85,7 @@
   }
 }
 
-.ui-datatable, .ui-cell-data {
+.p-datatable, .ui-cell-data {
   font-family: $baseFontFamily !important;
 }
 
@@ -103,7 +103,7 @@ div.ui-shadow {
 .ui-multiselect-panel {
   border-radius: 5px;
   background-color: white;
-  position: relative;
+  position: absolute;
   z-index: 9999;
 
   .slimscroll-wrapper {

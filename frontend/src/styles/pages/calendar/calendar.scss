@@ -206,7 +206,7 @@ $titleDayHeight: 145px;
   box-sizing: border-box;
   border: 2px solid #fff;
   word-wrap: break-word;
-  z-index: 100;
+  z-index: 1;
 
   @media (min-width: 1300px) and (max-width: 1380px) {
     padding: 15px 15px 30px;
@@ -794,7 +794,8 @@ $titleDayHeight: 145px;
 }
 
 .ct-calendar-multiselect.ui-multiselect-panel > div {
-  margin-left: 19px;
+  top: 4px;
+  right: 120px;
   font-family: inherit;
 }
 

@@ -94,10 +94,14 @@ $linkColor: #0099cf;
   }
 
   .ui-chkbox-box {
+    height: 18px;
+    width: 18px;
+
     &.ui-state-focus {
       box-shadow: none;
 
       .ui-chkbox-icon {
+
         border-color: $linkColor;
       }
     }
