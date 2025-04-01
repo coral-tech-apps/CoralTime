@@ -50,7 +50,7 @@
                       </td>
                       <td>
                           <a *ngIf="projectTask.projectId" class="ct-grid-link ct-grid-delete"
-                             (click)="removeTask(projectTask)">
+                             (click)="removeTask(projectTask, $event.target)">
                               <i class="material-icons" aria-hidden="true">clear</i>
                           </a>
                       </td>

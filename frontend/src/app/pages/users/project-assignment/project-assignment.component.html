@@ -36,14 +36,14 @@
                       <td>{{ userProject.projectName }}</td>
                       <td>
                           <ct-select class="ct-users-project-edit-role ct-select-ellipse ng-untouched ng-valid ng-star-inserted ng-dirty" *ngIf="userProject.id" [(ngModel)]="userProject.role"
-                                     [options]="projectRoles" (change)="changeRole(userProject)">
+                                     [options]="projectRoles" (change)="changeRole(userProject, $event.source.el.nativeElement)">
                           </ct-select>
                           <ct-select *ngIf="!userProject.id" [(ngModel)]="userProject.role"
-                                     [options]="projectRoles" (change)="assignToPublic(userProject)">
+                                     [options]="projectRoles" (change)="assignToPublic(userProject, $event.source.el.nativeElement)">
                           </ct-select>
                       </td>
                       <td>
-                          <a *ngIf="userProject.isProjectPrivate" (click)="removeFromUser(userProject)">
+                          <a *ngIf="userProject.isProjectPrivate" (click)="removeFromUser(userProject, $event.target)">
                               <i class="material-icons">clear</i>
                           </a>
                           <span *ngIf="!userProject.isProjectPrivate">Public</span>
@@ -72,7 +72,7 @@
                   <tr>
                       <td>{{ project.name }}</td>
                       <td>
-                          <span class="ct-grid-button" (click)="addToUser(project)">Assign to User</span>
+                          <span class="ct-grid-button" (click)="addToUser(project, $event.target)">Assign to User</span>
                       </td>
                   </tr>
               </ng-template>

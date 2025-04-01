@@ -176,6 +176,9 @@ export class ProjectUsersComponent implements OnInit {
 			this.notAssignedUsersLastEvent = event;
 		}
 		if (updatePage) {
+      if(!this.notAssignedUsersLastEvent){
+        return;
+      }
 			this.updatingNotAssignedUsersGrid = updatePage;
 			this.notAssignedUsersLastEvent.first = 0;
 		}

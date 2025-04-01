@@ -57,7 +57,7 @@
                                      [displayName]="'name'" [trackBy]="'id'"
                                      [container]="assignedTable.el.nativeElement"
                                      [(ngModel)]="userProject.role"
-                                     (change)="changeRole(userProject, $event)"
+                                     (change)="changeRole(userProject, $event.source.el.nativeElement)"
                                      [options]="projectRoles">
                           </ct-select>
                           <ct-select *ngIf="canAssignProjectManager && !userProject.id"
@@ -65,7 +65,7 @@
                                      [name]="'role'"
                                      [displayName]="'name'" [trackBy]="'id'"
                                      [(ngModel)]="userProject.role"
-                                     (change)="assignToPublic(userProject, $event)"
+                                     (change)="assignToPublic(userProject, $event.source.el.nativeElement)"
                                      [options]="projectRoles">
                           </ct-select>
                           <span *ngIf="!canAssignProjectManager">{{userProject.role.name}}</span>
@@ -77,7 +77,7 @@
                                   || (!canAssignProjectManager
                                   && userProject.roleName !== 'manager'))"
                              class="ct-grid-link ct-grid-delete"
-                             (click)="removeFromProject(userProject, $event)">
+                             (click)="removeFromProject(userProject, $event.target)">
                               <i class="material-icons" aria-hidden="true">clear</i>
                           </a>
                           <span *ngIf="!userProject.id">Public</span>
