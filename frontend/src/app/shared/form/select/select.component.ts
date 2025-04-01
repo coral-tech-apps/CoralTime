@@ -111,8 +111,12 @@ export class SelectComponent implements ControlValueAccessor {
 	}
 
 	getDisplayedName(option: any) {
+    console.log(option);
     const result = option ? (this.displayName ? option[this.displayName] : option) : '';
-		return result.name;
+    if(result.name){
+      return result.name;
+    }
+    return result;
 	}
 
 	trackByFn(index: number, item: any) {

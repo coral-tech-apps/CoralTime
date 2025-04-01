@@ -89,7 +89,7 @@
   font-family: $baseFontFamily !important;
 }
 
-.mat-list .mat-list-item .mat-list-item-content, .mat-nav-list .mat-list-item .mat-list-item-content {
+.mat-mdc-list .mat-mdc-list-item .mat-mdc-list-item-unscoped-content, .mat-nav-list .mat-list-item .mat-list-item-content {
   font-family: $baseFontFamily;
   font-size: $baseFont;
 }
@@ -113,6 +113,7 @@ div.ui-shadow {
 }
 
 .ct-select-option {
+  --mdc-list-list-item-one-line-container-height: 36px;
   position: relative;
   line-height: 22px;
 }

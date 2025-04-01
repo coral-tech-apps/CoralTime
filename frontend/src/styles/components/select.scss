@@ -23,6 +23,9 @@
     overflow: hidden;
 
     .ct-label-item {
+      position: relative;
+      padding: 0 0 0 10px;
+      font-weight: 700;
       cursor: pointer;
     }
 
@@ -58,16 +61,18 @@
       }
     }
 
-    .mat-list-item-content {
+    .mat-mdc-list-item-unscoped-content {
       min-height: 35px;
-      padding: 10px 45px 10px 30px !important;
+      //padding: 10px 45px 10px 30px !important;
       color: $formInputColor;
       cursor: pointer;
     }
 
-    .ct-select-option:hover, .ct-select-option-selected {
-      &:before {
-        background: $selectItemBgHover;
+    .ct-select-option:hover, .ct-select-option-selected  {
+        --mdc-list-list-item-hover-label-text-color: #8994b3;
+        &:before {
+        background: $selectItemBgHover !important;
+        opacity: 1;
       }
     }
 
