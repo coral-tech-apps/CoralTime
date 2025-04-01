@@ -20,7 +20,7 @@ import { TableModule } from 'primeng/table';
 export class ClientProjectAssignmentComponent implements OnInit {
 	@Input() client: Client;
 	@ViewChild('grid', { static: true }) gridContainer: ElementRef;
-  @ViewChild('assignTable') assignTable: Table;
+  @ViewChild('assignedTable') assignTable: Table;
   @ViewChild('notAssignTable') notAssignTable: Table;
 
 	filterStr: string = '';

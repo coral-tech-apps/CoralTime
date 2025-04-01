@@ -111,7 +111,6 @@ export class SelectComponent implements ControlValueAccessor {
 	}
 
 	getDisplayedName(option: any) {
-    console.log(option);
     const result = option ? (this.displayName ? option[this.displayName] : option) : '';
     if(result.name){
       return result.name;

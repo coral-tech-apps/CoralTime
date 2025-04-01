@@ -16,6 +16,7 @@ import { PagedResult } from '../../../services/odata';
 import { Subject } from 'rxjs';
 import { ArrayUtils } from '../../../core/object-utils';
 import { ROWS_ON_PAGE } from '../../../core/constant.service';
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'ct-project-members',
@@ -26,6 +27,8 @@ import { ROWS_ON_PAGE } from '../../../core/constant.service';
 export class ProjectUsersComponent implements OnInit {
 	@Input() project: Project;
 	@ViewChild('grid', { static: true }) gridContainer: ElementRef;
+  @ViewChild('assignedTable') assignTable: Table;
+  @ViewChild('notAssignTable') notAssignTable: Table;
 
 	authUser: AuthUser;
 	canAssignProjectManager: boolean = false;
@@ -197,6 +200,14 @@ export class ProjectUsersComponent implements OnInit {
 			this.isAllNotAssignedUsers = true;
 		}
 	}
+
+  //filtration
+  onGlobalFilter(value: string){
+    this.assignTable.filterGlobal(value, 'contains');
+    if(this.notAssignTable){
+     this.notAssignTable.filterGlobal(value, 'contains');
+    }
+  }
 
 	// GENERAL
 

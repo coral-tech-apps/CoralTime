@@ -6,15 +6,15 @@
 
   <div class="ct-search-container">
       <div class="ct-grid-search-filter">
-        <!--add GlobFilet to comonent filterGlobal(value, 'contains')-->
-          <input class="ct-input-element" #gb placeholder="Search to add or remove teammates" [(ngModel)]="filterStr">
+          <!--add GlobFilet to comonent filterGlobal(value, 'contains')-->
+          <input class="ct-input-element" #gb placeholder="Search to add or remove teammates" [(ngModel)]="filterStr" (input)="onGlobalFilter(gb.value)">
           <i class="ct-search-icon"></i>
       </div>
   </div>
 
   <div class="ct-grid" #grid>
       <div class="ct-popup-table-wrapper" (window:resize)="onResize()">
-          <p-table #table1 class="ct-grid-container ct-grid-row-border ct-grid-blue"
+          <p-table #assignedTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
                    *ngIf = "true"
                    [value]="assignedUsersPagedResult?.data"
                    scrollable="true" [sortField]="'fullName'"
@@ -55,7 +55,7 @@
                                      class="ct-users-project-edit-role ct-select-ellipse"
                                      [name]="'role'"
                                      [displayName]="'name'" [trackBy]="'id'"
-                                     [container]="table1.el.nativeElement"
+                                     [container]="assignedTable.el.nativeElement"
                                      [(ngModel)]="userProject.role"
                                      (change)="changeRole(userProject, $event)"
                                      [options]="projectRoles">
@@ -86,7 +86,7 @@
               </ng-template>
           </p-table>
 
-          <p-table *ngIf="project.isPrivate" #table2 class="ct-grid-container ct-grid-row-border"
+          <p-table *ngIf="project.isPrivate" #notAssignTable class="ct-grid-container ct-grid-row-border"
                    [value]="notAssignedUsersPagedResult?.data"
                    scrollable="true" [sortField]="'fullName'"
                    [responsive]="true" [lazy]="true"
