@@ -1,9 +1,9 @@
 @import '../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables';
 
-.snack-bar-success {
-  background-color: $brand-success !important;
+.mat-mdc-snack-bar-container.snack-bar-success {
+  --mdc-snackbar-container-color: #198754 !important;
 }
 
-.snack-bar-danger {
-  background-color: $brand-danger !important;
+.mat-mdc-snack-bar-container.snack-bar-danger {
+  --mdc-snackbar-container-color: #dc3545 !important;
 }
