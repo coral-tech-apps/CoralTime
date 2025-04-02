@@ -346,13 +346,10 @@ namespace CoralTime
                 foreach (var policyName in Constants.ApplicationsPolicies)
                 {
                     var policyRoles = Constants.RolePolicies.Where(x => x.Value.Contains(policyName)).Select(x => x.Key).ToArray();
-                    foreach(var role in policyRoles)
+                    options.AddPolicy(policyName, policy =>
                     {
-                        options.AddPolicy(policyName, policy =>
-                        {
-                            policy.RequireClaim(ClaimTypes.Role, role);
-                        });
-                    }
+                        policy.RequireClaim(ClaimTypes.Role, policyRoles);
+                    });
                 }
             });
         }

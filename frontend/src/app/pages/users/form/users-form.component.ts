@@ -106,7 +106,7 @@ export class UsersFormComponent implements OnInit {
 		this.user = user ? user : new User();
 		this.submitButtonText = this.user.id ? 'Save' : 'Create';
 		this.model = FormUser.fromUser(this.user);
-		this.roles = ['admin', 'user'];
+		this.roles = ['admin', 'user', 'pm'];
 		//this.roles = Object.keys(this.authService.roles);
 		this.roleModel = this.model.role;
 		this.dialogHeader = this.user.id ? 'Edit' : this.translatePipe.transform('Create New User');

@@ -1,6 +1,7 @@
 ﻿{
   "AddTasks": true,
   "AddAdmins": true,
+  "AddProjectManagers": true,
   "AddMembers": true,
   "AddClients": true,
   "AddProjects": true,
@@ -45,19 +46,21 @@
         "IsActive": "true"
       }
     ],
+    "ProjectManagers": [
+      {
+        "UserName": "pm",
+        "FullName": "Marx, Karl",
+        "Password": "password",
+        "Email": "CoralTime.pm@mail.com",
+        "IsActive": "true"
+      }
+    ],
     "Members": [
       {
         "UserName": "user",
         "FullName": "Doe, Jane",
         "Password": "password",
         "Email": "CoralTime.user@mail.com",
-        "IsActive": "true"
-      },
-      {
-        "UserName": "pm",
-        "FullName": "Marx, Karl",
-        "Password": "password",
-        "Email": "CoralTime.pm@mail.com",
         "IsActive": "true"
       }
     ]

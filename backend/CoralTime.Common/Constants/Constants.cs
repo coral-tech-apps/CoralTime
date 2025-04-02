@@ -12,13 +12,15 @@ namespace CoralTime.Common.Constants
 
         public const string UserTypeAdmins = "Admins";
         public const string UserTypeMembers = "Members";
+        public const string UserTypeProjectManagers = "ProjectManagers";
 
         #region ApplicationRole
 
         public const string ApplicationRoleAdmin = "admin";
+        public const string ApplicationRoleProjectManager = "pm";
         public const string ApplicationRoleUser = "user";
 
-        public static readonly IEnumerable<string> ApplicationRoles = new[] {  ApplicationRoleUser, ApplicationRoleAdmin };
+        public static readonly IEnumerable<string> ApplicationRoles = new[] {  ApplicationRoleUser, ApplicationRoleAdmin, ApplicationRoleProjectManager };
 
         public const string PolicyAuthenticatedUser = "AuthenticatedUser";
         public const string PolicyViewProject = "ViewProject";
@@ -63,6 +65,27 @@ namespace CoralTime.Common.Constants
             PolicyManagesAllProjects
         };
 
+        public static readonly IEnumerable<string> PMPolicies = new[]
+        {   //TODO give right policy
+            PolicyAuthenticatedUser,
+            PolicyViewProject,
+            PolicyAddProject,
+            PolicyEditProject,
+            PolicyChangeProjectStatus,
+            PolicyAssignProjectManager,
+            PolicyAssignProjectMember,
+            //PolicyViewClient,
+            //PolicyAddClient,
+            //PolicyEditClient,
+            PolicyViewTask,
+            PolicyAddTask,
+            PolicyEditTask,
+            //PolicyViewMember,
+            //PolicyAddMember,
+            //PolicyEditMember,
+            PolicyManagesAllProjects
+        };
+
         public static readonly IEnumerable<string> UserPolicies = new[]
         {
             PolicyAuthenticatedUser,
@@ -71,7 +94,8 @@ namespace CoralTime.Common.Constants
         public static readonly IDictionary<string, IEnumerable<string>> RolePolicies = new Dictionary<string, IEnumerable<string>>()
         {
             {ApplicationRoleAdmin, AdminPolicies},
-            {ApplicationRoleUser, UserPolicies }
+            {ApplicationRoleProjectManager, PMPolicies},
+            {ApplicationRoleUser, UserPolicies}
         };
 
         public static readonly IEnumerable<string> ApplicationsPolicies = new[]

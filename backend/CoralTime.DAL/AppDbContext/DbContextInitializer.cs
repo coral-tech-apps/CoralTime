@@ -123,6 +123,11 @@ namespace CoralTime.DAL
                     await InitializeUsers(Constants.UserTypeAdmins, Constants.ApplicationRoleAdmin);
                 }
 
+                if (bool.Parse(Configuration["AddProjectManagers"]))
+                {
+                    await InitializeUsers(Constants.UserTypeProjectManagers, Constants.ApplicationRoleProjectManager);
+                }
+
                 if (bool.Parse(Configuration["AddMembers"]))
                 {
                     await InitializeUsers(Constants.UserTypeMembers, Constants.ApplicationRoleUser);

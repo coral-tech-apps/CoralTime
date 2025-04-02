@@ -6,6 +6,7 @@ using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -43,9 +44,7 @@ namespace CoralTime.Services
             resultClaims.Add(new Claim(type: Constants.JwtRefreshTokenLifeTimeClaimType, value: _config["SlidingRefreshTokenLifetime"]));
 
             var userRole = user.Role;
-            var isAdmin = userRole == Constants.ApplicationRoleAdmin;
-            var policy = isAdmin ? Constants.AdminPolicies : Constants.UserPolicies;
-            var jsonPolicy = JsonConvert.SerializeObject(policy);
+            var jsonPolicy = GetPolicies(userRole);
             resultClaims.Add(new Claim(type: Constants.PoliciesClaimType, value: jsonPolicy));
 
             context.IssuedClaims = resultClaims;
@@ -62,6 +61,24 @@ namespace CoralTime.Services
                     context.IsActive = user.IsActive;
                 }
             }
+        }
+
+        private string GetPolicies(string role)
+        {
+            IEnumerable<string> policy = null;
+            switch (role)
+            {
+                case Constants.ApplicationRoleAdmin:
+                    policy = Constants.AdminPolicies;
+                    break;
+                case Constants.ApplicationRoleProjectManager:
+                    policy = Constants.PMPolicies;
+                    break;
+                case Constants.ApplicationRoleUser:
+                    policy = Constants.UserPolicies;
+                    break;
+            }
+            return JsonConvert.SerializeObject(policy);
         }
     }
 }
