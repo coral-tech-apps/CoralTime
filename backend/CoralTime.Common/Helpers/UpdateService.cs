@@ -16,9 +16,18 @@ namespace CoralTime.Common.Helpers
                 if (jsonPropertyName != "id")
                 {
                     JsonElement jsonProperty;
+                    
                     if (delta.TryGetProperty(jsonPropertyName, out jsonProperty))
                     {
-                        propertyInfo.SetValue(currentObject, jsonProperty.GetValue(propertyInfo.PropertyType));
+                        if(jsonProperty.ValueKind == JsonValueKind.String && propertyInfo.PropertyType == typeof(int))
+                        {
+                            int intValue = int.Parse(jsonProperty.GetString());
+                            propertyInfo.SetValue(currentObject, intValue);
+                        }
+                        else
+                        {
+                            propertyInfo.SetValue(currentObject, jsonProperty.GetValue(propertyInfo.PropertyType));
+                        }
                     }
                 }
             }

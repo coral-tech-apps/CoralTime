@@ -97,7 +97,7 @@
       display: none;
     }
 
-    .mat-form-field-wrapper {
+    .mat-mdc-text-field-wrapper {
       margin: 0;
       padding: 0;
     }
@@ -469,13 +469,13 @@
 
   .ct-popup-table-wrapper .ct-grid-container .p-datatable div table{
     --p-datatable-header-cell-selected-background: white !important;
-    --p-datatable-header-cell-selected-color: black !important;
+    --p-datatable-header-cell-selected-color: $black !important;
 
   }
 
   .ct-popup-table-wrapper .ct-grid-blue .p-datatable div table{
     --p-datatable-header-cell-selected-background: $main-blue !important;
-    --p-datatable-header-cell-selected-color: black;
+    --p-datatable-header-cell-selected-color: $black;
     --p-datatable-header-cell-background: $main-blue;
     --p-datatable-row-background: $main-blue;
     background: $main-blue;
@@ -554,67 +554,77 @@
     opacity: 0.7;
   }
 
-  .mat-form-field {
+  .mat-mdc-form-field {
     width: 35px;
     font-size: $formControlFontSize;
 
-    &.mat-form-field-should-float {
-      .mat-form-field-label {
-        display: none;
-      }
-    }
-
-    .mat-form-field-required-marker {
+    &.mdc-text-field--label-floating .mdc-floating-label {
       display: none;
     }
 
-    .mat-form-field-infix {
-      padding: 0;
-      border: 0;
+    .mat-mdc-input-element{
+      background-color: white !important;
     }
 
-    .mat-form-field-label-wrapper {
-      padding: 0;
-      top: 0;
+    .mat-mdc-form-field-required-marker {
+      display: none;
     }
 
-    .mat-form-field-label {
+    .mat-mdc-form-field-infix {
+      padding: 0;
+      border-top: 0;
+      min-height: auto;
+    }
+
+    .mdc-floating-label {
       top: 0;
+      padding: 0;
+      width: 100%;
       text-align: center;
       color: $main-blue;
     }
 
     &.mat-form-field-disabled {
-      .mat-form-field-label {
-        opacity: .7;
-        color: rgba(0, 0, 0, .38);
+      .mdc-floating-label {
+        opacity: 0.7;
+        color: rgba(0, 0, 0, 0.38);
+      }
+
+      .mdc-text-field__input::placeholder {
+        color: transparent;
       }
     }
 
-    .mat-form-field-underline {
-      height: 0;
-      overflow: hidden;
+    .mdc-text-field {
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-top: 1px solid $main-blue;
+      }
+
+      &.mdc-text-field--disabled::after {
+        border-top-style: dotted;
+        background-size: 2px 1px;
+      }
+    }
+
+    .mdc-line-ripple {
+      display: none;
+    }
+
+    &.mat-mdc-form-field-error .mdc-text-field::after {
+      border-color: #f44336;
     }
   }
 
-  .mat-form-field-underline {
-    border: none;
-    border-top: 1px solid $main-blue;
-    bottom: 0;
-    left: 0;
-
-    .mat-form-field-ripple {
-      height: 1px;
+  .mdc-text-field__input {
+    text-align: center;
+    &::placeholder {
+      color: transparent;
     }
-
-    &.mat-disabled {
-      background-size: 2px 1px;
-    }
-  }
-
-  .mat-form-field-invalid .mat-form-field-underline {
-    display: block;
-    border-color: #f44336;
   }
 
   .mat-radio-label {

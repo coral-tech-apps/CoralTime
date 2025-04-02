@@ -15,65 +15,70 @@
   padding: 30px !important;
 }
 
-.mat-mdc-dialog-surface{
+.mat-mdc-dialog-surface {
   overflow-y: visible !important;
   box-shadow: none !important;
 }
 
-.mat-select-underline {
+.mat-mdc-select-underline {
   display: none;
 }
 
-.mat-menu-item.ct-disabled {
-  color: rgba(0, 0, 0, .38);
+.mat-mdc-menu-item.ct-disabled {
+  color: rgba(0, 0, 0, 0.38);
   pointer-events: none;
   cursor: default;
 }
 
-.mat-checkbox-indeterminate.mat-accent, .mat-checkbox-checked.mat-accent {
-  .mat-checkbox-background {
-    background-color: $main-blue;
+.mat-mdc-checkbox:not(.mat-mdc-checkbox-disabled).mat-mdc-accent {
+  .mat-mdc-checkbox-ripple .mat-mdc-ripple-element {
+    background-color: rgba($main-blue, 0.26) !important;
   }
 }
 
-.mat-checkbox:not(.mat-checkbox-disabled).mat-accent {
-  .mat-checkbox-ripple .mat-ripple-element {
-    background-color: rgba($main-blue, .26);
+.mat-mdc-checkbox.mat-mdc-checkbox-checked {
+  .mdc-checkbox__background {
+    background-color: $main-blue !important;
+    --mdc-checkbox-selected-checkmark-color: white !important;
+    --mdc-checkbox-selected-icon-color: white !important;
+    --mdc-checkbox-selected-hover-icon-color: white !important;
   }
 }
 
-.mat-radio-button.mat-accent {
-  &.mat-radio-checked .mat-radio-outer-circle {
-    border-color: $main-blue;
+.mat-mdc-radio-button.mat-accent {
+  --mdc-radio-selected-icon-color: #00a0de !important; //for some reason $main-blue doesnt work
+  --mdc-radio-selected-hover-icon-color: #00a0de !important;
+  --mdc-radio-selected-pressed-icon-color: #00a0de !important;
+  --mdc-radio-selected-focus-icon-color: #00a0de !important;
+
+  .mdc-radio__ripple .mat-ripple-element {
+    background-color: rgba($main-blue, 0.26) !important;
   }
 
-  .mat-radio-inner-circle {
-    background-color: $main-blue;
-  }
-
-  .mat-radio-ripple .mat-ripple-element {
-    background-color: rgba($main-blue, 0.26);
-  }
-
-  .mat-radio-outer-circle {
+  .mdc-radio__outer-circle {
     border: 1px solid #ccc;
-    background: #fff;
+    background: #fff !important;
   }
 }
 
-.mat-form-field-underline .mat-form-field-ripple {
+.mat-mdc-form-field-underline .mat-mdc-form-field-ripple {
   background-color: $main-blue;
 }
 
-.mat-select {
-  &:focus:not(.mat-select-disabled) {
-    .mat-select-arrow, .mat-select-trigger {
+.mat-mdc-form-field-subscript-wrapper.mat-mdc-form-field-bottom-align{
+  display: none !important;
+}
+
+.mat-mdc-select {
+  &:focus:not(.mat-mdc-select-disabled) {
+    .mat-mdc-select-arrow,
+    .mat-mdc-select-trigger {
       color: $main-blue;
     }
   }
 }
 
-.mat-option.mat-selected {
+.mat-mdc-option.mat-mdc-option-selected {
   color: $main-blue;
 }
 
@@ -85,11 +90,13 @@
   }
 }
 
-.p-datatable, .ui-cell-data {
+.p-datatable,
+.ui-cell-data {
   font-family: $baseFontFamily !important;
 }
 
-.mat-mdc-list .mat-mdc-list-item .mat-mdc-list-item-unscoped-content, .mat-nav-list .mat-list-item .mat-list-item-content {
+.mat-mdc-list .mat-mdc-list-item .mat-mdc-list-item-unscoped-content,
+.mat-mdc-nav-list .mat-mdc-list-item .mat-mdc-list-item-content {
   font-family: $baseFontFamily;
   font-size: $baseFont;
 }
@@ -118,7 +125,7 @@ div.ui-shadow {
   line-height: 22px;
 }
 
-.mat-list-item-content {
+.mat-mdc-list-item-content {
   display: block !important;
 
   label {
@@ -131,24 +138,25 @@ div.ui-shadow {
   display: block !important;
 }
 
-.mat-checkbox {
-  .mat-checkbox-frame {
+.mat-mdc-checkbox {
+  .mdc-checkbox__background {
     border: 1px solid #ccc;
     border-radius: 0;
   }
 
-  &.mat-checkbox-checked {
-    .mat-checkbox-frame {
+  &.mat-mdc-checkbox-checked {
+    .mdc-checkbox__background {
       border-color: #099cce;
     }
   }
 }
 
-.mat-checkbox-inner-container {
+.mdc-checkbox__native-control {
   background: #fff;
 }
 
-.mat-checkbox-label, .mat-radio-label-content {
+.mdc-label,
+.mat-mdc-radio-label-content {
   font-family: $baseFontFamily;
 }
 
@@ -160,7 +168,7 @@ div.ui-shadow {
   max-width: 95vw !important;
 }
 
-.mat-list-item {
+.mat-mdc-list-item {
   height: auto !important;
 }
 
