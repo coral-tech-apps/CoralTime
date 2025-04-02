@@ -45,8 +45,8 @@
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body" let-item>
-    <tr>
+  <ng-template pTemplate="body" let-item let-i="rowIndex">
+    <tr [ngClass]="{'p-datatable-even' : i % 2 == 0}">
       <td class="ct-cell-project">
         <div class="ct-grid-project">
           <h3 *ngIf="groupById != 1">{{ item.projectName }}</h3>

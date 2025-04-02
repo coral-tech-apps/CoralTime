@@ -38,7 +38,7 @@
                           <ct-select class="ct-users-project-edit-role ct-select-ellipse ng-untouched ng-valid ng-star-inserted ng-dirty" *ngIf="userProject.id" [(ngModel)]="userProject.role"
                                      [options]="projectRoles" (change)="changeRole(userProject, $event.source.el.nativeElement)">
                           </ct-select>
-                          <ct-select *ngIf="!userProject.id" [(ngModel)]="userProject.role"
+                          <ct-select class="ct-users-project-edit-role ct-select-ellipse ng-untouched ng-valid ng-star-inserted ng-dirty" *ngIf="!userProject.id" [(ngModel)]="userProject.role"
                                      [options]="projectRoles" (change)="assignToPublic(userProject, $event.source.el.nativeElement)">
                           </ct-select>
                       </td>
