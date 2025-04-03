@@ -9,7 +9,7 @@
            [value]="pagedResult?.data"
 
            scrollable="true" [sortField]="'date'"
-           [responsive]="true" [lazy]="true"
+           [lazy]="true"
            [loading]="!isAllActions"
            (onLazyLoad)="loadLazy($event)"
            (onMoreContent)="loadLazy()"

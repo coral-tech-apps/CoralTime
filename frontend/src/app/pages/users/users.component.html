@@ -23,7 +23,7 @@
                [value]="pagedResult?.data"
 
                scrollable="true" [sortField]="'fullName'"
-               [responsive]="true" [lazy]="true"
+               [lazy]="true"
                [loading]="!isAllUsers"
                (onLazyLoad)="loadLazy($event)"
                (onMoreContent)="loadLazy()"

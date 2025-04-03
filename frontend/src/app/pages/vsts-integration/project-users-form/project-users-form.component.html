@@ -18,7 +18,7 @@
                    *ngIf = "true"
                    [value]="assignedUsersPagedResult?.data"
                    scrollable="true" [sortField]="'fullName'"
-                   [responsive]="true" [lazy]="true"
+                   [lazy]="true"
                    [loading]="!isAllAssignedUsers"
                    (onLazyLoad)="updateAssignedUsers($event)"
                    (onMoreContent)="updateAssignedUsers()"

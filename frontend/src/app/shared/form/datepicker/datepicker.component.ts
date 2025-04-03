@@ -1,7 +1,8 @@
 import {
 	Component, Input, Output, EventEmitter, forwardRef, HostBinding, ViewChild, AfterContentInit,
   ElementRef,
-  OnInit
+  OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
@@ -22,6 +23,7 @@ export const INPUT_CONTROL_VALUE_ACCESSOR: any = {
 
 @Component({
     selector: 'ct-datepicker',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: 'datepicker.component.html',
     providers: [INPUT_CONTROL_VALUE_ACCESSOR],
     host: {

@@ -37,7 +37,7 @@
                         [(ngModel)]="projectIds"
                         (onChange)="toggleProject(projectIds)"
                         [appendTo]="'body'"
-                        [defaultLabel]="'All Projects'"
+                        [placeholder]="'All Projects'"
                         [options]="projects"
                         [extraActionTitle]="showOnlyActive ? 'Show Archived' : 'Hide Archived'"
                         (onExtraAction)="toggleArchivedProjects()"

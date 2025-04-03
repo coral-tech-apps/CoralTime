@@ -219,10 +219,10 @@ export class MultiSelectComponent extends MultiSelect implements OnChanges {
       if(quantity > 1){
         return selectItem.replace('{0}', quantity.toString());
       }else{
-        return this.defaultLabel;
+        return this.placeholder();
       }
     }else{
-      return this.defaultLabel;
+      return this.placeholder();
     }
 	}
 

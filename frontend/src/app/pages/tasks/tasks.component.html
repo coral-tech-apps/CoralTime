@@ -22,7 +22,7 @@
       <p-table #tableRef class="ct-grid-container ct-grid-row-border"
                [value]="pagedResult?.data"
                scrollable="true" [sortField]="'name'"
-               [responsive]="true" [lazy]="true"
+               [lazy]="true"
                [loading]="!isAllTasks"
                (onLazyLoad)="loadLazy($event)"
                (onMoreContent)="loadLazy()"
