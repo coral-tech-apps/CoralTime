@@ -64,16 +64,16 @@
     top: -8px;
   }
 
-  .ui-datatable-scrollable-header {
+  .p-datatable-scrollable-header {
     background: none;
   }
 
-  .ui-datatable-scrollable-body {
+  .p-datatable-scrollable-body {
     padding-right: 0;
     max-height: calc(100vh - 254px);
   }
 
-  .ui-datatable-scrollable-wrapper {
+  .p-datatable-scrollable-wrapper {
     .slimscroll-wrapper {
       height: 100% !important;
 
@@ -88,7 +88,6 @@
   }
 
   td, th, tr {
-    white-space: nowrap;
     border: none !important;
     font-family: inherit;
   }
@@ -112,11 +111,11 @@
     }
   }
 
-  .ui-datatable-odd {
+  .p-datatable-odd {
     background: transparent !important;
   }
 
-  .ui-datatable-tablewrapper table, .ui-datatable-scrollable-wrapper table {
+  .p-datatable-tablewrapper table, .p-datatable-scrollable-wrapper table {
     thead {
       tr, td, th {
         background: none !important;
@@ -392,7 +391,7 @@
 .ct-visible {
   overflow: visible !important;
 
-  .ui-datatable-scrollable-body {
+  .p-datatable-scrollable-body {
     overflow: visible !important;
   }
 }

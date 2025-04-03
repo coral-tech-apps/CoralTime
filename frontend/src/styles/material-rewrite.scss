@@ -8,6 +8,7 @@
 }
 
 .mat-mdc-dialog-container {
+  overflow-y: auto;
   position: relative;
   border-radius: 5px !important;
   background-color: $calendarTaskColor;

@@ -66,7 +66,7 @@ namespace CoralTime.Common.Constants
         };
 
         public static readonly IEnumerable<string> PMPolicies = new[]
-        {   //TODO give right policy
+        {
             PolicyAuthenticatedUser,
             PolicyViewProject,
             PolicyAddProject,
@@ -74,15 +74,6 @@ namespace CoralTime.Common.Constants
             PolicyChangeProjectStatus,
             PolicyAssignProjectManager,
             PolicyAssignProjectMember,
-            //PolicyViewClient,
-            //PolicyAddClient,
-            //PolicyEditClient,
-            PolicyViewTask,
-            PolicyAddTask,
-            PolicyEditTask,
-            //PolicyViewMember,
-            //PolicyAddMember,
-            //PolicyEditMember,
             PolicyManagesAllProjects
         };
 

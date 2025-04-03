@@ -1,4 +1,4 @@
-<div class="ct-grid-search-filter">
+<div class="ct-grid-search-filter position-fixed">
   <!-- filtration  -->
   <input class="ct-input-element" #globalFilter placeholder="Search connection..."
          [(ngModel)]="filterStr" (input)="dt.filterGlobal($event.target.value, 'contains')">

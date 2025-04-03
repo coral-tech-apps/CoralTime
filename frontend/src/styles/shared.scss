@@ -228,6 +228,11 @@ h5 {
   width: 180px;
   z-index: 1001;
 
+  &.position-fixed{
+    position: fixed !important;
+    top: 15px;
+  }
+
   .fa-search {
     position: absolute;
     left: 7px;
@@ -265,10 +270,6 @@ h5 {
       color: $placeholderColor;
     }
   }
-}
-
-.ct-grid-search-filter.position-absolute{
-  position: absolute;
 }
 
 .p-datatable-table {
@@ -347,6 +348,7 @@ p-table div div{
   background-color: $main-blue !important;
 }
 
+.ct-blue-button,
 button.ct-blue-button.mat-mdc-raised-button {
   background-color: $main-blue;
   border: none;
