@@ -60,11 +60,13 @@ namespace CoralTime.DAL
 
         public DbSet<VstsProjectUser> VstsProjectUsers { get; set; }
 
-         public DbSet<Key> Keys { get; set; }
+        public DbSet<Key> Keys { get; set; }
 
         public DbSet<ServerSideSession> ServerSideSessions { get; set; }
 
         public DbSet<PushedAuthorizationRequest> PushedAuthorizationRequests { get; set; }
+
+        public DbSet<JiraSetting> JiraSettings { get; set; }
 
         public Task<int> SaveChangesAsync()
         {
@@ -170,6 +172,17 @@ namespace CoralTime.DAL
             builder.Entity<VstsProjectUser>()
                 .HasOne(pu => pu.VstsUser)
                 .WithMany(p => p.VstsProjectUsers).HasForeignKey(k => k.VstsUserId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<JiraSetting>()
+                .HasIndex(j => new
+                {
+                    j.Id,
+                    j.UserEmail
+                }).IsUnique();
+
+            builder.Entity<JiraSetting>()
+                .HasOne(j => j.Member)
+                .WithMany(m => m.JiraSettings).HasForeignKey(k => k.MemberId).OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(builder);
         }

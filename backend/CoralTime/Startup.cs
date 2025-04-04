@@ -215,6 +215,7 @@ namespace CoralTime
             services.AddScoped<IMemberActionService, MemberActionService>();
             services.AddScoped<IVstsService, VstsService>();
             services.AddScoped<IVstsAdminService, VstsService>();
+            services.AddScoped<IJiraServices, JiraServices>();
         }
 
         private static void SetupAngularRouting(IApplicationBuilder app)

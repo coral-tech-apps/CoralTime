@@ -5,6 +5,7 @@ using CoralTime.DAL.Models.LogChanges;
 using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Models.ReportsSettings;
 using CoralTime.ViewModels.Clients;
+using CoralTime.ViewModels.JiraSettings;
 using CoralTime.ViewModels.Member;
 using CoralTime.ViewModels.MemberActions;
 using CoralTime.ViewModels.MemberProjectRoles;
@@ -75,6 +76,8 @@ namespace CoralTime.DAL.Mapper
             CreateMap<TaskType, TaskTypeView>();
 
             CreateMap<ReportsSettings, ReportsSettings>();
+
+            CreateMap<JiraSettingsView, JiraSetting>();
         }
 
         private class MemberToMemberViewConverter : ITypeConverter<Member, MemberView>

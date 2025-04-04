@@ -68,6 +68,10 @@ namespace CoralTime.DAL.Repositories
 
         public VstsProjectUserRepository VstsProjectUserRepository => _vstsProjectUserRepository ?? (_vstsProjectUserRepository = new VstsProjectUserRepository(AppDbContext, MemoryCache, UserId));
 
+        public JiraSettingsRepository JiraSettingsRepository => _jiraSettingsRepository ?? (_jiraSettingsRepository = new JiraSettingsRepository(AppDbContext, MemoryCache, UserId));
+
+        private JiraSettingsRepository _jiraSettingsRepository;
+
         #endregion List of Repositories
     }
 }

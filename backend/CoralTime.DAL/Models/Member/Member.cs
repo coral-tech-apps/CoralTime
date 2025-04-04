@@ -45,5 +45,9 @@ namespace CoralTime.DAL.Models.Member
         public int? SendEmailDays { get; set; }
 
         public int WorkingHoursPerDay { get; set; }
+
+        public bool EnableJira { get; set; } = false;
+
+        public List<JiraSetting> JiraSettings { get; set; }
     }
 }
