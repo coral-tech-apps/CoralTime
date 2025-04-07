@@ -42,6 +42,24 @@ namespace CoralTime.BL.Services
             _avatarService = avatarService;
         }
 
+        public bool IsJiraEnable()
+        {
+            return Uow.MemberCurrent.EnableJira;
+        }
+
+        public bool SetJiraEnableStatus(bool isEnable)
+        {
+            var currentMember = Uow.MemberCurrent;
+            var currentUserId = Uow.MemberCurrent.UserId;
+
+            currentMember.EnableJira = isEnable;
+
+            Uow.MemberRepository.Update(currentMember, currentUserId);
+
+            Uow.Save();
+            return isEnable;
+        }
+
         public IEnumerable<MemberView> GetAllMembers()
         {
             var globalActiveProjCount = Uow.ProjectRepository.LinkedCacheGetList().Where(x => !x.IsPrivate && x.IsActive).Select(x => x.Id).ToArray();

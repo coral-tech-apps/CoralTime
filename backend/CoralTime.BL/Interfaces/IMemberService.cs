@@ -11,6 +11,10 @@ namespace CoralTime.BL.Interfaces
 {
     public interface IMemberService
     {
+        bool IsJiraEnable();
+
+        bool SetJiraEnableStatus(bool isEnable);
+
         IEnumerable<MemberView> GetAllMembers();
 
         MemberView GetById(int id);

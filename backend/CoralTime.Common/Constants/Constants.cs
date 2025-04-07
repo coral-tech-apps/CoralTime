@@ -206,6 +206,8 @@ namespace CoralTime.Common.Constants
                 public const string MemberProjectRolesRouteWithMembers = MemberProjectRolesWithIdRoute + WithMembers;
                 public const string VstsProjectIntegrationWithIdRoute = "VstsProjectIntegration(" + IdRoute + ")";
                 public const string VstsProjectIntegrationMembersByProject = "VstsProjectIntegration(" + IdRoute + ")" + WithMembers;
+                public const string IsJiraEnableRoute = "IsJiraEnable";
+                public const string ChangeJiraFieldRoute = "ChangeJiraField";
             }
         }
 

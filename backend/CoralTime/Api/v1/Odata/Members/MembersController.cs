@@ -110,5 +110,31 @@ namespace CoralTime.Api.v1.Odata.Members
         [HttpDelete(IdRoute)]
         [Authorize(Policy = PolicyEditMember)]
         public IActionResult Delete([FromODataUri]int id) => BadRequest($"Can't delete the member with Id - {id}");
+
+        [HttpGet(IsJiraEnableRoute)]
+        public IActionResult IsJiraEnable()
+        {
+            try
+            {
+                return Ok(_service.IsJiraEnable());
+            }
+            catch(Exception e)
+            {
+                return SendErrorODataResponse(e);
+            }
+        }
+
+        [HttpPost(ChangeJiraFieldRoute)]
+        public IActionResult ChangeJiraEnableField(bool jiraSatus)
+        {
+            try
+            {
+                return Ok(_service.SetJiraEnableStatus(jiraSatus));
+            }
+            catch (Exception e)
+            {
+                return SendErrorODataResponse(e);
+            }
+        }
     }
 }
