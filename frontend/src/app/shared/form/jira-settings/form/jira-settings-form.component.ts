@@ -38,7 +38,8 @@ export class FormJiraSetting {
 @Component({
   selector: 'ct-jira-setting-form',
   templateUrl: 'jira-settings-form.component.html',
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule],
+
 })
 export class JiraSettingFormComponent implements OnInit {
   @Input() setting: JiraSetting;
@@ -75,7 +76,6 @@ export class JiraSettingFormComponent implements OnInit {
       finalize(() => this.isValidateLoading = false)
     ).subscribe((isFormValid: boolean) => {
       if (isFormValid) {
-        console.log(form);
         this.submit(form);
       }
     });
@@ -96,7 +96,6 @@ export class JiraSettingFormComponent implements OnInit {
     }else{
       this.jiraSettingService.createNewSetting(updatedSetting).subscribe({
         next: (res) => {
-          console.log('created ', res);
           this.onSubmit.emit({ isNewSetting: true});
         },
         error: (err) => {

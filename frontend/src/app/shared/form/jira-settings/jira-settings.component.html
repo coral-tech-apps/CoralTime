@@ -8,44 +8,48 @@
       <a class="ct-manage-add" style="padding-top: 3px;" >Create New Jira Setting</a>
     </div>
   </div>
+<div class="ct-data-table-wrapper">
+  <p-table
+  class="ct-grid-container ct-grid-row-border"
+  *ngIf="showJiraTable"
+  [value] = "tableData">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>
+        Setting name
+      </th>
+      <th>
+        Api Token
+      </th>
+      <th>
+        Domain
+      </th>
+      <th>
+        User Email
+      </th>
+      <th>
+        Edit
+      </th>
+      <th>
+        Delete
+      </th>
+    </tr>
+  </ng-template>
 
-  <p-table *ngIf="showJiraTable"
-           [value] = "tableData">
-      <ng-template pTemplate="header">
-          <tr>
-              <th>
-                Setting name
-              </th>
-              <th>
-                Api Token
-              </th>
-              <th>
-                Domain
-              </th>
-              <th>
-                User Email
-              </th>
-              <th>
-                Action
-              </th>
-          </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
-          <tr>
-              <td>{{row.settingName}}</td>
-              <td>{{row.apiToken}}</td>
-              <td>{{row.domain}}</td>
-              <td>{{row.userEmail}}</td>
-              <td>
-                <button (click) = "deleteTask(rowIndex)">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button (click) = "openConnectionDialog(row)">
-                  <i class="ct-grid-settings-icon"></i>
-                </button>
-              </td>
-          </tr>
-      </ng-template>
+  <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+    <tr>
+      <td class="ct-info-col">{{row.settingName}}</td>
+      <td>{{row.apiToken}}</td>
+      <td>{{row.domain}}</td>
+      <td class="ct-info-col">{{row.userEmail}}</td>
+      <td class="ct-small-padding">
+          <a class="ct-grid-settings-icon" (click) = "openConnectionDialog(row)"></a>
+      </td>
+      <td>
+        <a class="fa fa-times" (click) = "deleteSetting(rowIndex)"></a>
+      </td>
+    </tr>
+  </ng-template>
   </p-table>
+</div>
 </div>

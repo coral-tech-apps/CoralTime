@@ -8,7 +8,7 @@ import { JiraSettingFormComponent } from "./form/jira-settings-form.component";
 import { JiraSetting } from "src/app/models/jira-setting";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { NotificationService } from "src/app/core/notification.service";
-import { Subject } from 'rxjs';
+import { Subject, Subscriber } from 'rxjs';
 
 @Component({
   selector: 'ct-jira-settings',
@@ -35,23 +35,17 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
   }
 
   loadInitialState(){
-    this.http.get<boolean>('http://localhost:4200/api/v1/odata/Members/IsJiraEnable').subscribe({
-      next: (response) => {
-        this.showJiraTable = response;
-        if(this.showJiraTable){
-          this.loadJiraTable();
-        }
+    this.jiraSettingService.isEnableJira().subscribe(result => {
+      this.showJiraTable = result;
+      if(this.showJiraTable){
+        this.loadJiraTable();
       }
     });
   }
 
   onToggle(){
-    const newVal = !this.showJiraTable;
-
-    this.http.post(`http://localhost:4200/api/v1/odata/Members/ChangeJiraField?jiraSatus=${this.showJiraTable}`, {}).subscribe({
-      error: (err) => {
-        this.showJiraTable = !newVal;
-      }
+    this.jiraSettingService.changeJiraStatus(this.showJiraTable).subscribe(result => {
+      this.showJiraTable = result;
     })
 
     if(this.showJiraTable){
@@ -60,12 +54,10 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
   }
 
   deleteSetting(index: number): void{
-    this.http.delete(`http://localhost:4200/api/v1/Jira?id=${this.tableData[index].id}`, {}).subscribe({
-      next: ()=> {
+    this.jiraSettingService.deleteSetting(this.tableData[index].id).subscribe(result => {
+      if(result){
         this.tableData.splice(index, 1);
         this.tableData = [...this.tableData];
-      },
-      error: (err) => {
       }
     })
   }
@@ -94,14 +86,9 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
 	}
 
   private loadJiraTable(){
-    this.http.get<any[]>(`http://localhost:4200/api/v1/Jira?memberId=${this.authService.authUser.id}`).subscribe({
-      next: (data) => {
-        this.tableData = [];
-        this.tableData = data;
-      },
-      error(err) {
-        console.error('error while loading jira table data: ', err);
-      },
+    this.jiraSettingService.loadSettingsTable(this.authService.authUser.id).subscribe(result => {
+      this.tableData = [],
+      this.tableData = result;
     })
   }
 }
