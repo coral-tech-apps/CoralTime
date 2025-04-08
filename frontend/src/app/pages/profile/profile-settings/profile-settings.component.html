@@ -137,9 +137,20 @@
                         </button>
                     </form>
                 </div>
-                <ct-jira-settings>
 
-                </ct-jira-settings>
+                <div class="ct-form-block"  style="width: 900px;">
+                  <div class="ct-form-header" (click)="toggleForm(3)">
+                    <a class="ct-add-button">
+                        <i class="material-icons">{{isFormShownArray[3] ? "keyboard_arrow_up" : "keyboard_arrow_down"}}</i>
+                    </a>
+                    <span class="ct-link-text">{{isFormShownArray[3] ? "Hide jira settings" : "Show jira settings"}}</span>
+                </div>
+                    <form class="ct-form" [hidden]="!isFormShownArray[3]">
+                      <ct-jira-settings>
+                      </ct-jira-settings>
+                    </form>
+                </div>
+
                 <!--<div class="ct-form-block">-->
                 <!--<div class="ct-form-header" (click)="toggleForm(2)">-->
                 <!--<a class="ct-add-button">-->

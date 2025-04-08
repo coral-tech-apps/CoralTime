@@ -8,6 +8,7 @@ import { DirectivesModule } from '../directives/directives.module';
 import { TextareaComponent } from './textarea/textarea.component';
 import { InputListComponent } from './input-list/input-list.component';
 import { JiraSettings } from './jira-settings/jira-settings.component';
+import { JiraSettingFormComponent } from './jira-settings/form/jira-settings-form.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { NgSlimScrollModule } from 'ngx-slimscroll';
 import { MaterialModule } from '../material.module';
@@ -35,6 +36,7 @@ import { TableModule } from 'primeng/table';
 		MultiSelectComponent,
 		SelectComponent,
     JiraSettings,
+    JiraSettingFormComponent,
 		TextareaComponent
 	],
 	exports: [
@@ -45,6 +47,7 @@ import { TableModule } from 'primeng/table';
 		MultiSelectComponent,
 		SelectComponent,
     JiraSettings,
+    JiraSettingFormComponent,
 		TextareaComponent,
 		ColorPickerModule,
 		NgSlimScrollModule

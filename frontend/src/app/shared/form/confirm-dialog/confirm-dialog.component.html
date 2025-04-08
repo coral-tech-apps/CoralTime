@@ -1,0 +1,13 @@
+<div class="ct-dialog ct-dialog-add">
+  <div class="ct-dialog-title">
+    <span>{{ data.title }}</span>
+    <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
+  </div>
+  <span>{{ data.message || 'Are you sure? '}}</span>
+  <div class="ct-buttons-block" mat-dialog-actions>
+    <button mat-raised-button class="ct-button ct-blue-button" [mat-dialog-close]="true">Yes</button>
+    <button mat-dialog-close class="ct-cancel-button">No</button>
+  </div>
+</div>
+
+

@@ -1,14 +1,12 @@
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { AclService } from "src/app/core/auth/acl.service";
 import { AuthService } from "src/app/core/auth/auth.service";
-import { ClientFormComponent } from "src/app/pages/clients/form/client-form.component";
 import { JiraSettingFormComponent } from "./form/jira-settings-form.component";
 import { JiraSetting } from "src/app/models/jira-setting";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { NotificationService } from "src/app/core/notification.service";
-import { Subject, Subscriber } from 'rxjs';
+import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'ct-jira-settings',
@@ -54,12 +52,26 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
   }
 
   deleteSetting(index: number): void{
-    this.jiraSettingService.deleteSetting(this.tableData[index].id).subscribe(result => {
-      if(result){
-        this.tableData.splice(index, 1);
-        this.tableData = [...this.tableData];
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete Setting?',
+        message: `Are you sure you want to delete "${this.tableData[index].settingName}"?`
       }
-    })
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.jiraSettingService.deleteSetting(this.tableData[index].id).subscribe(result => {
+          if(result){
+            this.tableData.splice(index, 1);
+            this.tableData = [...this.tableData];
+            this.notificationService.success('Jira setting successfuly deleted.');
+          }else{
+            this.notificationService.success('Error deleting jira setting.');
+          }
+        });
+      }
+    });
   }
 
   openConnectionDialog(setting: JiraSetting = null): void {

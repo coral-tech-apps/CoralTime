@@ -4,8 +4,6 @@ import { map, finalize } from 'rxjs/operators';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { JiraSetting } from 'src/app/models/jira-setting';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 export class FormJiraSetting {
   id: string;
@@ -38,8 +36,7 @@ export class FormJiraSetting {
 @Component({
   selector: 'ct-jira-setting-form',
   templateUrl: 'jira-settings-form.component.html',
-  imports: [CommonModule, FormsModule],
-
+  standalone: false
 })
 export class JiraSettingFormComponent implements OnInit {
   @Input() setting: JiraSetting;

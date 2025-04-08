@@ -47,7 +47,7 @@ export class ProfileSettingsComponent implements OnInit {
 	dateFormatModel: DateFormat;
 	emailPattern = EMAIL_PATTERN;
 	isEmailChanged: boolean;
-	isFormShownArray: boolean[] = [true, true, true];
+	isFormShownArray: boolean[] = [false, false, false, false];
 	isTasksLoading: boolean;
 	numberMask = [/\d/, /\d/];
 	projects: Project[];
@@ -118,7 +118,12 @@ export class ProfileSettingsComponent implements OnInit {
 	}
 
 	toggleForm(formIndex: number): void {
-		this.isFormShownArray[formIndex] = !this.isFormShownArray[formIndex];
+    this.isFormShownArray = this.isFormShownArray.map((value, index) => {
+      if(index === formIndex){
+        return !value;
+      }
+      return value ? false : value;
+    });
 	}
 
 	updateAvatar(avatarUrl: string): void {
