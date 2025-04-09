@@ -141,14 +141,61 @@ namespace CoralTime.DAL.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("CoralTime.DAL.Models.JiraSetting", b =>
+            modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraMemberSettings", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ApiToken")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("JiraSettingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JiraUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastEditorUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("JiraSettingId");
+
+                    b.HasIndex("LastEditorUserId");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("JiraMemberSettings");
+                });
+
+            modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -165,26 +212,14 @@ namespace CoralTime.DAL.Migrations
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SettingName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserEmail")
-                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
 
                     b.HasIndex("LastEditorUserId");
-
-                    b.HasIndex("MemberId");
-
-                    b.HasIndex("Id", "UserEmail")
-                        .IsUnique()
-                        .HasFilter("[UserEmail] IS NOT NULL");
 
                     b.ToTable("JiraSettings");
                 });
@@ -1216,7 +1251,38 @@ namespace CoralTime.DAL.Migrations
                     b.Navigation("LastEditor");
                 });
 
-            modelBuilder.Entity("CoralTime.DAL.Models.JiraSetting", b =>
+            modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraMemberSettings", b =>
+                {
+                    b.HasOne("CoralTime.DAL.Models.ApplicationUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("CoralTime.DAL.Models.Jira.JiraSetting", "JiraSetting")
+                        .WithMany("JiraMemberSettings")
+                        .HasForeignKey("JiraSettingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CoralTime.DAL.Models.ApplicationUser", "LastEditor")
+                        .WithMany()
+                        .HasForeignKey("LastEditorUserId");
+
+                    b.HasOne("CoralTime.DAL.Models.Member.Member", "Member")
+                        .WithMany("JiraMemberSettings")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("JiraSetting");
+
+                    b.Navigation("LastEditor");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraSetting", b =>
                 {
                     b.HasOne("CoralTime.DAL.Models.ApplicationUser", "Creator")
                         .WithMany()
@@ -1226,17 +1292,9 @@ namespace CoralTime.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("LastEditorUserId");
 
-                    b.HasOne("CoralTime.DAL.Models.Member.Member", "Member")
-                        .WithMany("JiraSettings")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Creator");
 
                     b.Navigation("LastEditor");
-
-                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.LogChanges.MemberAction", b =>
@@ -1570,9 +1628,14 @@ namespace CoralTime.DAL.Migrations
                     b.Navigation("Projects");
                 });
 
+            modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraSetting", b =>
+                {
+                    b.Navigation("JiraMemberSettings");
+                });
+
             modelBuilder.Entity("CoralTime.DAL.Models.Member.Member", b =>
                 {
-                    b.Navigation("JiraSettings");
+                    b.Navigation("JiraMemberSettings");
 
                     b.Navigation("MemberImage");
 

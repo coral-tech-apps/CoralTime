@@ -1,15 +1,18 @@
-export class JiraSetting{
+export class JiraMemberSetting{
   id: number;
+  userEmail: string;
 	settingName: string;
 	domain: string;
-  memberCount: number;
+  apiToken: string;
 
 	constructor(data = null) {
 		if (data) {
+      this.id
 			this.id = data.id;
+      this.userEmail = data.userEmail;
 			this.settingName = data.settingName;
 			this.domain = data.domain;
-      this.memberCount = data.memberCount;
+      this.apiToken = data.apiToken;
 		}
 	}
 }

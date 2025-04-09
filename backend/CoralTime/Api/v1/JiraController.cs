@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using CoralTime.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 using CoralTime.ViewModels.JiraSettings;
+using System.Threading.Tasks;
+using CoralTime.ViewModels.Jira;
 
 namespace CoralTime.Api.v1
 {
@@ -18,9 +20,30 @@ namespace CoralTime.Api.v1
 
         // GET: api/v1/Jira
         [HttpGet]
-        public IActionResult GetSettings(int memberId)
+        public IActionResult GetSettings()
         {
-            return Ok(_service.GetSettings(memberId));
+            return Ok(_service.GetSettings());
+        }
+
+        // GET: api/v1/Jira/GetAssignedUsers
+        [HttpGet("GetAssignedUsers")]
+        public IActionResult GetAssignedUsers(int id)
+        {
+            return Ok(_service.GetAssignedUsers(id));
+        }
+
+        // GET: api/v1/Jira/GetNotAssignedUsers
+        [HttpGet("GetNotAssignedUsers")]
+        public IActionResult GetNotAssignedUsers(int id)
+        {
+            return Ok(_service.GetNotAssignedUsers(id));
+        }
+
+        // GET: api/v1/Jira/GetMemberSettings
+        [HttpGet("GetMemberSettings")]
+        public IActionResult GetJiraMemberSetting(int id)
+        {
+            return Ok(_service.GetMemberSetting(id));
         }
 
         // POST: api/v1/Jira
@@ -32,28 +55,57 @@ namespace CoralTime.Api.v1
                 return BadRequest("Invalid Model");
             }
 
-            _service.Create(jiraSettingsView);
+            _service.CreateSetting(jiraSettingsView);
+            return Ok();
+        }
+
+        // POST: api/v1/Jira/AssignToIntegration
+        [HttpPost("AssignToIntegration")]
+        public IActionResult AssignToIntegration(int memberId, int jiraSettingId)
+        {
+            _service.AssignIntegrationToUser(memberId, jiraSettingId);
             return Ok();
         }
 
         // PATCH: api/v1/Jira
         [HttpPatch]
-        public IActionResult Update(string id, [FromBody] JiraSettingsView jiraSettingsView)
+        public IActionResult Update(int id, [FromBody] JiraSettingsView jiraSettingsView)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Invalid Model");
             }
 
-            _service.Update(jiraSettingsView, id);
+            _service.UpdateSetting(jiraSettingsView, id);
+            return Ok();
+        }
+
+        // PATCH: api/v1/Jira
+        [HttpPatch("FillJiraMemberSetting")]
+        public IActionResult FillJiraMember(int id, [FromBody] JiraMemberSettingView jiraMemberSettingView)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid Model");
+            }
+
+            _service.FillMemberJiraSetting(id, jiraMemberSettingView);
             return Ok();
         }
 
         // DELETE: api/v1/Jira
         [HttpDelete]
-        public IActionResult Delete(string id)
+        public IActionResult Delete(int id)
         {
             _service.DeleteSetting(id);
+            return Ok();
+        }
+
+        // POST: api/v1/Jira/AssignToIntegration
+        [HttpDelete("UnAssignToIntegration")]
+        public IActionResult UnAssignToIntegration(int memberId, int jiraSettingId)
+        {
+            _service.UnAssingIntegrationToUser(memberId, jiraSettingId);
             return Ok();
         }
     }

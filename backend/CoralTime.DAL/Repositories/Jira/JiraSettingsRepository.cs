@@ -1,12 +1,12 @@
 ﻿using CoralTime.ViewModels.JiraSettings;
-using CoralTime.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CoralTime.DAL.Models.Jira;
 
-namespace CoralTime.DAL.Repositories
+namespace CoralTime.DAL.Repositories.Jira
 {
     public class JiraSettingsRepository : GenericRepository<JiraSetting>
     {
@@ -14,17 +14,13 @@ namespace CoralTime.DAL.Repositories
             : base(context, memoryCache, userId) { }
 
         protected override IQueryable<JiraSetting> GetIncludes(IQueryable<JiraSetting> query) =>
-            query
-                .Include(x => x.Member)
-                .Include(x => x.Member.JiraSettings);
+            query;
 
-        public List<JiraSetting> GetSettingsByMember(int memberId)
+        public List<JiraSetting> GetSettings()
         {
-            return GetQuery()
-                .Where(x => x.Member.Id == memberId)
-                .SelectMany(x => x.Member.JiraSettings)
-                .Distinct()
-                .ToList();
+            return GetQuery().ToList();
         }
+
+        
     }
 }

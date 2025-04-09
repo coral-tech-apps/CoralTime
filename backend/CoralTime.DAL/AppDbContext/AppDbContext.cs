@@ -1,4 +1,5 @@
 ﻿using CoralTime.DAL.Models;
+using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Models.LogChanges;
 using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Models.ReportsSettings;
@@ -67,6 +68,8 @@ namespace CoralTime.DAL
         public DbSet<PushedAuthorizationRequest> PushedAuthorizationRequests { get; set; }
 
         public DbSet<JiraSetting> JiraSettings { get; set; }
+
+        public DbSet<JiraMemberSettings> JiraMemberSettings { get; set; }
 
         public Task<int> SaveChangesAsync()
         {
@@ -173,16 +176,13 @@ namespace CoralTime.DAL
                 .HasOne(pu => pu.VstsUser)
                 .WithMany(p => p.VstsProjectUsers).HasForeignKey(k => k.VstsUserId).OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<JiraSetting>()
-                .HasIndex(j => new
-                {
-                    j.Id,
-                    j.UserEmail
-                }).IsUnique();
-
-            builder.Entity<JiraSetting>()
+            builder.Entity<JiraMemberSettings>()
                 .HasOne(j => j.Member)
-                .WithMany(m => m.JiraSettings).HasForeignKey(k => k.MemberId).OnDelete(DeleteBehavior.Restrict);
+                .WithMany(m => m.JiraMemberSettings).HasForeignKey(k => k.MemberId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<JiraMemberSettings>()
+                .HasOne(j => j.JiraSetting)
+                .WithMany(jm => jm.JiraMemberSettings).HasForeignKey(k => k.JiraSettingId).OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(builder);
         }

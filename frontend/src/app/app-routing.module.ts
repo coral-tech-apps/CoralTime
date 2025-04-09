@@ -66,6 +66,10 @@ export const appRoutes: Routes = [
 		path: 'vsts-integration',
 		loadChildren: () => import('./pages/vsts-integration/vsts-integration.module').then(m => m.VstsIntegrationModule)
 	},
+  {
+    path: 'jira-integration',
+    loadChildren: () => import('./pages/jira-integration/jira-integration.module').then(m => m.JiraIntegrationModule)
+  },
 	{
 		path: 'error',
 		component: ServerErrorComponent

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using CoralTime.Common.Helpers;
 using CoralTime.DAL.Models;
+using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Models.LogChanges;
 using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Models.ReportsSettings;
 using CoralTime.ViewModels.Clients;
+using CoralTime.ViewModels.Jira;
 using CoralTime.ViewModels.JiraSettings;
 using CoralTime.ViewModels.Member;
 using CoralTime.ViewModels.MemberActions;
@@ -78,6 +80,8 @@ namespace CoralTime.DAL.Mapper
             CreateMap<ReportsSettings, ReportsSettings>();
 
             CreateMap<JiraSettingsView, JiraSetting>();
+            CreateMap<JiraMemberSettingView, JiraMemberSettings>();
+            CreateMap<JiraSetting, JiraSettingsView>();
         }
 
         private class MemberToMemberViewConverter : ITypeConverter<Member, MemberView>

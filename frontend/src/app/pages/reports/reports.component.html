@@ -32,7 +32,6 @@
 
                         <div class="ct-report-filters-block">
                             <div>
-                              <!-- TODO: fix ct-multiselect with customMultiSelect-->
                                 <ct-multiselect
                                         [panelStyleClass]="'ct-reports-multiselect ct-clients' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.clientIds"
@@ -49,7 +48,6 @@
                                 </ct-multiselect>
                             </div>
                             <div>
-                              <!-- TODO: fix ct-multiselect with customMultiSelect-->
                                 <ct-multiselect
                                         [panelStyleClass]="'ct-reports-multiselect ct-projects' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                                         [(ngModel)]="reportQuery.projectIds"
@@ -65,7 +63,6 @@
                                 </ct-multiselect>
                             </div>
                             <div>
-                              <!-- TODO: fix ct-multiselect with customMultiSelect-->
                                 <ct-multiselect
                                         *ngIf="isUsersFilterShown"
                                         [panelStyleClass]="'ct-reports-multiselect ct-users' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
@@ -167,7 +164,6 @@
             <div class="ct-reports-grid-container">
                 <div class="ct-page-header">
                     <h3 class="ct-header">Details</h3>
-                    <!-- TODO: fix ct-multiselect with customMultiSelect-->
                     <ct-multiselect class="ct-columns-multiselect ct-icon ct-settings-icon" title="Columns settings"
                                     [styleClass]="'ct-reports-settings-multiselect'"
                                     [(ngModel)]="reportQuery.showColumnIds"

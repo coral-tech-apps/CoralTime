@@ -56,7 +56,13 @@ const FULL_MANAGE_ITEMS = [
 		icon: 'ct-integration-icon',
 		routerLink: ['/vsts-integration'],
 		permission: 'ViewIntegrationPage'
-	}
+	},
+  {
+    label: 'Jira Integration',
+		icon: 'ct-integration-icon',
+		routerLink: ['/jira-integration'],
+		permission: 'ViewIntegrationPage'
+  }
 ];
 
 @Component({

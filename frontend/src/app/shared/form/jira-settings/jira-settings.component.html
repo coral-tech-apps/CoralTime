@@ -4,9 +4,9 @@
         Jira Enable
     </mat-checkbox>
 
-    <div *ngIf="showJiraTable" (click)="openConnectionDialog()" class="ct-add-link">
+    <!--<div *ngIf="showJiraTable" (click)="openConnectionDialog()" class="ct-add-link">
       <a class="ct-manage-add" style="padding-top: 3px;" >Create New Jira Setting</a>
-    </div>
+    </div>-->
   </div>
 <div class="ct-data-table-wrapper">
   <p-table
@@ -28,11 +28,14 @@
         User Email
       </th>
       <th>
-        Edit
+        Account id
       </th>
       <th>
-        Delete
+        Edit
       </th>
+     <!-- <th>
+        Delete
+      </th> -->
     </tr>
   </ng-template>
 
@@ -42,12 +45,15 @@
       <td>{{row.apiToken}}</td>
       <td>{{row.domain}}</td>
       <td class="ct-info-col">{{row.userEmail}}</td>
+      <td>
+        <i class="fa" [ngClass]="row.isEnableUserId ? 'fa-check' : 'fa-times'"></i>
+      </td>
       <td class="ct-small-padding">
           <a class="ct-grid-settings-icon" (click) = "openConnectionDialog(row)"></a>
       </td>
-      <td>
+<!--      <td>
         <a class="fa fa-times" (click) = "deleteSetting(rowIndex)"></a>
-      </td>
+      </td> -->
     </tr>
   </ng-template>
   </p-table>

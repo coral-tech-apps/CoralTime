@@ -1,0 +1,54 @@
+<div class="ct-grid-search-filter position-fixed">
+  <!-- filtration  -->
+  <input class="ct-input-element" #globalFilter placeholder="Search connection...">
+  <i class="fa fa-search"></i>
+</div>
+
+<div #pageContainer class="ct-page-container ct-integration-page">
+  <div class="ct-page-header">
+    <h3 class="ct-header">Jira settings</h3>
+    <div class="ct-add-link">
+      <a class="ct-manage-add" (click)="openConnectionDialog()">Create New Connection</a>
+    </div>
+  </div>
+
+  <div class="ct-data-table-wrapper">
+    <p-table #dt class="ct-grid-container ct-grid-row-border"
+          [value]="tableData">
+
+      <!-- header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="ct-info-col">Setting name</th>
+          <th class="ct-info-col">Domain</th>
+          <th class="ct-info-col">Assign to user</th>
+        </tr>
+      </ng-template>
+
+      <!--body -->
+      <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+        <tr>
+          <td class="ct-info-col">{{row.settingName}}</td>
+          <td>{{row.domain}}</td>
+          <td class="ct-info-col ct-small-padding" style="width: 140px;">
+            <span class="ct-user-circle-icon"></span>
+            <a (click)="openProjectUsersDialog(row)" class="ct-grid-link ct-grid-count">
+              {{ row.memberCount }}
+              <span class="ct-manage-text">Manage</span>
+            </a>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- empty data -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            Sorry, you don't have any reports at this time period.
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+  </div>
+</div>

@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoralTime.DAL.Models.Member;
 
-namespace CoralTime.DAL.Models
+namespace CoralTime.DAL.Models.Jira
 {
-    public class JiraSetting : LogChanges.LogChanges
+    public class JiraMemberSettings : LogChanges.LogChanges
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
-
-        public string SettingName { get; set; }
+        public int Id { get; set; }
 
         public string UserEmail { get; set; }
 
-        public string Domain { get; set; }
-
         public string ApiToken { get; set; }
+
+        public string JiraUserId { get; set; }
+
+        public int JiraSettingId { get; set; }
+        [ForeignKey("JiraSettingId")]
+        public virtual JiraSetting JiraSetting { get; set; }
 
         public int MemberId { get; set; }
 

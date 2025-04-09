@@ -1,18 +1,35 @@
-﻿using CoralTime.DAL.Models;
+﻿using CoralTime.DAL.Models.Jira;
+using CoralTime.ViewModels.Jira;
 using CoralTime.ViewModels.JiraSettings;
+using CoralTime.ViewModels.Member;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoralTime.BL.Interfaces
 {
     public interface IJiraServices
     {
-        List<JiraSetting> GetSettings(int memberId);
+        List<JiraSettingsView> GetSettings();
 
-        void Create(JiraSettingsView jiraSettingsView);
+        List<MemberView> GetAssignedUsers(int id);
 
-        void Update(JiraSettingsView jiraSettingsView, string id);
+        List<MemberView> GetNotAssignedUsers(int id);
 
-        void DeleteSetting(string settingId);
+        List<JiraMemberSettingView> GetMemberSetting(int memberId);
+
+        void CreateSetting(JiraSettingsView jiraSettingsView);
+
+        void UpdateSetting(JiraSettingsView jiraSettingsView, int id);
+
+        void AddSettingToMember(int memberId, int settingId);
+
+        void FillMemberJiraSetting(int jiraMemberSettingId, JiraMemberSettingView jiraMemberSettingView);
+
+        void AssignIntegrationToUser(int memberId, int jiraSettingId);
+
+        void UnAssingIntegrationToUser(int memberId, int jiraSettingId);
+
+        void DeleteSetting(int id);
 
     }
 }

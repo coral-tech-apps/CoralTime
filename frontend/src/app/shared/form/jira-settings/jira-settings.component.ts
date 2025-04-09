@@ -3,10 +3,10 @@ import { Component, OnInit } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { AuthService } from "src/app/core/auth/auth.service";
 import { JiraSettingFormComponent } from "./form/jira-settings-form.component";
-import { JiraSetting } from "src/app/models/jira-setting";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { NotificationService } from "src/app/core/notification.service";
 import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.component";
+import { JiraMemberSetting } from "src/app/models/jira-member-setting";
 
 @Component({
   selector: 'ct-jira-settings',
@@ -74,7 +74,7 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
     });
   }
 
-  openConnectionDialog(setting: JiraSetting = null): void {
+  openConnectionDialog(setting: JiraMemberSetting = null): void {
     this.dialogRef = this.dialog.open(JiraSettingFormComponent);
     this.dialogRef.componentInstance.setting = setting;
     this.dialogRef.componentInstance.onSubmit.subscribe((response) => {
@@ -98,7 +98,7 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
 	}
 
   private loadJiraTable(){
-    this.jiraSettingService.loadSettingsTable(this.authService.authUser.id).subscribe(result => {
+    this.jiraSettingService.getJiraMemberSetting(this.authService.authUser.id).subscribe(result => {
       this.tableData = [],
       this.tableData = result;
     })
