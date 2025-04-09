@@ -222,13 +222,13 @@ namespace CoralTime
         {
             app.Use(async (context, next) =>
             {
-                if (context.Request.Path.HasValue && null != Constants.AngularRoutes.FirstOrDefault(ar => context.Request.Path.Value.StartsWith(ar, StringComparison.OrdinalIgnoreCase)))
+                /*if (context.Request.Path.HasValue && null != Constants.AngularRoutes.FirstOrDefault(ar => context.Request.Path.Value.StartsWith(ar, StringComparison.OrdinalIgnoreCase)))
                 {
                     context.Request.Path = new PathString("/");
 
                     context.Response.Headers.Append("Cache-Control", "no-cache, no-store");
                     context.Response.Headers.Append("Expires", "-1");
-                }
+                }*/
 
                 await next();
             });
