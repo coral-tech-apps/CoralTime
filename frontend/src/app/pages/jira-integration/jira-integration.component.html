@@ -22,6 +22,8 @@
           <th class="ct-info-col">Setting name</th>
           <th class="ct-info-col">Domain</th>
           <th class="ct-info-col">Assign to user</th>
+          <th class="ct-info-col">Edit</th>
+          <th class="ct-info-col">Delete setting</th>
         </tr>
       </ng-template>
 
@@ -32,10 +34,16 @@
           <td>{{row.domain}}</td>
           <td class="ct-info-col ct-small-padding" style="width: 140px;">
             <span class="ct-user-circle-icon"></span>
-            <a (click)="openProjectUsersDialog(row)" class="ct-grid-link ct-grid-count">
+            <a (click)="openJiraUsersDialog(row)" class="ct-grid-link ct-grid-count">
               {{ row.memberCount }}
               <span class="ct-manage-text">Manage</span>
             </a>
+          </td>
+          <td class="ct-small-padding">
+            <a class="ct-grid-settings-icon" (click) = "openConnectionDialog(row)"></a>
+          </td>
+          <td>
+            <i class="fa fa-times" (click)="deleteSetting(rowIndex)" style="cursor: pointer;"></i>
           </td>
         </tr>
       </ng-template>

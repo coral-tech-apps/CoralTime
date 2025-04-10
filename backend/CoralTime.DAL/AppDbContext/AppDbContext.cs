@@ -178,11 +178,11 @@ namespace CoralTime.DAL
 
             builder.Entity<JiraMemberSettings>()
                 .HasOne(j => j.Member)
-                .WithMany(m => m.JiraMemberSettings).HasForeignKey(k => k.MemberId).OnDelete(DeleteBehavior.Restrict);
+                .WithMany(m => m.JiraMemberSettings).HasForeignKey(k => k.MemberId).OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<JiraMemberSettings>()
                 .HasOne(j => j.JiraSetting)
-                .WithMany(jm => jm.JiraMemberSettings).HasForeignKey(k => k.JiraSettingId).OnDelete(DeleteBehavior.Restrict);
+                .WithMany(jm => jm.JiraMemberSettings).HasForeignKey(k => k.JiraSettingId).OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(builder);
         }

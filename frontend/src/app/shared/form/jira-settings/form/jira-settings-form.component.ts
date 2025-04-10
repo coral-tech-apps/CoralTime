@@ -17,6 +17,8 @@ export class FormJiraSetting {
     instance.id = setting.id;
     instance.settingName = setting.settingName;
     instance.domain = setting.domain;
+    instance.apiToken = setting.apiToken;
+    instance.userEmail = setting.userEmail;
     return instance;
   }
 
@@ -76,8 +78,7 @@ export class JiraSettingFormComponent implements OnInit {
 
   private submit(form: NgForm): void {
     const updatedSetting = this.model.toSetting(this.setting);
-    console.log(updatedSetting);
-    this.jiraSettingService.updateSetting(updatedSetting, this.setting.id).subscribe({
+    this.jiraSettingService.fillJiraMemberSetting(updatedSetting, this.setting.id).subscribe({
       next: (res) => {
         this.onSubmit.emit({ isNewSetting: false});
       }

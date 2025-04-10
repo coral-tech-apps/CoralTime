@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoralTime.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250409112739_Add_JiraSettings_Tables")]
+    [Migration("20250410074237_Add_JiraSettings_Tables")]
     partial class Add_JiraSettings_Tables
     {
         /// <inheritdoc />
@@ -1263,7 +1263,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasOne("CoralTime.DAL.Models.Jira.JiraSetting", "JiraSetting")
                         .WithMany("JiraMemberSettings")
                         .HasForeignKey("JiraSettingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CoralTime.DAL.Models.ApplicationUser", "LastEditor")
@@ -1273,7 +1273,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasOne("CoralTime.DAL.Models.Member.Member", "Member")
                         .WithMany("JiraMemberSettings")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Creator");

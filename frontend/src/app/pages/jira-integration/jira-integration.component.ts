@@ -7,6 +7,7 @@ import { NotificationService } from "src/app/core/notification.service";
 import { JiraSetting } from "src/app/models/jira-setting";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { JiraUsersComponent } from "./jira-member-form/jira-member.component";
+import { ConfirmDialogComponent } from "src/app/shared/form/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'ct-jira-integration',
@@ -38,31 +39,58 @@ loadInitialState(): void{
   })
 }
 
- openConnectionDialog(setting: JiraSetting = null): void {
-    this.dialogRef = this.dialog.open(JiraIntegrationFormComponent);
-    this.dialogRef.componentInstance.setting = setting;
-    this.dialogRef.componentInstance.onSubmit.subscribe((response) => {
-      this.dialogRef.close();
-      this.onSubmit(response);
+openConnectionDialog(setting: JiraSetting = null): void {
+  this.dialogRef = this.dialog.open(JiraIntegrationFormComponent);
+  this.dialogRef.componentInstance.setting = setting;
+  this.dialogRef.componentInstance.onSubmit.subscribe((response) => {
+    this.dialogRef.close();
+    this.onSubmit(response);
+  });
+}
+
+openJiraUsersDialog(jiraSetting: JiraSetting): void {
+  this.dialogUserRef = this.dialog.open(JiraUsersComponent);
+  this.dialogUserRef.componentInstance.jiraSetting = jiraSetting;
+
+  this.dialogUserRef.afterClosed().subscribe(result => {
+    this.loadInitialState();
+  })
+}
+
+deleteSetting(index: number): void{
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete Setting?',
+        message: `Are you sure you want to delete "${this.tableData[index].settingName}"?`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.jiraSettingService.deleteSetting(this.tableData[index].id).subscribe(result => {
+          if(result){
+            this.tableData.splice(index, 1);
+            this.tableData = [...this.tableData];
+            this.notificationService.success('Jira setting successfuly deleted.');
+          }else{
+            this.notificationService.success('Error deleting jira setting.');
+          }
+        });
+      }
     });
   }
 
-  openProjectUsersDialog(jiraSetting: JiraSetting): void {
-    this.dialogUserRef = this.dialog.open(JiraUsersComponent);
-    this.dialogUserRef.componentInstance.jiraSetting = jiraSetting;
+private onSubmit(response: any): void {
+  if (response.error) {
+    this.notificationService.danger('Error saving jira setting.');
+    return;
   }
 
-  private onSubmit(response: any): void {
-    if (response.error) {
-      this.notificationService.danger('Error saving jira setting.');
-      return;
-    }
-
-    if (response.isNewSetting) {
-      this.notificationService.success('New Jira setting has been successfully created.');
-    } else {
-      this.notificationService.success('New Jira setting has been successfully changed.');
-    }
-    this.loadInitialState();
+  if (response.isNewSetting) {
+    this.notificationService.success('New Jira setting has been successfully created.');
+  } else {
+    this.notificationService.success('Jira setting has been successfully changed.');
   }
+  this.loadInitialState();
+}
 }

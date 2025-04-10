@@ -8,9 +8,7 @@ import { JiraSetting } from 'src/app/models/jira-setting';
 export class FormJiraSetting {
   id: number;
   settingName: string;
-  userEmail: string;
   domain: string;
-  apiToken: string;
 
   static formJiraSetting(setting: JiraSetting): FormJiraSetting {
     let instance = new this();
@@ -24,9 +22,7 @@ export class FormJiraSetting {
     return new JiraSetting({
       id: setting.id,
       settingName: this.settingName,
-      userEmail: this.userEmail,
       domain: this.domain,
-      apiToken: this.apiToken
     });
   }
 }
@@ -76,13 +72,12 @@ export class JiraIntegrationFormComponent implements OnInit {
 
   private submit(form: NgForm): void {
     const updatedSetting = this.model.toSetting(this.setting);
-    console.log(updatedSetting);
     if(this.setting.id){
-      /*this.jiraSettingService.updateSetting(updatedSetting, this.setting.id).subscribe({
+      this.jiraSettingService.updateSetting(updatedSetting, this.setting.id).subscribe({
         next: (res) => {
           this.onSubmit.emit({ isNewSetting: false});
         }
-      });*/
+      });
     }else{
       this.jiraSettingService.createNewSetting(updatedSetting).subscribe({
         next: (res) => {

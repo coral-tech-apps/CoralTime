@@ -1260,7 +1260,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasOne("CoralTime.DAL.Models.Jira.JiraSetting", "JiraSetting")
                         .WithMany("JiraMemberSettings")
                         .HasForeignKey("JiraSettingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CoralTime.DAL.Models.ApplicationUser", "LastEditor")
@@ -1270,7 +1270,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasOne("CoralTime.DAL.Models.Member.Member", "Member")
                         .WithMany("JiraMemberSettings")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Creator");

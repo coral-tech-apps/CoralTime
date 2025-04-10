@@ -83,9 +83,13 @@ export class JiraSettingService {
     return this.http.post(this.constantService.jiraApi, jiraSetting)
   }
 
-  updateSetting(jiraSetting: JiraMemberSetting, id: number): Observable<any>{
+  updateSetting(jiraSetting: JiraSetting, id: number): Observable<any>{
+    const query = this.constantService.jiraApi + `/?id=${id}`;
+    return this.http.patch(query, jiraSetting)
+  }
+
+  fillJiraMemberSetting(jiraSetting: JiraMemberSetting, id: number): Observable<any>{
     const query = this.constantService.jiraApi + `/FillJiraMemberSetting?id=${id}`;
-    console.log(query);
     return this.http.patch(query, jiraSetting)
   }
 
