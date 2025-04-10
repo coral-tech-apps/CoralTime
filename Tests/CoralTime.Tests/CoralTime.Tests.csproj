@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>13</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Duende.AccessTokenManagement" Version="3.2.0" />
+    <PackageReference Include="Duende.IdentityServer" Version="7.1.1" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.1.1" />
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="7.1.1" />
+    <PackageReference Include="GeekLearning.Testavior" Version="1.4.1" />
+    <PackageReference Include="GeekLearning.Testavior.Configuration" Version="1.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.8.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.8.2" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
+    <ProjectReference Include="..\..\Services\CoralTime.Services.API\CoralTime\CoralTime.Services.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="coraltime.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
