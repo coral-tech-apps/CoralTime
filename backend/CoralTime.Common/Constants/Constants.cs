@@ -181,6 +181,12 @@ namespace CoralTime.Common.Constants
             public const string Tasks = "Tasks";
             public const string TimeEntries = "TimeEntries";
             public const string Setup = "Setup";
+            public const string GetAssignedUsers = "GetAssignedUsers";
+            public const string GetNotAssignedUsers = "GetNotAssignedUsers";
+            public const string GetMemberSettings = "GetMemberSettings";
+            public const string AssignToIntegration = "AssignToIntegration";
+            public const string FillJiraMemberSetting = "FillJiraMemberSetting";
+            public const string UnAssignToIntegration = "UnAssignToIntegration";
 
             private const string WithMembers = "/members";
             private const string WithProjects = "/projects";
