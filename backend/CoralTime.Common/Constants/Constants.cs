@@ -187,6 +187,10 @@ namespace CoralTime.Common.Constants
             public const string AssignToIntegration = "AssignToIntegration";
             public const string FillJiraMemberSetting = "FillJiraMemberSetting";
             public const string UnAssignToIntegration = "UnAssignToIntegration";
+            public const string GetAllJiraSettings = "GetAllJiraSettings";
+            public const string GetUnAssignJiraProject = "GetUnAssignJiraProject";
+            public const string GetAssignJiraProject = "GetAssignJiraProject";
+            public const string LoadJiraProject = "LoadJiraProject";
 
             private const string WithMembers = "/members";
             private const string WithProjects = "/projects";

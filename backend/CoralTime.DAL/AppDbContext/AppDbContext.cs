@@ -71,6 +71,10 @@ namespace CoralTime.DAL
 
         public DbSet<JiraMemberSettings> JiraMemberSettings { get; set; }
 
+        public DbSet<JiraProject> JiraProjects { get; set; }
+
+        public DbSet<LinkedJiraProject> LinkedJiraProjects { get; set; }
+
         public Task<int> SaveChangesAsync()
         {
             return base.SaveChangesAsync();
@@ -176,6 +180,10 @@ namespace CoralTime.DAL
                 .HasOne(pu => pu.VstsUser)
                 .WithMany(p => p.VstsProjectUsers).HasForeignKey(k => k.VstsUserId).OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<JiraSetting>()
+                .HasIndex(j => j.SettingName)
+                .IsUnique();
+
             builder.Entity<JiraMemberSettings>()
                 .HasOne(j => j.Member)
                 .WithMany(m => m.JiraMemberSettings).HasForeignKey(k => k.MemberId).OnDelete(DeleteBehavior.Cascade);
@@ -183,6 +191,22 @@ namespace CoralTime.DAL
             builder.Entity<JiraMemberSettings>()
                 .HasOne(j => j.JiraSetting)
                 .WithMany(jm => jm.JiraMemberSettings).HasForeignKey(k => k.JiraSettingId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<JiraProject>()
+                .HasIndex(j => j.JiraProjectId)
+                .IsUnique();
+
+            builder.Entity<JiraProject>()
+                .HasOne(j => j.JiraSetting)
+                .WithMany(js => js.JiraProjects).HasForeignKey(k => k.JiraSettingId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<LinkedJiraProject>()
+                .HasOne(j => j.Project)
+                .WithMany(p => p.LinkedJiraProjects).HasForeignKey(k => k.ProjectId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<LinkedJiraProject>()
+                .HasOne(j => j.JiraProject)
+                .WithMany(jp => jp.LinkedJiraProjects).HasForeignKey(k => k.JiraProjectId).OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(builder);
         }

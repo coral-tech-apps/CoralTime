@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CoralTime.Common.Constants;
+using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Models.Member;
 
 namespace CoralTime.DAL.Models
@@ -47,5 +48,7 @@ namespace CoralTime.DAL.Models
         public Constants.LockTimePeriod LockPeriod { get; set; }
 
         public int NotificationDay { get; set; }
+
+        public List<LinkedJiraProject> LinkedJiraProjects { get; set; }
     }
 }

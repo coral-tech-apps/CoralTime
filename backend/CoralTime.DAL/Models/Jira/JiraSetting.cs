@@ -15,10 +15,12 @@ namespace CoralTime.DAL.Models.Jira
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public string SettingName { get; set; }
+        public string SettingName { get; set; } //uniq
 
         public string Domain { get; set; }
 
         public List<JiraMemberSettings> JiraMemberSettings { get; set; }
+
+        public List<JiraProject> JiraProjects { get; set; }
     }
 }

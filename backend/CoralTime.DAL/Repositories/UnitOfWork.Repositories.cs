@@ -77,6 +77,14 @@ namespace CoralTime.DAL.Repositories
 
         private JiraMemberSettingsRepository _jiraMemberSettingsRepository;
 
+        public JiraProjectRepository JiraProjectRepository => _jiraProjectRepository ?? (_jiraProjectRepository = new JiraProjectRepository(AppDbContext, MemoryCache, UserId));
+
+        private JiraProjectRepository _jiraProjectRepository;
+
+        public LinkedJiraProjectRepository LinkedJiraProjectRepository => _linkedJiraProjectRepository ?? (_linkedJiraProjectRepository = new LinkedJiraProjectRepository(AppDbContext, MemoryCache, UserId));
+
+        private LinkedJiraProjectRepository _linkedJiraProjectRepository;
+
         #endregion List of Repositories
     }
 }

@@ -22,15 +22,11 @@ using Newtonsoft.Json.Linq;
 namespace CoralTime.BL.Services
 {
     [Authorize]
-    public class JiraServices : IJiraServices
+    public class JiraServices : BaseService, IJiraServices
     {
-        private readonly UnitOfWork _uow;
-        private readonly IMapper _mapper;
-
         public JiraServices(UnitOfWork uow, IMapper mapper)
+            :base(uow, mapper)
         {
-            _uow = uow;
-            _mapper = mapper;
         }
 
         public async Task<string> GetJiraAccountIdAsync(string email, string apiToken, string domain)
@@ -113,12 +109,12 @@ namespace CoralTime.BL.Services
 
         public List<JiraSettingsView> GetSettings()
         {
-            var jiraSettings = _uow.JiraSettingsRepository.GetSettings();
-            var result = _mapper.Map<List<JiraSettingsView>>(jiraSettings);
+            var jiraSettings = Uow.JiraSettingsRepository.GetSettings();
+            var result = Mapper.Map<List<JiraSettingsView>>(jiraSettings);
 
             foreach(var item in result)
             {
-                var memberCount = _uow.jiraMemberSettingsRepository.GetMemberCount(item.Id);
+                var memberCount = Uow.jiraMemberSettingsRepository.GetMemberCount(item.Id);
 
                 item.MemberCount = memberCount;
             }
@@ -128,43 +124,45 @@ namespace CoralTime.BL.Services
 
         public List<JiraMemberSettingView> GetMemberSetting(int memberId)
         {
-            return _uow.jiraMemberSettingsRepository.GetJiraMemberSettings(memberId);
+            return Uow.jiraMemberSettingsRepository.GetJiraMemberSettings(memberId);
              
         }
 
         public List<MemberView> GetAssignedUsers(int id)
         {
-            var assignedUsers = _uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
+            //TODO: fix urlImgPath
+            var assignedUsers = Uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
             var assignedUserId = assignedUsers.Select(u => u.Id).ToArray();
 
-            var ass = _uow.MemberRepository.GetQuery().Where(m => assignedUserId.Contains(m.Id));
+            var ass = Uow.MemberRepository.GetQuery().Where(m => assignedUserId.Contains(m.Id));
 
-            var result = _mapper.Map<List<MemberView>>(ass);
+            var result = Mapper.Map<List<MemberView>>(ass);
 
             return result;
         }
 
         public List<MemberView> GetNotAssignedUsers(int id)
         {
-            var assignedUsers = _uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
+            //TODO: fix urlImgPath
+            var assignedUsers = Uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
             var assignedUsersId = assignedUsers.Select(u => u.Id).ToArray();
 
-            var notAssignedUsers = _uow.MemberRepository.GetQuery().Where(m => !assignedUsersId.Contains(m.Id));
+            var notAssignedUsers = Uow.MemberRepository.GetQuery().Where(m => !assignedUsersId.Contains(m.Id));
 
-            var result = _mapper.Map<List<MemberView>>(notAssignedUsers);
+            var result = Mapper.Map<List<MemberView>>(notAssignedUsers);
 
             return result;
         }
 
         public void CreateSetting(JiraSettingsView jiraSettingsView)
         {
-            var currentUserId = _uow.MemberCurrent.UserId;
+            var currentUserId = Uow.MemberCurrent.UserId;
 
-            var newJiraSetting = _mapper.Map<JiraSettingsView, JiraSetting>(jiraSettingsView);
+            var newJiraSetting = Mapper.Map<JiraSettingsView, JiraSetting>(jiraSettingsView);
             try
             {
-                _uow.JiraSettingsRepository.Insert(newJiraSetting, currentUserId);
-                _uow.Save();
+                Uow.JiraSettingsRepository.Insert(newJiraSetting, currentUserId);
+                Uow.Save();
             }
             catch (Exception e)
             {
@@ -174,19 +172,19 @@ namespace CoralTime.BL.Services
 
         public void UpdateSetting(JiraSettingsView jiraSettingsView, int id)
         {
-            var currentJiraSetting = _uow.JiraSettingsRepository.GetById(id);
+            var currentJiraSetting = Uow.JiraSettingsRepository.GetById(id);
 
             if (currentJiraSetting == null)
             {
                 throw new CoralTimeEntityNotFoundException($"Jira setting with id {id} not found");
             }
 
-            _mapper.Map(jiraSettingsView, currentJiraSetting);
+            Mapper.Map(jiraSettingsView, currentJiraSetting);
 
             try
             {
-                _uow.JiraSettingsRepository.Update(currentJiraSetting);
-                _uow.Save();
+                Uow.JiraSettingsRepository.Update(currentJiraSetting);
+                Uow.Save();
             }
             catch (Exception e)
             {
@@ -196,7 +194,7 @@ namespace CoralTime.BL.Services
 
         public void AddSettingToMember(int memberId, int settingId)
         {
-            var currentUserId = _uow.MemberCurrent.UserId;
+            var currentUserId = Uow.MemberCurrent.UserId;
 
             var jiraMemberSetting = new JiraMemberSettings
             {
@@ -206,8 +204,8 @@ namespace CoralTime.BL.Services
 
             try
             {
-                _uow.jiraMemberSettingsRepository.Insert(jiraMemberSetting, currentUserId);
-                _uow.Save();
+                Uow.jiraMemberSettingsRepository.Insert(jiraMemberSetting, currentUserId);
+                Uow.Save();
             }
             catch (Exception e)
             {
@@ -217,21 +215,21 @@ namespace CoralTime.BL.Services
 
         public void FillMemberJiraSetting(int jiraMemberSettingId, JiraMemberSettingView jiraMemberSettingView)
         {
-            var currentUserId = _uow.MemberCurrent.UserId;
+            var currentUserId = Uow.MemberCurrent.UserId;
 
-            var currentJiraMemberSetting = _uow.jiraMemberSettingsRepository.GetById(jiraMemberSettingId);
+            var currentJiraMemberSetting = Uow.jiraMemberSettingsRepository.GetById(jiraMemberSettingId);
 
             if (currentJiraMemberSetting == null)
             {
                 throw new CoralTimeEntityNotFoundException($"Jira member setting with id {jiraMemberSettingId} not found");
             }
 
-            _mapper.Map(jiraMemberSettingView, currentJiraMemberSetting);
+            Mapper.Map(jiraMemberSettingView, currentJiraMemberSetting);
 
             try
             {
-                _uow.jiraMemberSettingsRepository.Update(currentJiraMemberSetting, currentUserId);
-                _uow.Save();
+                Uow.jiraMemberSettingsRepository.Update(currentJiraMemberSetting, currentUserId);
+                Uow.Save();
             }
             catch(Exception e)
             {
@@ -243,9 +241,9 @@ namespace CoralTime.BL.Services
 
         public void AssignIntegrationToUser(int memberId, int jiraSettingId)
         {
-            var jiraSetting = _uow.JiraSettingsRepository.GetById(jiraSettingId);
-            var member = _uow.MemberRepository.GetById(memberId);
-            var currentUserId = _uow.MemberCurrent.UserId;
+            var jiraSetting = Uow.JiraSettingsRepository.GetById(jiraSettingId);
+            var member = Uow.MemberRepository.GetById(memberId);
+            var currentUserId = Uow.MemberCurrent.UserId;
 
             var newJiraMemberSetting = new JiraMemberSettings
             {
@@ -257,8 +255,8 @@ namespace CoralTime.BL.Services
 
             try
             {
-                _uow.jiraMemberSettingsRepository.Insert(newJiraMemberSetting, currentUserId);
-                _uow.Save();
+                Uow.jiraMemberSettingsRepository.Insert(newJiraMemberSetting, currentUserId);
+                Uow.Save();
             }
             catch(Exception e)
             {
@@ -268,7 +266,7 @@ namespace CoralTime.BL.Services
 
         public void UnAssingIntegrationToUser(int memberId, int jiraSettingId)
         {
-            var jiraMemberSetting = _uow.jiraMemberSettingsRepository.GetJiraMemberSetting(jiraSettingId, memberId);
+            var jiraMemberSetting = Uow.jiraMemberSettingsRepository.GetJiraMemberSetting(jiraSettingId, memberId);
 
             if(jiraMemberSetting == null)
             {
@@ -277,8 +275,8 @@ namespace CoralTime.BL.Services
 
             try
             {
-                _uow.jiraMemberSettingsRepository.Delete(jiraMemberSetting);
-                _uow.Save();
+                Uow.jiraMemberSettingsRepository.Delete(jiraMemberSetting);
+                Uow.Save();
             }
             catch (Exception e)
             {
@@ -290,8 +288,8 @@ namespace CoralTime.BL.Services
         {
             try
             {
-                _uow.JiraSettingsRepository.Delete(id);
-                _uow.Save();
+                Uow.JiraSettingsRepository.Delete(id);
+                Uow.Save();
             }
             catch (Exception e)
             {
