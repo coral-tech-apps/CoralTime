@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.json",
-    "start:clean": "rimraf .angular && ng serve --proxy-config proxy.conf.json",
+    "start": "ng serve --proxy-config proxy.conf.js",
+    "start:clean": "rimraf .angular && ng serve --proxy-config proxy.conf.js",
     "build": "ng build",
     "build1": "rimraf .angular && ng build",
     "build:prod": "rimraf .angular && ng build --configuration production",
