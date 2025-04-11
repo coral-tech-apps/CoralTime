@@ -17,6 +17,11 @@ namespace CoralTime.DAL.Models.Jira
 
         public string SettingName { get; set; } //uniq
 
+       /* public int ClientId { get; set; }
+
+        [ForeignKey("ClientId")]
+        public Client Client { get; set; }*/
+
         public string Domain { get; set; }
 
         public List<JiraMemberSettings> JiraMemberSettings { get; set; }

@@ -3,6 +3,7 @@ using CoralTime.ViewModels.Jira;
 using CoralTime.ViewModels.JiraSettings;
 using CoralTime.ViewModels.Member;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoralTime.BL.Interfaces

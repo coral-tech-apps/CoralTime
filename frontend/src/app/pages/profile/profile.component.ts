@@ -35,7 +35,6 @@ export class ProfileComponent implements OnInit {
 	getAvatar(): void {
 		this.userPicService.loadUserPicture(this.userInfo.id).subscribe((avatarUrl: string) => {
 			this.avatarUrl = avatarUrl;
-      console.log(this.avatarUrl);
 		});
 	}
 

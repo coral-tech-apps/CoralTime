@@ -8,7 +8,7 @@ export const OUTPUT_DATE_FORMAT = 'YYYY-MM-DD';
 @Injectable()
 export class ConstantService {
 	apiBaseUrl = '/api/v1';
-  jiraApi = '/api/v1/Jira';
+  jiraApi = '/api/v1/odata/Jira';
   jiraProject = 'api/v1/JiraProject';
 	adminApi = '/api/v1/Admin/';
 	profileApi: string = '/api/v1/Profile';

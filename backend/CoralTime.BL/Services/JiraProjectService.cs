@@ -48,7 +48,7 @@ namespace CoralTime.BL.Services
                     else
                     {
                         //notSuccessStatusCode
-                        return null;
+                        return new List<JiraProject>();
                     }
                 }
                 catch (Exception ex)

@@ -7,7 +7,9 @@
   <div class="ct-search-container">
       <div class="ct-grid-search-filter">
           <!--add GlobFilet to comonent filterGlobal(value, 'contains')-->
-          <input class="ct-input-element" #gb placeholder="Search to add or remove teammates">
+          <input class="ct-input-element" #gb placeholder="Search to add or remove members"
+                [(ngModel)]="filterStr"
+                (input)="filterTable($event.target.value)">
           <i class="ct-search-icon"></i>
       </div>
   </div>

@@ -1,4 +1,5 @@
-import { catchError, map, Observable, of } from 'rxjs';
+import { first, filter } from 'rxjs/operators';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, QueryList } from '@angular/core';
 import { ODataServiceFactory, ODataService } from './odata';
@@ -6,35 +7,57 @@ import { JiraSetting } from '../models/jira-setting';
 import { ConstantService } from '../core/constant.service';
 import { User } from '../models/user';
 import { JiraMemberSetting } from '../models/jira-member-setting';
+import { Project } from '../models/project';
 
 @Injectable()
 export class JiraSettingService {
   authService: any;
 
 	constructor(private constantService: ConstantService,
+              private odataFactory: ODataServiceFactory,
 	            private http: HttpClient) {
 ;
 	}
 
-  getAssignedUsers(id: number): Observable<User[]>{
-    return this.http.get<User[]>(this.constantService.jiraApi + `/GetAssignedUsers?id=${id}`).pipe(
-      map(response => {
-        return response;
-      })
-    )
+  getAssignedUsers(id: number, filterStr: string = ''): any{
+    let odata = this.odataFactory.CreateService<User>('jira/GetAssignedUsers/'+id);
+    let filters: string[] = []
+
+    if(filterStr){
+      filters.push('contains(tolower(fullName),\'' + filterStr.trim().toLowerCase() + '\')');
+    }
+
+    let query = odata
+      .Query();
+    query.Filter(filters.join('and'));
+
+    return query.ExecWithCount().pipe(map(res => {
+			res.data = res.data.map((x: Object) => new User(x));
+			return res;
+		}));
   }
 
-  getNotAssignedUsers(id: number): Observable<User[]>{
-    return this.http.get<User[]>(this.constantService.jiraApi + `/GetNotAssignedUsers?id=${id}`).pipe(
-      map(response => {
-        return response;
-      })
-    )
+  getNotAssignedUsers(id: number, filterStr: string = ''): any{
+    let odata = this.odataFactory.CreateService<User>('jira/GetNotAssignedUsers/'+id);
+    let filters: string[] = []
+
+    if(filterStr){
+      filters.push('contains(tolower(fullName),\'' + filterStr.trim().toLowerCase() + '\')');
+    }
+
+    let query = odata
+      .Query();
+    query.Filter(filters.join('and'));
+
+    return query.ExecWithCount().pipe(map(res => {
+			res.data = res.data.map((x: Object) => new User(x));
+			return res;
+		}));
   }
 
   assignUserToIntegration(memberId: number, jiraSettingId: number): Observable<any>{
     return this.http.post(this.constantService.jiraApi + `/AssignToIntegration?memberId=${memberId}&jiraSettingId=${jiraSettingId}`, {}).pipe(
-      map(response => {
+      map((response) => {
         return response;
       })
     )
@@ -71,12 +94,23 @@ export class JiraSettingService {
     )
   }
 
-  loadSettingsTable(id: number): any{
-    return this.http.get<any[]>(this.constantService.jiraApi).pipe(
-      map(response => {
-        return response;
-      })
-    )
+  loadSettingsTable(id: number, filterStr: string = ''): any{
+    let odata = this.odataFactory.CreateService<JiraSetting>('Jira');
+    let filters: string[] = []
+
+    if(filterStr){
+      filters.push('contains(tolower(settingName),\'' + filterStr.trim().toLowerCase() + '\')');
+    }
+
+    let query = odata
+      .Query();
+
+    query.Filter(filters.join('and'));
+
+    return query.ExecWithCount().pipe(map(res => {
+			res.data = res.data.map((x: Object) => new JiraSetting(x));
+			return res;
+		}));
   }
 
   createNewSetting(jiraSetting: JiraSetting): Observable<any>{

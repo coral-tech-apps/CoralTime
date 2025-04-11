@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { JiraIntegrationFormComponent } from "./form/jira-integration-form.component";
 import { AuthService } from "src/app/core/auth/auth.service";
@@ -8,6 +8,8 @@ import { JiraSetting } from "src/app/models/jira-setting";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { JiraUsersComponent } from "./jira-member-form/jira-member.component";
 import { ConfirmDialogComponent } from "src/app/shared/form/confirm-dialog/confirm-dialog.component";
+import { PagedResult } from "src/app/services/odata";
+import { Table } from "primeng/table";
 
 @Component({
   selector: 'ct-jira-integration',
@@ -16,9 +18,14 @@ import { ConfirmDialogComponent } from "src/app/shared/form/confirm-dialog/confi
 })
 
 export class JiraIntegrationComponent {
+  filterStr: string = '';
+  @ViewChild('dt') tableRef!: Table;
+  tableData: any[];
+  tableData1: PagedResult<JiraSetting>;
+
   private dialogRef: MatDialogRef<JiraIntegrationFormComponent>;
   private dialogUserRef: MatDialogRef<JiraUsersComponent>;
-  tableData: any[] = [];
+
 
   constructor(private http: HttpClient,
     public authService: AuthService,
@@ -29,14 +36,13 @@ export class JiraIntegrationComponent {
 }
 
 ngOnInit(){
-  this.loadInitialState();
+  this.loadInitialState(this.filterStr);
 }
 
-loadInitialState(): void{
-  //TODO: fix filtering (at jira-member too)
-  this.jiraSettingService.loadSettingsTable(this.authService.authUser.id).subscribe(result => {
-    this.tableData = [],
-    this.tableData = result;
+//TODO: fix sorting
+loadInitialState(filterStr: string): void{
+  this.jiraSettingService.loadSettingsTable(this.authService.authUser.id, filterStr).subscribe((result : PagedResult<JiraSetting>) => {
+    this.tableData = result.data;
   })
 }
 
@@ -54,7 +60,7 @@ openJiraUsersDialog(jiraSetting: JiraSetting): void {
   this.dialogUserRef.componentInstance.jiraSetting = jiraSetting;
 
   this.dialogUserRef.afterClosed().subscribe(result => {
-    this.loadInitialState();
+    this.loadInitialState(this.filterStr);
   })
 }
 
@@ -92,6 +98,10 @@ private onSubmit(response: any): void {
   } else {
     this.notificationService.success('Jira setting has been successfully changed.');
   }
-  this.loadInitialState();
+  this.loadInitialState(this.filterStr);
+}
+
+filterTable(value: string): void{
+  this.loadInitialState(value);
 }
 }

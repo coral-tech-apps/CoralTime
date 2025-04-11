@@ -170,7 +170,6 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
   }
 
   dayClicked(day: IDay): void {
-    console.log('Legacy dayClicked method called');
     this.dateClicked.emit(day.date);
     this.handleDateSelection(day);
   }

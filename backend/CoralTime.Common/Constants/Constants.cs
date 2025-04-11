@@ -181,8 +181,10 @@ namespace CoralTime.Common.Constants
             public const string Tasks = "Tasks";
             public const string TimeEntries = "TimeEntries";
             public const string Setup = "Setup";
-            public const string GetAssignedUsers = "GetAssignedUsers";
-            public const string GetNotAssignedUsers = "GetNotAssignedUsers";
+
+            //TODO: delete this
+            public const string GetAssignedUsers = "GetAssignedUsers/{id}";
+            public const string GetNotAssignedUsers = "GetNotAssignedUsers/{id}";
             public const string GetMemberSettings = "GetMemberSettings";
             public const string AssignToIntegration = "AssignToIntegration";
             public const string FillJiraMemberSetting = "FillJiraMemberSetting";
@@ -218,6 +220,9 @@ namespace CoralTime.Common.Constants
                 public const string VstsProjectIntegrationMembersByProject = "VstsProjectIntegration(" + IdRoute + ")" + WithMembers;
                 public const string IsJiraEnableRoute = "IsJiraEnable";
                 public const string ChangeJiraFieldRoute = "ChangeJiraField";
+                public const string GetAssignedUsersRoute = "GetAssignedUsers(" + IdRoute + ")";
+                public const string GetNosAssignedUsersRoute = "GetNotAssignedUsers(" + IdRoute + ")";
+                public const string GetSettingsRoute = "GetSettings";
             }
         }
 

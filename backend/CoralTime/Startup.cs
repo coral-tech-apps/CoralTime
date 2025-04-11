@@ -58,6 +58,7 @@ using System.Collections.Generic;
 using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using CoralTime.ViewModels.JiraSettings;
 
 namespace CoralTime
 {
@@ -250,6 +251,7 @@ namespace CoralTime
             builder.EntitySet<ProjectNameView>("ProjectsNames");
             builder.EntitySet<MemberActionView>("MemberActions");
             builder.EntitySet<VstsProjectIntegrationView>("VstsProjectIntegration");
+            builder.EntitySet<JiraSettingsView>("GetAssignedUsers");
             builder.EnableLowerCamelCase();
             return builder.GetEdmModel();
         }
