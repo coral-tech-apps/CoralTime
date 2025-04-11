@@ -21,6 +21,7 @@ import { SettingsService } from './services/settings.service';
 import { ImpersonationService } from './services/impersonation.service';
 import { AdminService } from './services/admin.service';
 import { JiraSettingService } from './services/jira-settings.service';
+import { JiraProjectService } from './services/jira-project.service';
 import { AppInsightsService } from './services/app-insights.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
@@ -63,6 +64,7 @@ export function httpFactory(http: HttpClient) {
         }),
         ErrorHandler,
         JiraSettingService,
+        JiraProjectService,
         ClientsService,
         ImpersonationService,
         ProjectRolesService,

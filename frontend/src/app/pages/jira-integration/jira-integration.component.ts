@@ -33,6 +33,7 @@ ngOnInit(){
 }
 
 loadInitialState(): void{
+  //TODO: fix filtering (at jira-member too)
   this.jiraSettingService.loadSettingsTable(this.authService.authUser.id).subscribe(result => {
     this.tableData = [],
     this.tableData = result;

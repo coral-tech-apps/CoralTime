@@ -31,7 +31,6 @@
             </div>
 
             <div *ngIf="availablePeriod > 1" class="ct-calendar-projects">
-              <!-- TODO: fix ct-multiselect with customMultiSelect-->
                 <ct-multiselect
                         [panelStyleClass]="'ct-calendar-multiselect' + (impersonationService.impersonationUser ? ' ct-impersonate' : '')"
                         [(ngModel)]="projectIds"

@@ -80,8 +80,10 @@ namespace CoralTime.DAL.Mapper
             CreateMap<ReportsSettings, ReportsSettings>();
 
             CreateMap<JiraSettingsView, JiraSetting>();
-            CreateMap<JiraMemberSettingView, JiraMemberSettings>();
+            CreateMap<JiraMemberSettingView, JiraMemberSettings>()
+                .ForMember(dest => dest.JiraSettingId, opt => opt.Ignore());
             CreateMap<JiraSetting, JiraSettingsView>();
+            CreateMap<JiraProject, JiraProjectView>();
         }
 
         private class MemberToMemberViewConverter : ITypeConverter<Member, MemberView>

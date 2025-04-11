@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using CoralTime.ViewModels.Jira;
+using CoralTime.Common.Exceptions;
+using CoralTime.ViewModels.JiraSettings;
 
 namespace CoralTime.BL.Services
 {
@@ -52,7 +54,7 @@ namespace CoralTime.BL.Services
                 catch (Exception ex)
                 {
                     //exception
-                    return null;
+                    throw new CoralTimeDangerException("An error occured while loading jira projects", ex);
                 }
             }
         }
@@ -62,14 +64,27 @@ namespace CoralTime.BL.Services
             var currentUserId = Uow.MemberCurrent.UserId;
             var getNewJiraProjects = await GetJiraProjectAsync(email, apiToken, domain);
 
+            if(getNewJiraProjects == null)
+            {
+                return;
+            }
+
             var savedJiraProjectsAtDb = Uow.JiraProjectRepository.GetAll();
 
             var newJiraProjects = getNewJiraProjects
                 .Where(jPrj => !savedJiraProjectsAtDb.Any(dbPrj => dbPrj.JiraProjectId == jPrj.JiraProjectId));
 
-            foreach(var item in newJiraProjects)
+            try
             {
-                Uow.JiraProjectRepository.Insert(item, currentUserId);
+                foreach(var item in newJiraProjects)
+                {
+                    Uow.JiraProjectRepository.Insert(item, currentUserId);
+                }
+                Uow.Save();
+            }
+            catch(Exception e)
+            {
+                throw new CoralTimeDangerException("An error occured while loading jira projects", e);
             }
         }
 
@@ -78,7 +93,7 @@ namespace CoralTime.BL.Services
             return Uow.JiraProjectRepository.GetJiraProjectsBySettingId(jiraSettingId);
         }
 
-        public List<JiraProject> GetUnAssignJiraProject(int jiraSettingId)
+        public List<JiraProjectView> GetUnAssignJiraProject(int jiraSettingId)
         {
             var linkedProjectIds = Uow.LinkedJiraProjectRepository
                 .GetUnLinkedJiraProjects(jiraSettingId)
@@ -89,7 +104,9 @@ namespace CoralTime.BL.Services
                 .Where(j => !linkedProjectIds.Contains(j.Id) && j.JiraSettingId == jiraSettingId)
                 .ToList();
 
-            return unLinkedProjects;
+            var result = Mapper.Map<List<JiraProjectView>>(unLinkedProjects);
+
+            return result;
         }
 
         public List<JiraProjectLinkedView> GetAssingJiraProject(int jiraSettingId)

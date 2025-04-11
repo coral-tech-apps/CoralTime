@@ -9,6 +9,7 @@ export const OUTPUT_DATE_FORMAT = 'YYYY-MM-DD';
 export class ConstantService {
 	apiBaseUrl = '/api/v1';
   jiraApi = '/api/v1/Jira';
+  jiraProject = 'api/v1/JiraProject';
 	adminApi = '/api/v1/Admin/';
 	profileApi: string = '/api/v1/Profile';
 	reportsApi: string = '/api/v1/Reports';

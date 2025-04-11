@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
 	ngOnInit() {
 		this.route.data.forEach((data: { user: User }) => {
 			this.userInfo = this.impersonationService.impersonationUser || data.user;
-		});		
+		});
 		this.getAvatar();
 		this.getProjects();
 	}
@@ -35,6 +35,7 @@ export class ProfileComponent implements OnInit {
 	getAvatar(): void {
 		this.userPicService.loadUserPicture(this.userInfo.id).subscribe((avatarUrl: string) => {
 			this.avatarUrl = avatarUrl;
+      console.log(this.avatarUrl);
 		});
 	}
 

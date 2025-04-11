@@ -102,6 +102,7 @@ export class ProfileSettingsComponent implements OnInit {
 		return this.userPicService.loadUserPicture(this.userModel.id)
 			.toPromise()
 			.then((avatarUrl: string) => this.avatarUrl = avatarUrl);
+      console.log(this.avatarUrl);
 	}
 
 	isGravatarIcon(avatarUrl: string): boolean {

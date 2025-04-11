@@ -19,8 +19,8 @@ namespace CoralTime.Api.v1
         {
         }
 
-        // GET: api/v1/JiraProject/GetAllJiraSettings
-        [HttpGet(Constants.Routes.GetAllJiraSettings)]
+        // GET: api/v1/JiraProject/GetAllJiraProjectsBySettingId
+        [HttpGet(Constants.Routes.GetAllJiraProjectsBySettingId)]
         public IActionResult GetJiraProjects(int jiraSettingId)
         {
             return Ok(_service.GetJiraProjects(jiraSettingId));

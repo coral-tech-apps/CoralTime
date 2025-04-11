@@ -7,6 +7,8 @@ import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { NotificationService } from "src/app/core/notification.service";
 import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.component";
 import { JiraMemberSetting } from "src/app/models/jira-member-setting";
+import { JiraProjectProjectComponent } from "./jira-project-project/jira-project-project.component";
+import { JiraSetting } from "src/app/models/jira-setting";
 
 @Component({
   selector: 'ct-jira-settings',
@@ -19,6 +21,7 @@ showJiraTable: boolean;
 tableData: any[] = [];
 
 private dialogRef: MatDialogRef<JiraSettingFormComponent>;
+private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
 
   constructor(private http: HttpClient,
               public authService: AuthService,
@@ -60,6 +63,10 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
     });
   }
 
+  checkConncetion(): void{
+
+  }
+
   private onSubmit(response: any): void {
 		if (response.error) {
 			this.notificationService.danger('Error saving jira setting.');
@@ -68,6 +75,16 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
 		this.notificationService.success('Jira setting has been successfully changed.');
     this.loadInitialState();
 	}
+
+  onJiraProjectDialog(setting: JiraMemberSetting = null): void {
+    this.jiraProjectDialogRef = this.dialog.open(JiraProjectProjectComponent);
+    this.jiraProjectDialogRef.componentInstance.jiraSettingId = setting.jiraSettingId;
+    this.jiraProjectDialogRef.componentInstance.jiraSetting = setting;
+    /*this.jiraProjectDialogRef.componentInstance.onSubmit.subscribe((response) => {
+      this.jiraProjectDialogRef.close();
+      this.onSubmit(response);
+    });*/
+  }
 
   private loadJiraTable(){
     this.jiraSettingService.getJiraMemberSetting(this.authService.authUser.id).subscribe(result => {

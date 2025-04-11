@@ -1,0 +1,86 @@
+<div class="ct-dialog ct-data-dialog">
+  <div class="ct-dialog-title">
+      <span>Team members of</span><span>{{jiraSetting.settingName}}</span>
+      <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
+  </div>
+
+  <button mat-raised-button class="ct-blue-button" (click)="loadAllProjects()">
+    Update jira projects
+  </button>
+
+  <div class="ct-search-container">
+      <div class="ct-grid-search-filter">
+          <!--add GlobFilet to comonent filterGlobal(value, 'contains')-->
+          <input class="ct-input-element" #gb placeholder="Search to add or remove teammates">
+          <i class="ct-search-icon"></i>
+      </div>
+  </div>
+
+
+
+  <div class="ct-grid" #grid>
+      <div class="ct-popup-table-wrapper">
+          <p-table #assignedTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
+                   [value]="AddssignedJiraProjects"
+                   scrollable="true" [sortField]="'jiraProjectName'"
+                   [lazy]="true"
+                   [loading]="!isAssingedProjects">
+
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th pSortableColumn="jiraProjectName" [style]="{'width':'330px'}" class="ct-info-col">
+                          {{AddssignedJiraProjects?.count}} Jira project name
+                          <p-sortIcon field="jiraProjectName"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="projectName" [style]="{'width':'470px'}">
+                          Project name
+                          <p-sortIcon field="projectName"></p-sortIcon>
+                      </th>
+                  </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-jiraProject>
+                  <tr>
+                      <td>
+                          <span class="ct-grid-link-text">
+                            {{jiraProject.JiraProjectName}}
+                        </span>
+                      </td>
+                      <td>{{jiraProject.ProjectName}}</td>
+                  </tr>
+              </ng-template>
+          </p-table>
+
+          <p-table #notAssignTable class="ct-grid-container ct-grid-row-border"
+                   [value]="notAddssignedJiraProjects"
+                   scrollable="true" [sortField]="'key'"
+                   [lazy]="true"
+                   [loading]="!isNotAssingedProjects">
+
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th pSortableColumn="key" [style]="{'width':'330px'}" class="ct-info-col">
+                          Key
+                          <p-sortIcon field="key"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="name" [style]="{'width':'470px'}">
+                          Name
+                          <p-sortIcon field="name"></p-sortIcon>
+                      </th>
+                  </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-jiraProject>
+                  <tr>
+                      <td>
+                          <span class="ct-grid-link-text">
+                              {{jiraProject.key}}
+                          </span>
+                      </td>
+                      <td>{{jiraProject.name}}</td>
+                  </tr>
+              </ng-template>
+          </p-table>
+      </div>
+  </div>
+</div>
