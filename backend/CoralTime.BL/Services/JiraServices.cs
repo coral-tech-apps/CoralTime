@@ -24,9 +24,12 @@ namespace CoralTime.BL.Services
     [Authorize]
     public class JiraServices : BaseService, IJiraServices
     {
-        public JiraServices(UnitOfWork uow, IMapper mapper)
+        private readonly IImageService _avatarService;
+
+        public JiraServices(UnitOfWork uow, IMapper mapper, IImageService avatarService)
             :base(uow, mapper)
         {
+            _avatarService = avatarService;
         }
 
         public async Task<string> GetJiraAccountIdAsync(string email, string apiToken, string domain)
@@ -131,28 +134,12 @@ namespace CoralTime.BL.Services
 
         public List<MemberView> GetAssignedUsers(int id)
         {
-            //TODO: fix urlImgPath
-            var assignedUsers = Uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
-            var assignedUserId = assignedUsers.Select(u => u.Id).ToArray();
-
-            var ass = Uow.MemberRepository.GetQuery().Where(m => assignedUserId.Contains(m.Id));
-
-            var result = Mapper.Map<List<MemberView>>(ass);
-
-            return result;
+            return GetUsers(id, true);
         }
 
         public List<MemberView> GetNotAssignedUsers(int id)
         {
-            //TODO: fix urlImgPath
-            var assignedUsers = Uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
-            var assignedUsersId = assignedUsers.Select(u => u.Id).ToArray();
-
-            var notAssignedUsers = Uow.MemberRepository.GetQuery().Where(m => !assignedUsersId.Contains(m.Id));
-
-            var result = Mapper.Map<List<MemberView>>(notAssignedUsers);
-
-            return result;
+            return GetUsers(id, false);
         }
 
         public void CreateSetting(JiraSettingsView jiraSettingsView)
@@ -296,6 +283,26 @@ namespace CoralTime.BL.Services
             {
                 throw new CoralTimeDangerException("An error occurred while deleting jira setting", e);
             }
+        }
+
+        private List<MemberView> GetUsers(int id, bool assigned)
+        {
+            var assignedJiraUsers = Uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
+            var assignedJiraUsersId = assignedJiraUsers.Select(u => u.Id).ToArray();
+
+            var query = Uow.MemberRepository.GetQuery();
+            query = assigned
+                ? query.Where(m => assignedJiraUsersId.Contains(m.Id))
+                : query.Where(m => !assignedJiraUsersId.Contains(m.Id));
+
+            var result = Mapper.Map<List<MemberView>>(query);
+
+            foreach(var item in result)
+            {
+                item.UrlIcon = _avatarService.GetUrlIcon(item.Id);
+            }
+
+            return result;
         }
     }
 }
