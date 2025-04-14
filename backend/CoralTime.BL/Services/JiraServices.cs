@@ -115,8 +115,9 @@ namespace CoralTime.BL.Services
             foreach(var item in result)
             {
                 var memberCount = Uow.jiraMemberSettingsRepository.GetMemberCount(item.Id);
-
+                var client = Uow.ClientRepository.GetById(item.ClientId);
                 item.MemberCount = memberCount;
+                item.ClientName = client.Name;
             }
 
             return result;

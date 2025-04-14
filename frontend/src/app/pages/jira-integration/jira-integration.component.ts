@@ -67,8 +67,8 @@ openConnectionDialog(setting: JiraSetting = null): void {
   this.dialogRef = this.dialog.open(JiraIntegrationFormComponent);
   this.dialogRef.componentInstance.setting = setting;
   this.dialogRef.componentInstance.onSubmit.subscribe((response) => {
-    this.dialogRef.close();
     this.onSubmit(response);
+    this.dialogRef.close();
   });
 }
 

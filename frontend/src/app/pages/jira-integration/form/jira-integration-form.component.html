@@ -21,6 +21,24 @@
         </div>
       </div>
 
+      <!-- Client -->
+      <div>
+        <label class="ct-form-label">Client</label>
+        <div class="ct-required-field-container">
+          <ct-select [name]="'defaultProject'"
+                      [displayName]="'name'"
+                      [trackBy]="'id'"
+                      name = "clientId"
+                      [(ngModel)]="model.client"
+                      [options]="clients"
+                      (ngModelChange)="showErrors[1] = false">
+          </ct-select>
+        </div>
+        <div *ngIf="showErrors[1] && !model.client" class="ct-error-text">
+          Client is required!
+        </div>
+      </div>
+
       <!-- Domain -->
       <div>
         <label class="ct-form-label">Domain</label>

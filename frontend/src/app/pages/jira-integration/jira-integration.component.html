@@ -32,6 +32,7 @@
             <th pSortableColumn="domain" class="ct-info-col">
               Domain <p-sortIcon field="domain"></p-sortIcon>
             </th>
+            <th class="ct-info-col">Client</th>
             <th class="ct-info-col">Assign to user</th>
             <th class="ct-info-col">Edit</th>
             <th class="ct-info-col">Delete setting</th>
@@ -43,6 +44,7 @@
           <tr>
             <td class="ct-info-col">{{row.settingName}}</td>
             <td>{{row.domain}}</td>
+            <td>{{row.clientName}}</td>
             <td class="ct-info-col ct-small-padding" style="width: 140px;">
               <span class="ct-user-circle-icon"></span>
               <a (click)="openJiraUsersDialog(row)" class="ct-grid-link ct-grid-count">

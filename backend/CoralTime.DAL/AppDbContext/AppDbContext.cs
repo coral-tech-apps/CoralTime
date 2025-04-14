@@ -184,6 +184,10 @@ namespace CoralTime.DAL
                 .HasIndex(j => j.SettingName)
                 .IsUnique();
 
+            builder.Entity<Models.Client>()
+                .HasOne(c => c.JiraSetting)
+                .WithOne(j => j.Client).HasForeignKey<JiraSetting>(j => j.ClientId);
+
             builder.Entity<JiraMemberSettings>()
                 .HasOne(j => j.Member)
                 .WithMany(m => m.JiraMemberSettings).HasForeignKey(k => k.MemberId).OnDelete(DeleteBehavior.Cascade);

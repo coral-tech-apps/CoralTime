@@ -15,12 +15,12 @@ namespace CoralTime.DAL.Models.Jira
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public string SettingName { get; set; } //uniq
+        public string SettingName { get; set; }
 
-       /* public int ClientId { get; set; }
+        public int ClientId { get; set; }
 
         [ForeignKey("ClientId")]
-        public Client Client { get; set; }*/
+        public Client Client { get; set; }
 
         public string Domain { get; set; }
 

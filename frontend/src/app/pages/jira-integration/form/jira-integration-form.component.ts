@@ -4,17 +4,22 @@ import { map, finalize } from 'rxjs/operators';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { JiraSetting } from 'src/app/models/jira-setting';
+import { Client } from 'src/app/models/client';
+import { ClientsService } from 'src/app/services/clients.service';
 
 export class FormJiraSetting {
   id: number;
   settingName: string;
   domain: string;
+  clientId: number;
+  client: Client;
 
   static formJiraSetting(setting: JiraSetting): FormJiraSetting {
     let instance = new this();
     instance.id = setting.id;
     instance.settingName = setting.settingName;
     instance.domain = setting.domain;
+    instance.clientId = setting.clientId;
     return instance;
   }
 
@@ -47,8 +52,11 @@ export class JiraIntegrationFormComponent implements OnInit {
   submitButtonText: string;
   showErrors: boolean[] = []; // [settingName, domain]
   dialogRef: any;
+  clients: Client[];
 
-  constructor(private jiraSettingService: JiraSettingService) {}
+  constructor(private jiraSettingService: JiraSettingService,
+              private clienService: ClientsService
+  ) {}
 
   ngOnInit() {
     let setting = this.setting;
@@ -57,6 +65,7 @@ export class JiraIntegrationFormComponent implements OnInit {
     this.submitButtonText = this.setting.id ? 'Save' : 'Create';
     this.dialogHeader = this.setting.id ? 'Edit' : 'Create New Jira Setting';
     this.model = FormJiraSetting.formJiraSetting(this.setting);
+    this.getClients();
   }
 
   validateAndSubmit(form: NgForm): void {
@@ -70,8 +79,17 @@ export class JiraIntegrationFormComponent implements OnInit {
     });
   }
 
+  private getClients(): void{
+    this.clienService.getClients().subscribe(result => {
+      this.clients = result;
+      console.log(this.clients);
+    })
+  }
+
   private submit(form: NgForm): void {
     const updatedSetting = this.model.toSetting(this.setting);
+    updatedSetting.clientId = this.model.client.id;
+    console.log(updatedSetting);
     if(this.setting.id){
       this.jiraSettingService.updateSetting(updatedSetting, this.setting.id).subscribe({
         next: (res) => {
@@ -79,6 +97,7 @@ export class JiraIntegrationFormComponent implements OnInit {
         }
       });
     }else{
+      console.log(updatedSetting);
       this.jiraSettingService.createNewSetting(updatedSetting).subscribe({
         next: (res) => {
           this.onSubmit.emit({isNewSetting: true});
@@ -90,6 +109,7 @@ export class JiraIntegrationFormComponent implements OnInit {
   private validateForm(form: NgForm): Observable<boolean> {
     this.showErrors = [false, false, false, false];
     const isSettingNameValid = observableOf(form.controls['settingName'].valid);
+    const isClientIsValid = observableOf(!!this.model.clientId);
     const isDomainValid = observableOf(form.controls['domain'].valid);
 
     return observableForkJoin([isSettingNameValid, isDomainValid])
