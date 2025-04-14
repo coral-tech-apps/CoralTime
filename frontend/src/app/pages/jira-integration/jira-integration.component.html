@@ -17,9 +17,11 @@
   <div class="ct-data-table-wrapper">
     <p-table #dt class="ct-grid-container ct-grid-row-border"
           [sortField]="'settingName'"
-          [value]="tableData"
+          [value]="pagedResult?.data"
           [lazy]="true"
-          [loading]="false">
+          [loading]="!isAllProjects"
+          (onLazyLoad)="loadLazy($event)"
+          (onMoreContent)="loadLazy()">
 
         <!-- header -->
         <ng-template pTemplate="header">

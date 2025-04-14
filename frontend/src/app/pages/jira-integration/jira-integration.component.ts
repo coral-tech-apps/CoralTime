@@ -10,6 +10,8 @@ import { JiraUsersComponent } from "./jira-member-form/jira-member.component";
 import { ConfirmDialogComponent } from "src/app/shared/form/confirm-dialog/confirm-dialog.component";
 import { PagedResult } from "src/app/services/odata";
 import { Table } from "primeng/table";
+import { debounceTime, Subject, switchMap } from "rxjs";
+import { ROWS_ON_PAGE } from "src/app/core/constant.service";
 
 @Component({
   selector: 'ct-jira-integration',
@@ -21,8 +23,13 @@ export class JiraIntegrationComponent {
   filterStr: string = '';
   @ViewChild('dt') tableRef!: Table;
   tableData: any[];
-  tableData1: PagedResult<JiraSetting>;
+  pagedResult: PagedResult<JiraSetting>;
+  updatingGrid: boolean = false;
+  resizeObservable: Subject<any> = new Subject();
+  isAllProjects: boolean = false;
 
+  private subject = new Subject<any>();
+  private lastEvent: any;
   private dialogRef: MatDialogRef<JiraIntegrationFormComponent>;
   private dialogUserRef: MatDialogRef<JiraUsersComponent>;
 
@@ -36,14 +43,24 @@ export class JiraIntegrationComponent {
 }
 
 ngOnInit(){
-  this.loadInitialState(this.filterStr);
+  this.loadInitialState();
 }
 
-//TODO: fix sorting
-loadInitialState(filterStr: string): void{
-  this.jiraSettingService.loadSettingsTable(this.authService.authUser.id, filterStr).subscribe((result : PagedResult<JiraSetting>) => {
-    this.tableData = result.data;
-  })
+private loadInitialState(): void{
+  this.subject.pipe(debounceTime(500),switchMap(() => {
+        return this.jiraSettingService.loadSettingsTable(this.authService.authUser.id, this.lastEvent, this.filterStr);
+      }),)
+        .subscribe((result : PagedResult<JiraSetting>) => {
+          this.tableData = result.data;
+          this.pagedResult = result;
+          this.checkIsAllProjects();
+        });
+}
+
+private checkIsAllProjects(): void {
+  if (this.pagedResult && this.pagedResult.data.length >= this.pagedResult.count) {
+    this.isAllProjects = true;
+  }
 }
 
 openConnectionDialog(setting: JiraSetting = null): void {
@@ -60,7 +77,7 @@ openJiraUsersDialog(jiraSetting: JiraSetting): void {
   this.dialogUserRef.componentInstance.jiraSetting = jiraSetting;
 
   this.dialogUserRef.afterClosed().subscribe(result => {
-    this.loadInitialState(this.filterStr);
+    this.loadLazy(null, true);
   })
 }
 
@@ -98,10 +115,36 @@ private onSubmit(response: any): void {
   } else {
     this.notificationService.success('Jira setting has been successfully changed.');
   }
-  this.loadInitialState(this.filterStr);
+  this.loadLazy(null, true);
 }
 
 filterTable(value: string): void{
-  this.loadInitialState(value);
+  if(this.tableRef){
+    this.tableRef.filterGlobal(value, 'contains');
+  }
 }
+
+loadLazy(event = null, updatePage?: boolean): void {
+    if (event) {
+      this.lastEvent = event;
+    }
+    if (updatePage) {
+      this.updatingGrid = updatePage;
+      this.lastEvent.first = 0;
+    }
+    if (event || updatePage) {
+      this.isAllProjects = false;
+      this.pagedResult = null;
+      this.resizeObservable.next(true);
+    }
+    this.lastEvent.rows = ROWS_ON_PAGE;
+    if (!updatePage && this.isAllProjects) {
+      return;
+    }
+
+    this.subject.next({
+      event,
+      filterStr: this.filterStr
+    });
+  }
 }

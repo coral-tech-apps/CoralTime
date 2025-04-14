@@ -9,7 +9,7 @@
           <!--add GlobFilet to comonent filterGlobal(value, 'contains')-->
           <input class="ct-input-element" #gb placeholder="Search to add or remove members"
                 [(ngModel)]="filterStr"
-                (input)="filterTable($event.target.value)">
+                (input)="onGlobalFilter($event.target.value)">
           <i class="ct-search-icon"></i>
       </div>
   </div>
@@ -17,10 +17,12 @@
   <div class="ct-grid" #grid>
       <div class="ct-popup-table-wrapper">
           <p-table #assignedTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
-                   [value]="AssignedUsersPagedResult"
+                   [value]="assignedUsersPagedResult?.data"
                    scrollable="true" [sortField]="'fullName'"
                    [lazy]="true"
-                   [loading]="!isAllAssignedUsers">
+                   [loading]="!isAllAssignedUsers"
+                   (onLazyLoad)="updateAssignedUsers($event)"
+                   (onMoreContent)="updateAssignedUsers()">
 
               <ng-template pTemplate="header">
                   <tr>
@@ -55,10 +57,12 @@
           </p-table>
 
           <p-table #notAssignTable class="ct-grid-container ct-grid-row-border"
-                   [value]="notAssignedUsersPagedResult"
+                   [value]="notAssignedUsersPagedResult?.data"
                    scrollable="true" [sortField]="'fullName'"
                    [lazy]="true"
-                   [loading]="!isAllNotAssignedUsers">
+                   [loading]="!isAllNotAssignedUsers"
+                   (onLazyLoad)="updateNotAssignedUsers($event)"
+                   (onMoreContent)="updateNotAssignedUsers()">
 
               <ng-template pTemplate="header">
                   <tr>

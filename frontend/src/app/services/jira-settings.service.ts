@@ -19,16 +19,22 @@ export class JiraSettingService {
 ;
 	}
 
-  getAssignedUsers(id: number, filterStr: string = ''): any{
+  getAssignedUsers(id: number, event, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<User>('jira/GetAssignedUsers/'+id);
     let filters: string[] = []
 
+    let query = odata
+      .Query();
+
+    if (event.sortField) {
+      query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    } else {
+      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    }
     if(filterStr){
       filters.push('contains(tolower(fullName),\'' + filterStr.trim().toLowerCase() + '\')');
     }
 
-    let query = odata
-      .Query();
     query.Filter(filters.join('and'));
 
     return query.ExecWithCount().pipe(map(res => {
@@ -37,16 +43,22 @@ export class JiraSettingService {
 		}));
   }
 
-  getNotAssignedUsers(id: number, filterStr: string = ''): any{
+  getNotAssignedUsers(id: number, event, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<User>('jira/GetNotAssignedUsers/'+id);
     let filters: string[] = []
 
+    let query = odata
+      .Query();
+
+    if (event.sortField) {
+      query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    } else {
+      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    }
     if(filterStr){
       filters.push('contains(tolower(fullName),\'' + filterStr.trim().toLowerCase() + '\')');
     }
 
-    let query = odata
-      .Query();
     query.Filter(filters.join('and'));
 
     return query.ExecWithCount().pipe(map(res => {
@@ -94,16 +106,21 @@ export class JiraSettingService {
     )
   }
 
-  loadSettingsTable(id: number, filterStr: string = ''): any{
+  loadSettingsTable(id: number, event, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<JiraSetting>('Jira');
     let filters: string[] = []
 
+    let query = odata
+      .Query();
+
+    if (event.sortField) {
+      query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    } else {
+      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    }
     if(filterStr){
       filters.push('contains(tolower(settingName),\'' + filterStr.trim().toLowerCase() + '\')');
     }
-
-    let query = odata
-      .Query();
 
     query.Filter(filters.join('and'));
 
