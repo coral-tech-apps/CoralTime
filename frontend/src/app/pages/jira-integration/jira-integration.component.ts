@@ -73,7 +73,9 @@ openConnectionDialog(setting: JiraSetting = null): void {
 }
 
 openJiraUsersDialog(jiraSetting: JiraSetting): void {
-  this.dialogUserRef = this.dialog.open(JiraUsersComponent);
+  this.dialogUserRef = this.dialog.open(JiraUsersComponent, {
+    panelClass: 'scrollable-dialog'
+  });
   this.dialogUserRef.componentInstance.jiraSetting = jiraSetting;
 
   this.dialogUserRef.afterClosed().subscribe(result => {

@@ -82,14 +82,12 @@ export class JiraIntegrationFormComponent implements OnInit {
   private getClients(): void{
     this.clienService.getClients().subscribe(result => {
       this.clients = result;
-      console.log(this.clients);
     })
   }
 
   private submit(form: NgForm): void {
     const updatedSetting = this.model.toSetting(this.setting);
     updatedSetting.clientId = this.model.client.id;
-    console.log(updatedSetting);
     if(this.setting.id){
       this.jiraSettingService.updateSetting(updatedSetting, this.setting.id).subscribe({
         next: (res) => {
@@ -97,7 +95,6 @@ export class JiraIntegrationFormComponent implements OnInit {
         }
       });
     }else{
-      console.log(updatedSetting);
       this.jiraSettingService.createNewSetting(updatedSetting).subscribe({
         next: (res) => {
           this.onSubmit.emit({isNewSetting: true});

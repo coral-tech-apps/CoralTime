@@ -145,12 +145,16 @@ export class ProjectsComponent implements OnInit {
 	}
 
 	openProjectTasksDialog(project: Project): void {
-		this.dialogTasksRef = this.dialog.open(ProjectTasksComponent);
+		this.dialogTasksRef = this.dialog.open(ProjectTasksComponent, {
+      panelClass: 'scrollable-dialog'
+    });
 		this.dialogTasksRef.componentInstance.project = project;
 	}
 
 	openProjectUsersDialog(project: Project): void {
-		this.dialogUserRef = this.dialog.open(ProjectUsersComponent);
+		this.dialogUserRef = this.dialog.open(ProjectUsersComponent, {
+      panelClass: 'scrollable-dialog'
+    });
 		this.dialogUserRef.componentInstance.project = project;
 	}
 

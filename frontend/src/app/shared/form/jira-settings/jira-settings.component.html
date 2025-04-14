@@ -1,4 +1,4 @@
-<div class="ct-page-container ct-clients-page" style="width: 1000px;">
+<div class="ct-page-container ct-clients-page ct-max-width">
   <div class="ct-page-header">
     <mat-checkbox [(ngModel)]="showJiraTable" (ngModelChange)="onToggle()">
         Jira Enable
@@ -36,9 +36,6 @@
       <th>
         Projects
       </th>
-     <!-- <th>
-        Delete
-      </th> -->
     </tr>
   </ng-template>
 
@@ -57,9 +54,6 @@
       <td class="ct-small-padding">
         <a class="ct-grid-settings-icon" (click)="onJiraProjectDialog(row)"></a>
       </td>
-<!--      <td>
-        <a class="fa fa-times" (click) = "deleteSetting(rowIndex)"></a>
-      </td> -->
     </tr>
   </ng-template>
   </p-table>

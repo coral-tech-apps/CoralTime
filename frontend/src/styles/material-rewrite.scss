@@ -7,8 +7,11 @@
   opacity: 0.35;
 }
 
-.mat-mdc-dialog-container {
+.scrollable-dialog .mat-mdc-dialog-container{
   overflow-y: auto;
+}
+
+.mat-mdc-dialog-container {
   position: relative;
   border-radius: 5px !important;
   background-color: $calendarTaskColor;

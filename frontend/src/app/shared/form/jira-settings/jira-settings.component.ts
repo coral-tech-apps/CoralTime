@@ -5,10 +5,8 @@ import { AuthService } from "src/app/core/auth/auth.service";
 import { JiraSettingFormComponent } from "./form/jira-settings-form.component";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { NotificationService } from "src/app/core/notification.service";
-import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.component";
 import { JiraMemberSetting } from "src/app/models/jira-member-setting";
 import { JiraProjectProjectComponent } from "./jira-project-project/jira-project-project.component";
-import { JiraSetting } from "src/app/models/jira-setting";
 
 @Component({
   selector: 'ct-jira-settings',
