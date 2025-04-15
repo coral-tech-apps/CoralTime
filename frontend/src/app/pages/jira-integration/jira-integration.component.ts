@@ -1,10 +1,10 @@
+import { JiraSetting } from './../../models/jira-setting';
 import { Component, ViewChild } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { JiraIntegrationFormComponent } from "./form/jira-integration-form.component";
 import { AuthService } from "src/app/core/auth/auth.service";
 import { HttpClient } from "@angular/common/http";
 import { NotificationService } from "src/app/core/notification.service";
-import { JiraSetting } from "src/app/models/jira-setting";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { JiraUsersComponent } from "./jira-member-form/jira-member.component";
 import { ConfirmDialogComponent } from "src/app/shared/form/confirm-dialog/confirm-dialog.component";
@@ -12,6 +12,7 @@ import { PagedResult } from "src/app/services/odata";
 import { Table } from "primeng/table";
 import { debounceTime, Subject, switchMap } from "rxjs";
 import { ROWS_ON_PAGE } from "src/app/core/constant.service";
+import { JiraLinkedProjectComponent } from './jira-linked-project/jira-linked-project.component';
 
 @Component({
   selector: 'ct-jira-integration',
@@ -32,7 +33,7 @@ export class JiraIntegrationComponent {
   private lastEvent: any;
   private dialogRef: MatDialogRef<JiraIntegrationFormComponent>;
   private dialogUserRef: MatDialogRef<JiraUsersComponent>;
-
+  private dialogLinkedPrjectRef: MatDialogRef<JiraLinkedProjectComponent>;
 
   constructor(private http: HttpClient,
     public authService: AuthService,
@@ -81,6 +82,13 @@ openJiraUsersDialog(jiraSetting: JiraSetting): void {
   this.dialogUserRef.afterClosed().subscribe(result => {
     this.loadLazy(null, true);
   })
+}
+
+opennLinkedJiraDialog(jiraSetting: JiraSetting): void{
+  this.dialogLinkedPrjectRef = this.dialog.open(JiraLinkedProjectComponent, {
+    panelClass: 'scrollable-dialog'
+  });
+  this.dialogLinkedPrjectRef.componentInstance.jiraSetting = jiraSetting;
 }
 
 deleteSetting(index: number): void{

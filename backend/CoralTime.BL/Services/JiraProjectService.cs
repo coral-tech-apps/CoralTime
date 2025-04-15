@@ -58,13 +58,13 @@ namespace CoralTime.BL.Services
                 }
             }
         }
-    
+
         public async Task LoadJiraProject(string domain, string apiToken, string email)
         {
             var currentUserId = Uow.MemberCurrent.UserId;
             var getNewJiraProjects = await GetJiraProjectAsync(email, apiToken, domain);
 
-            if(getNewJiraProjects == null)
+            if (getNewJiraProjects == null)
             {
                 return;
             }
@@ -76,13 +76,13 @@ namespace CoralTime.BL.Services
 
             try
             {
-                foreach(var item in newJiraProjects)
+                foreach (var item in newJiraProjects)
                 {
                     Uow.JiraProjectRepository.Insert(item, currentUserId);
                 }
                 Uow.Save();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new CoralTimeDangerException("An error occured while loading jira projects", e);
             }
@@ -112,16 +112,49 @@ namespace CoralTime.BL.Services
         public List<JiraProjectLinkedView> GetAssingJiraProject(int jiraSettingId)
         {
             var linkedProject = Uow.LinkedJiraProjectRepository
-                .GetUnLinkedJiraProjects(jiraSettingId)
-                .Select(j => new JiraProjectLinkedView
-                {
-                    JiraProjectName = j.JiraProject.Name,
-                    ProjectName = j.Project.Name
-                })
-                .ToList();
-
+              .GetUnLinkedJiraProjects(jiraSettingId)
+              .Select(j => new JiraProjectLinkedView
+              {
+                  Id = j.Id,
+                  JiraProjectName = j.JiraProject.Name,
+                  ProjectName = j.Project.Name
+              })
+              .ToList();
 
             return linkedProject;
+        }
+
+        public void LinkJiraProject(int projectId, int jiraProjectId)
+        {
+            var currentUserId = Uow.MemberCurrent.UserId;
+            var newLinkedItem = new LinkedJiraProject
+            {
+                ProjectId = projectId,
+                JiraProjectId = jiraProjectId
+            };
+
+            try
+            {
+                Uow.LinkedJiraProjectRepository.Insert(newLinkedItem, currentUserId);
+                Uow.Save();
+            }
+            catch(Exception ex)
+            {
+                throw new CoralTimeDangerException("An error occured while linking project with Jira project", ex);
+            }
+        }
+
+        public void RemoveProjectJiraLink(int id)
+        {
+            try
+            {
+                Uow.LinkedJiraProjectRepository.Delete(id);
+                Uow.Save();
+            }
+            catch (Exception ex)
+            {
+                throw new CoralTimeDangerException("An error occured while unlinking project from Jira project", ex);
+            }
         }
     }
 }

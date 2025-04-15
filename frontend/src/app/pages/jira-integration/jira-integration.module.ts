@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { JiraIntegrationComponent } from './jira-integration.component';
 import { JiraIntegrationRoutingModule } from './jira-integration-routin.module';
 import { JiraUsersComponent } from './jira-member-form/jira-member.component';
+import { JiraLinkedProjectComponent } from './jira-linked-project/jira-linked-project.component';
 
 @NgModule({
     imports: [
@@ -13,11 +14,13 @@ import { JiraUsersComponent } from './jira-member-form/jira-member.component';
     ],
     declarations: [
       JiraIntegrationComponent,
-      JiraUsersComponent
+      JiraUsersComponent,
+      JiraLinkedProjectComponent
     ],
     exports: [
       JiraIntegrationComponent,
-      JiraUsersComponent
+      JiraUsersComponent,
+      JiraLinkedProjectComponent
     ]
 })
 

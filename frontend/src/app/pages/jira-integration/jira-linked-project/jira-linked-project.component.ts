@@ -1,33 +1,36 @@
+
+import { Component, Input, OnInit, ViewChild} from '@angular/core';
+import { NotificationService } from '../../../core/notification.service';
+import { AclService } from '../../../core/auth/acl.service';
+import { AuthService } from '../../../core/auth/auth.service';
+import { User } from '../../../models/user';
 import { debounceTime, Subject, switchMap } from 'rxjs';
 import { JiraSetting } from 'src/app/models/jira-setting';
 import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { User } from 'src/app/models/user';
-import { AuthService } from 'src/app/core/auth/auth.service';
-import { NotificationService } from 'src/app/core/notification.service';
-import { JiraProjectService } from 'src/app/services/jira-project.service';
-import { JiraMemberSetting } from 'src/app/models/jira-member-setting';
+import { PagedResult } from 'src/app/services/odata';
 import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
 import { Table } from 'primeng/table';
-import { PagedResult } from 'src/app/services/odata';
-import { NotAssignedJiraProject } from 'src/app/models/not-assigned-jira-project';
+import { Project } from 'src/app/models/project';
+import { ProjectsService } from 'src/app/services/projects.service';
 import { AssignedJiraProject } from 'src/app/models/assigned-jira-project';
+import { NotAssignedJiraProject } from 'src/app/models/not-assigned-jira-project';
+import { JiraProjectService } from 'src/app/services/jira-project.service';
 
 @Component({
-    selector: 'ct-jira-project',
-    templateUrl: 'jira-project-project.component.html',
+    selector: 'ct-jira-linked-project',
+    templateUrl: 'jira-linked-project.component.html',
     standalone: false
 })
 
-export class JiraProjectProjectComponent implements OnInit{
-  @Input() jiraSetting: JiraMemberSetting;
+export class JiraLinkedProjectComponent implements OnInit{
+  @Input() jiraSetting: JiraSetting;
   @ViewChild('assignedTable') assignTable: Table;
   @ViewChild('notAssignTable') notAssignTable: Table;
 
   filterStr: string = '';
-  jiraSettingId: number;
+  projects: Project[];
 
   assignedJiraProjects: PagedResult<AssignedJiraProject>;
   updatingAssignedJiraProject: boolean = false;
@@ -41,28 +44,38 @@ export class JiraProjectProjectComponent implements OnInit{
   private notAssignedProjectsSubject = new Subject<any>();
   private notAssignedProjectsLastEvent: any;
 
-
-  onSubmit: any;
+  private projectsLastEvent: any;
 
   constructor(private http: HttpClient,
     public authService: AuthService,
-    private jiraProjectService: JiraProjectService,
-    private jiraSettingService: JiraSettingService,
-    private notificationService: NotificationService,){
+    private projectService: ProjectsService,
+    private jiraProjectService: JiraProjectService){
 
 }
 
   ngOnInit(): void {
-    this.loadAssignedProjects();
-    this.loadUnAssignedProjects();
-
+   this.loadProjects();
+   this.loadUnAssignedProjects();
+   this.loadAssignedProjects();
   }
 
-  //Assigned Projects
+  loadProjects(): void{
+    if(!this.projectsLastEvent){
+      this.projectsLastEvent = {
+        first: 0,
+        rows: ROWS_ON_PAGE
+      }
+    }
+    this.projectService.getClientProjects(this.projectsLastEvent, this.filterStr, true, this.jiraSetting.clientId).subscribe(result => {
+      this.projects = result.data;
+    })
+  }
+
+  // AssignedProject
 
   loadAssignedProjects(): void{
     this.assignedProjectsSubject.pipe(debounceTime(500),switchMap(() => {
-      return this.jiraProjectService.getAssignedProjects(this.jiraSettingId, this.assignedProjectsLastEvent, this.filterStr)
+      return this.jiraProjectService.getAssignedProjects(this.jiraSetting.id, this.assignedProjectsLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<AssignedJiraProject>) => {
       this.assignedJiraProjects = result;
@@ -93,11 +106,11 @@ export class JiraProjectProjectComponent implements OnInit{
     });
   }
 
-  //Not Assigned Projects
+  //NotAssigned Projects
 
   loadUnAssignedProjects(): void{
     this.notAssignedProjectsSubject.pipe(debounceTime(500),switchMap(() => {
-      return this.jiraProjectService.getNotAssignedProjects(this.jiraSettingId, this.notAssignedProjectsLastEvent, this.filterStr)
+      return this.jiraProjectService.getNotAssignedProjects(this.jiraSetting.id, this.notAssignedProjectsLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<NotAssignedJiraProject>) => {
       this.notAssignedJiraProjects = result;
@@ -128,13 +141,6 @@ export class JiraProjectProjectComponent implements OnInit{
     });
   }
 
-  //All projects
-
-  loadAllProjects(): void{
-    this.jiraProjectService.loadJiraProjects(this.jiraSetting.domain, this.jiraSetting.userEmail, this.jiraSetting.apiToken).subscribe();
-  }
-
-  // Filtering
 
   onGlobalFilter(value: string){
     this.assignTable.filterGlobal(value, 'contains');
@@ -142,5 +148,18 @@ export class JiraProjectProjectComponent implements OnInit{
      this.notAssignTable.filterGlobal(value, 'contains');
     }
   }
-}
 
+  onSelectionChange(event: any, jiraProject: NotAssignedJiraProject):void{
+    this.jiraProjectService.linkProjects(event.value.id, jiraProject.id).subscribe(result => {
+      this.updateAssignedProjects(null, true);
+      this.updateNotAssignedProjects(null, true);
+    });
+  }
+
+  unLink(assignedJiraProject: AssignedJiraProject): void{
+    this.jiraProjectService.removeProjectJiraLink(assignedJiraProject.id).subscribe(result => {
+      this.updateAssignedProjects(null, true);
+      this.updateNotAssignedProjects(null, true);
+    })
+  }
+}

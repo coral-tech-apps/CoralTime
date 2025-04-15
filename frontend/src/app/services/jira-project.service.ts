@@ -90,4 +90,20 @@ export class JiraProjectService {
       })
     )
   }
+
+  linkProjects(projectId: number, jiraProjectId: number): Observable<any>{
+    return this.http.post(this.constantService.jiraProject + `/LinkProjects?projectId=${projectId}&jiraProjectId=${jiraProjectId}`, {}).pipe(
+      map(response => {
+        return response;
+      })
+    )
+  }
+
+  removeProjectJiraLink(id: number): Observable<any>{
+    return this.http.delete(this.constantService.jiraProject + `/RemoveProjectJiraLink?id=${id}`).pipe(
+      map(response => {
+        return response;
+      })
+    )
+  }
 }

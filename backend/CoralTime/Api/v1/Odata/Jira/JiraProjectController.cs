@@ -1,5 +1,7 @@
 ﻿using CoralTime.BL.Interfaces;
 using CoralTime.Common.Constants;
+using CoralTime.DAL.Models.Jira;
+using CoralTime.DAL.Models;
 using CoralTime.ViewModels.Jira;
 using CoralTime.ViewModels.JiraSettings;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace CoralTime.Api.v1.Odata.Jira
 {
@@ -60,7 +63,35 @@ namespace CoralTime.Api.v1.Odata.Jira
             {
                 return BadRequest(ex);
             }
-        } 
+        }
+
+        [HttpPost(Constants.Routes.LinkProjects)]
+        public IActionResult LinkProjectJiraProject(int projectId, int jiraProjectId)
+        {
+            try
+            {
+                _service.LinkJiraProject(projectId, jiraProjectId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpDelete(Constants.Routes.RemovProjectJiraLink)]
+        public IActionResult RemoveProjectJiraLink(int id)
+        {
+            try
+            {
+                _service.RemoveProjectJiraLink(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }
 

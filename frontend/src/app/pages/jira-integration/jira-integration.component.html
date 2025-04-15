@@ -35,6 +35,7 @@
             <th class="ct-info-col">Client</th>
             <th class="ct-info-col">Assign to user</th>
             <th class="ct-info-col">Edit</th>
+            <th class="ct-info-col">Projects</th>
             <th class="ct-info-col">Delete setting</th>
           </tr>
         </ng-template>
@@ -54,6 +55,9 @@
             </td>
             <td class="ct-small-padding">
               <a class="ct-grid-settings-icon" (click)="openConnectionDialog(row)"></a>
+            </td>
+            <td class="ct-small-padding">
+              <a class="ct-grid-settings-icon" (click)="opennLinkedJiraDialog(row)"></a>
             </td>
             <td>
               <i class="fa fa-times" (click)="deleteSetting(rowIndex)" style="cursor: pointer;"></i>

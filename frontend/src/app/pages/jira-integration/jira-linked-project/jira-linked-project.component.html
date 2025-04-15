@@ -4,24 +4,18 @@
       <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
   </div>
 
-  <button mat-raised-button class="ct-blue-button" (click)="loadAllProjects()">
-    Update jira projects
-  </button>
-
   <div class="ct-search-container">
       <div class="ct-grid-search-filter">
-          <input class="ct-input-element" #gb placeholder="Search to add or remove teammates"
-          [(ngModel)]="filterStr"
-          (input)="onGlobalFilter($event.target.value)">
+          <input class="ct-input-element" #gb placeholder="Search to link or delete link projects"
+                [(ngModel)]="filterStr"
+                (input)="onGlobalFilter($event.target.value)">
           <i class="ct-search-icon"></i>
       </div>
   </div>
 
-
-
   <div class="ct-grid" #grid>
       <div class="ct-popup-table-wrapper">
-          <p-table #assignedTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
+        <p-table #assignedTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
                    [value]="assignedJiraProjects?.data"
                    scrollable="true" [sortField]="'jiraProjectName'"
                    [lazy]="true"
@@ -39,6 +33,9 @@
                           Project name
                           <p-sortIcon field="projectName"></p-sortIcon>
                       </th>
+                      <th>
+                          Remove
+                      </th>
                   </tr>
               </ng-template>
 
@@ -48,6 +45,9 @@
                             {{jiraProject.jiraProjectName}}
                       </td>
                       <td>{{jiraProject.projectName}}</td>
+                      <td>
+                        <i class="fa fa-times" (click)="unLink(jiraProject)" style="cursor: pointer;"></i>
+                      </td>
                   </tr>
               </ng-template>
           </p-table>
@@ -66,9 +66,12 @@
                       Name
                       <p-sortIcon field="name"></p-sortIcon>
                     </th>
-                    <th pSortableColumn="key" [style]="{'width':'470px'}" class="ct-info-col">
+                    <th pSortableColumn="key" [style]="{'width':'400px'}" class="ct-info-col">
                         Key
                         <p-sortIcon field="key"></p-sortIcon>
+                    </th>
+                    <th>
+                      Projects
                     </th>
                   </tr>
               </ng-template>
@@ -77,6 +80,16 @@
                   <tr>
                     <td class="ct-info-col">{{jiraProject.name}}</td>
                     <td>{{jiraProject.key}}</td>
+                    <td>
+                      <ct-select [name]="'defaultProject'"
+                                  class="ct-users-project-edit-role ct-select-ellipse ng-untouched ng-valid ng-star-inserted ng-dirty"
+                                  [displayName]="'name'"
+                                  [trackBy]="'id'"
+                                  [defaultValue] = "'choose project'"
+                                  [options]="projects"
+                                  (change)="onSelectionChange($event, jiraProject)">
+                      </ct-select>
+                    </td>
                   </tr>
               </ng-template>
           </p-table>

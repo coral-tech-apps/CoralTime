@@ -17,5 +17,9 @@ namespace CoralTime.BL.Interfaces
         List<JiraProjectView> GetUnAssignJiraProject(int jiraSettingId);
 
         List<JiraProjectLinkedView> GetAssingJiraProject(int jiraSettingId);
+
+        void LinkJiraProject(int projectId, int jiraProjectId);
+
+        void RemoveProjectJiraLink(int id);
     }
 }

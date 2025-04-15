@@ -8,6 +8,8 @@ namespace CoralTime.ViewModels.Jira
 {
     public class JiraProjectLinkedView
     {
+        public int Id { get; set; }
+
         public string JiraProjectName { get; set; }
 
         public string ProjectName { get; set; }

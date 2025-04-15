@@ -104,10 +104,6 @@ export class ProjectsService {
 		}
 
 		filters.push('clientId eq ' + clientId);
-
-		if (isActive) {
-			filters.push('isActive eq ' + isActive);
-		}
 		query.Filter(filters.join(' and '));
 
 		return query.ExecWithCount().pipe(map(res => {
