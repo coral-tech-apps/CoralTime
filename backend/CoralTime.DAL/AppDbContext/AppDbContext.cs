@@ -184,9 +184,9 @@ namespace CoralTime.DAL
                 .HasIndex(j => j.SettingName)
                 .IsUnique();
 
-            builder.Entity<Models.Client>()
-                .HasOne(c => c.JiraSetting)
-                .WithOne(j => j.Client).HasForeignKey<JiraSetting>(j => j.ClientId);
+            builder.Entity<JiraSetting>()
+                .HasOne(j => j.Client)
+                .WithMany(c => c.JiraSettings).HasForeignKey(k => k.ClientId);
 
             builder.Entity<JiraMemberSettings>()
                 .HasOne(j => j.Member)

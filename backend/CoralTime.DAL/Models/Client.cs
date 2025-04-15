@@ -25,6 +25,6 @@ namespace CoralTime.DAL.Models
         [MaxLength(200)]
         public string Email { get; set; }
 
-        public JiraSetting JiraSetting { get; set; }
+        public List<JiraSetting> JiraSettings { get; set; }
     }
 }
