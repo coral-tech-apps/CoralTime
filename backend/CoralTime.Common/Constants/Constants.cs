@@ -183,6 +183,7 @@ namespace CoralTime.Common.Constants
             public const string Setup = "Setup";
 
             //TODO: delete this
+            public const string GetJiraUserIdStatus = "GetJiraUserIdStatus";
             public const string GetAssignedUsers = "GetAssignedUsers/{id}";
             public const string GetNotAssignedUsers = "GetNotAssignedUsers/{id}";
             public const string GetMemberSettings = "GetMemberSettings";

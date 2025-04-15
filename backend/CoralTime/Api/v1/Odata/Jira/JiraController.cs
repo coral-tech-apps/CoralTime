@@ -32,6 +32,22 @@ namespace CoralTime.Api.v1.Odata.Jira
             return Ok(_service.GetSettings());
         }
 
+        // GET: api/v1/odata/Jira/GetJiraUserIdStatus
+        [HttpGet((Constants.Routes.GetJiraUserIdStatus))]
+        public async Task<IActionResult> ConnectJiraAsync(int id)
+        {
+            try
+            {
+                await _service.FillJiraUserId(id);
+                //retun jirasettingViewModel new
+                return Ok();
+            }
+            catch(Exception e)
+            {
+               return BadRequest(new { message = e.Message });
+            }
+        }
+
         // GET: api/v1/odata/Jira/GetAssignedUsers/7
         [ODataRouteComponent(GetAssignedUsersRoute)]
         [HttpGet(Constants.Routes.GetAssignedUsers)]

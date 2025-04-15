@@ -10,6 +10,8 @@ namespace CoralTime.BL.Interfaces
 {
     public interface IJiraServices
     {
+        Task FillJiraUserId(int jiraSettingId);
+
         List<JiraSettingsView> GetSettings();
 
         List<MemberView> GetAssignedUsers(int id);

@@ -39,7 +39,8 @@ namespace CoralTime.DAL.Repositories.Jira
                     UserEmail = x.UserEmail,
                     JiraSettingId = x.JiraSettingId,
                     ApiToken = x.ApiToken,
-                    Domain = x.JiraSetting.Domain
+                    Domain = x.JiraSetting.Domain,
+                    IsEnableConntection = x.JiraUserId != null ? true : false
                 })
                 .ToList();
         }

@@ -83,6 +83,14 @@ export class JiraSettingService {
     )
   }
 
+  getJiraUserIdStatus(id: number): Observable<boolean>{
+    return this.http.get<boolean>(this.constantService.jiraApi + `/GetJiraUserIdStatus?id=${id}`).pipe(
+      map(response => {
+        return response;
+      })
+    )
+  }
+
   changeJiraStatus(status: boolean): Observable<boolean>{
     return this.http.post<boolean>(this.constantService.apiBaseUrl + `/odata/Members/ChangeJiraField?jiraSatus=${status}`, {}).pipe(
         map(response => {

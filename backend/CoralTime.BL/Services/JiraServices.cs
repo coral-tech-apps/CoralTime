@@ -32,7 +32,7 @@ namespace CoralTime.BL.Services
             _avatarService = avatarService;
         }
 
-        public async Task<string> GetJiraAccountIdAsync(string email, string apiToken, string domain)
+        private async Task<string> GetJiraAccountIdAsync(string domain, string email, string apiToken)
         {
             using(var client = new HttpClient())
             {
@@ -72,9 +72,39 @@ namespace CoralTime.BL.Services
                 catch(Exception ex)
                 {
                     //exception
-                    throw ex;
+                    throw;
                 }
             }
+        }
+
+        public async Task FillJiraUserId(int jiraSettingId)
+        {
+            var currentUserId = Uow.MemberCurrent.UserId;
+            var currentMemberId = Uow.MemberCurrent.Id;
+            var jiraSetting = Uow.JiraSettingsRepository.GetById(jiraSettingId) 
+                ?? throw new CoralTimeEntityNotFoundException($"Jira setting with id {jiraSettingId} not found");
+            var jiraMemberSetting = Uow.jiraMemberSettingsRepository.GetJiraMemberSetting(jiraSettingId, currentMemberId) 
+                ?? throw new CoralTimeEntityNotFoundException($"Jira member setting with jira settind id {jiraSettingId} and member id {currentMemberId} not fou");
+
+            string domain = jiraSetting.Domain;
+            string email = jiraMemberSetting.UserEmail;
+            string apiToken = jiraMemberSetting.ApiToken;
+
+            var jiraUserId = await GetJiraAccountIdAsync(domain, email, apiToken)
+                ?? throw new CoralTimeEntityNotFoundException("Jira user Id not found");
+
+            jiraMemberSetting.JiraUserId = jiraUserId;
+
+            try
+            {
+                Uow.jiraMemberSettingsRepository.Update(jiraMemberSetting, currentUserId);
+                Uow.Save();
+            }
+            catch(Exception e)
+            {
+                throw new CoralTimeDangerException("An error occurred while updating jira member setting", e);
+            }
+
         }
 
         public async Task GetJiraProjectAsync(string email, string apiToken, string domain)

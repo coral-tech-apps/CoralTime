@@ -16,7 +16,7 @@ import { JiraProjectProjectComponent } from "./jira-project-project/jira-project
 
 export class JiraSettings implements OnInit{
 showJiraTable: boolean;
-tableData: any[] = [];
+tableData: JiraMemberSetting[] = [];
 
 private dialogRef: MatDialogRef<JiraSettingFormComponent>;
 private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
@@ -62,7 +62,13 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
   }
 
   checkConncetion(): void{
-
+    this.tableData.forEach(item => {
+      if(!item.isEnableConntection){
+        this.jiraSettingService.getJiraUserIdStatus(item.jiraSettingId).subscribe(response => {
+          this.loadJiraTable();
+        })
+      }
+    })
   }
 
   private onSubmit(response: any): void {

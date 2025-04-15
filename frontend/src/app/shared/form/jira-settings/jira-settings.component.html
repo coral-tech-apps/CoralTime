@@ -46,7 +46,10 @@
       <td>{{row.domain}}</td>
       <td class="ct-info-col">{{row.userEmail}}</td>
       <td>
-        <i class="fa" [ngClass]="row.isEnableConntection ? 'fa-check' : 'fa-times'"></i>
+        <i class="fa"
+          [ngClass]="row.isEnableConntection ? 'fa-check' : 'fa-times'"
+          [style.color]="row.isEnableConntection ? 'green' : 'red'"
+          ></i>
       </td>
       <td class="ct-small-padding">
           <a class="ct-grid-settings-icon" (click) = "openConnectionDialog(row)"></a>
