@@ -10,7 +10,7 @@
   <div class="ct-page-header">
     <h3 class="ct-header">Jira settings</h3>
     <div class="ct-add-link">
-      <a class="ct-manage-add" (click)="openConnectionDialog()">Create New Connection</a>
+      <a class="ct-manage-add" (click)="openFormDialog()">Create New Connection</a>
     </div>
   </div>
 
@@ -19,7 +19,7 @@
           [sortField]="'settingName'"
           [value]="pagedResult?.data"
           [lazy]="true"
-          [loading]="!isAllProjects"
+          [loading]="!isAllSettings"
           (onLazyLoad)="loadLazy($event)"
           (onMoreContent)="loadLazy()">
 
@@ -54,7 +54,7 @@
               </a>
             </td>
             <td class="ct-small-padding">
-              <a class="ct-grid-settings-icon" (click)="openConnectionDialog(row)"></a>
+              <a class="ct-grid-settings-icon" (click)="openFormDialog(row)"></a>
             </td>
             <td class="ct-small-padding">
               <a class="ct-grid-settings-icon" (click)="opennLinkedJiraDialog(row)"></a>

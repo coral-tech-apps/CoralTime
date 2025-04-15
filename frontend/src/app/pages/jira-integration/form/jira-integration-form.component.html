@@ -7,12 +7,18 @@
 
   <form #jiraForm="ngForm" class="ct-form-add" autocomplete="off">
     <div class="ct-form-block">
+
+      <div *ngIf="isChangeableLocker" class="ct-hint-text">
+        Jira setting cannot be changed because there are linked Jira Projects.
+      </div>
+
       <!-- Setting Name -->
       <div>
         <label class="ct-form-label">Setting Name</label>
         <div class="ct-required-field-container">
           <input class="ct-input ct-full-width" name="settingName"
                  [(ngModel)]="model.settingName"
+                 [disabled]="isChangeableLocker"
                  (ngModelChange)="showErrors[0] = false"
                  maxlength="200" required/>
         </div>
@@ -28,9 +34,10 @@
           <ct-select [name]="'defaultProject'"
                       [displayName]="'name'"
                       [trackBy]="'id'"
-                      name = "clientId"
+                      [defaultValue]="setting.clientName"
                       [(ngModel)]="model.client"
                       [options]="clients"
+                      [disabled]="isChangeableLocker"
                       (ngModelChange)="showErrors[1] = false">
           </ct-select>
         </div>
@@ -45,6 +52,7 @@
         <div class="ct-required-field-container">
           <input class="ct-input ct-full-width" name="domain" #domain="ngModel"
                  [(ngModel)]="model.domain"
+                 [disabled]="isChangeableLocker"
                  (ngModelChange)="showErrors[2] = false"
                  required/>
         </div>

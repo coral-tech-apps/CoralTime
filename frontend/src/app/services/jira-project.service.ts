@@ -61,7 +61,7 @@ export class JiraProjectService {
     if (event.sortField) {
       query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
     } else {
-      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+      query.OrderBy('projectName' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
     }
     if(filterStr){
       filters.push('contains(tolower(jiraProjectName),\'' + filterStr.trim().toLowerCase() + '\')');

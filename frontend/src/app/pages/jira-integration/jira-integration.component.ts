@@ -27,7 +27,7 @@ export class JiraIntegrationComponent {
   pagedResult: PagedResult<JiraSetting>;
   updatingGrid: boolean = false;
   resizeObservable: Subject<any> = new Subject();
-  isAllProjects: boolean = false;
+  isAllSettings: boolean = false;
 
   private subject = new Subject<any>();
   private lastEvent: any;
@@ -54,17 +54,17 @@ private loadInitialState(): void{
         .subscribe((result : PagedResult<JiraSetting>) => {
           this.tableData = result.data;
           this.pagedResult = result;
-          this.checkIsAllProjects();
+          this.checkIsAllSettings();
         });
 }
 
-private checkIsAllProjects(): void {
+private checkIsAllSettings(): void {
   if (this.pagedResult && this.pagedResult.data.length >= this.pagedResult.count) {
-    this.isAllProjects = true;
+    this.isAllSettings = true;
   }
 }
 
-openConnectionDialog(setting: JiraSetting = null): void {
+openFormDialog(setting: JiraSetting = null): void {
   this.dialogRef = this.dialog.open(JiraIntegrationFormComponent);
   this.dialogRef.componentInstance.setting = setting;
   this.dialogRef.componentInstance.onSubmit.subscribe((response) => {
@@ -143,12 +143,12 @@ loadLazy(event = null, updatePage?: boolean): void {
       this.lastEvent.first = 0;
     }
     if (event || updatePage) {
-      this.isAllProjects = false;
+      this.isAllSettings = false;
       this.pagedResult = null;
       this.resizeObservable.next(true);
     }
     this.lastEvent.rows = ROWS_ON_PAGE;
-    if (!updatePage && this.isAllProjects) {
+    if (!updatePage && this.isAllSettings) {
       return;
     }
 
