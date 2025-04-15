@@ -83,8 +83,8 @@ export class JiraProjectService {
     )
   }
 
-  loadJiraProjects(domain: string, email: string, token: string): Observable<boolean>{
-    return this.http.post<boolean>(this.constantService.jiraProject + `/LoadJiraProject?domain=${domain}&apiToken=${token}&email=${email}`, {}).pipe(
+  loadJiraProjects(id: number): Observable<boolean>{
+    return this.http.post<boolean>(this.constantService.jiraProject + `/LoadJiraProject?id=${id}`, {}).pipe(
       map(response => {
         return response;
       })

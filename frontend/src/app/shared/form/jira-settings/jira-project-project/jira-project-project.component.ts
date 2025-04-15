@@ -131,7 +131,14 @@ export class JiraProjectProjectComponent implements OnInit{
   //All projects
 
   loadAllProjects(): void{
-    this.jiraProjectService.loadJiraProjects(this.jiraSetting.domain, this.jiraSetting.userEmail, this.jiraSetting.apiToken).subscribe();
+    this.isNotAssingedProjects = false;
+    this.jiraProjectService.loadJiraProjects(this.jiraSetting.jiraSettingId).subscribe( result => {
+      this.notAssignedProjectsSubject.next({
+        event,
+        filterStr: this.filterStr
+      });
+      }
+    );
   }
 
   // Filtering

@@ -10,7 +10,7 @@ namespace CoralTime.BL.Interfaces
 {
     public interface IJiraProjectService
     {
-        Task LoadJiraProject(string domain, string apiToken, string email);
+        Task LoadJiraProject(int jiraSettingId);
 
         List<JiraProject> GetJiraProjects(int jiraSettingId);
 

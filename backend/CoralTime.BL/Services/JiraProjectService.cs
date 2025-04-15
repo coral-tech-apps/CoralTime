@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using CoralTime.ViewModels.Jira;
 using CoralTime.Common.Exceptions;
 using CoralTime.ViewModels.JiraSettings;
+using Newtonsoft.Json.Linq;
 
 namespace CoralTime.BL.Services
 {
@@ -40,7 +41,15 @@ namespace CoralTime.BL.Services
                     {
                         var content = await response.Content.ReadAsStringAsync();
 
-                        var jiraProjects = JsonConvert.DeserializeObject<List<JiraProject>>(content);
+                        var json = JObject.Parse(content);
+                        var values = json["values"] as JArray;
+
+                        var jiraProjects = values.Select(x => new JiraProject
+                        {
+                            JiraProjectId = (string)x["id"],
+                            Key = (string)x["key"],
+                            Name = (string)x["name"]
+                        }).ToList();
 
                         return jiraProjects;
                         //content - should be array of project
@@ -59,9 +68,19 @@ namespace CoralTime.BL.Services
             }
         }
 
-        public async Task LoadJiraProject(string domain, string apiToken, string email)
+        public async Task LoadJiraProject(int jiraSettingId)
         {
             var currentUserId = Uow.MemberCurrent.UserId;
+            var currentMemberId = Uow.MemberCurrent.Id;
+            var jiraSetting = Uow.JiraSettingsRepository.GetById(jiraSettingId)
+                ?? throw new CoralTimeEntityNotFoundException($"Jira setting with id {jiraSettingId} not found");
+            var jiraMemberSetting = Uow.jiraMemberSettingsRepository.GetJiraMemberSetting(jiraSettingId, currentMemberId)
+                ?? throw new CoralTimeEntityNotFoundException($"Jira member setting with jira settind id {jiraSettingId} and member id {currentMemberId} not fou");
+
+            string domain = jiraSetting.Domain;
+            string email = jiraMemberSetting.UserEmail;
+            string apiToken = jiraMemberSetting.ApiToken;
+
             var getNewJiraProjects = await GetJiraProjectAsync(email, apiToken, domain);
 
             if (getNewJiraProjects == null)
@@ -72,7 +91,13 @@ namespace CoralTime.BL.Services
             var savedJiraProjectsAtDb = Uow.JiraProjectRepository.GetAll();
 
             var newJiraProjects = getNewJiraProjects
-                .Where(jPrj => !savedJiraProjectsAtDb.Any(dbPrj => dbPrj.JiraProjectId == jPrj.JiraProjectId));
+                .Where(jPrj => !savedJiraProjectsAtDb.Any(dbPrj => dbPrj.JiraProjectId == jPrj.JiraProjectId && dbPrj.JiraSettingId == jPrj.JiraSettingId))
+                .ToList();
+
+            foreach(var item in newJiraProjects)
+            {
+                item.JiraSettingId = jiraSettingId;
+            }
 
             try
             {

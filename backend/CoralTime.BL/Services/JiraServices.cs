@@ -107,39 +107,6 @@ namespace CoralTime.BL.Services
 
         }
 
-        public async Task GetJiraProjectAsync(string email, string apiToken, string domain)
-        {
-            using(var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri($"https://{domain}.atlassian.net");
-
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{email}:{apiToken}")));
-
-                try
-                {
-                    var response = await client.GetAsync("rest/api/3/project/search");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-
-                        var jiraProjects = JsonConvert.DeserializeObject<List<JiraProject>>(content);
-
-                        //content - should be array of project
-                    }
-                    else
-                    {
-                        //notSuccessStatusCode
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //exception
-                }
-            }
-        }
-
         public List<JiraSettingsView> GetSettings()
         {
             var jiraSettings = Uow.JiraSettingsRepository.GetSettings();

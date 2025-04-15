@@ -52,11 +52,11 @@ namespace CoralTime.Api.v1.Odata.Jira
 
         // POST: api/v1/odata/JiraProject/GetAssignJiraProject
         [HttpPost(Constants.Routes.LoadJiraProject)]
-        public async Task<IActionResult> LoadJiraProjects(string domain, string apiToken, string email)
+        public async Task<IActionResult> LoadJiraProjects(int id)
         {
             try
             {
-               await _service.LoadJiraProject(domain, apiToken, email);
+               await _service.LoadJiraProject(id);
                return Ok();
             }
             catch(Exception ex)
