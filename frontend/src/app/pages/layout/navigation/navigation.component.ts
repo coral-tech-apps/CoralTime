@@ -115,7 +115,13 @@ export class NavigationComponent implements OnInit, OnDestroy {
 				label: 'Reports',
 				icon: 'ct-reports-icon',
 				routerLink: ['/reports']
-			}
+			},
+      {
+        label: 'Worklogs',
+        icon: 'ct-reports-icon',
+        routerLink: ['/worklogs'],
+        permission: 'ViewIntegrationPage'
+      }
 		];
 	}
 

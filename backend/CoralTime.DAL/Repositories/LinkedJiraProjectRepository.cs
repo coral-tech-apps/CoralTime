@@ -20,7 +20,7 @@ namespace CoralTime.DAL.Repositories
             .Include(x => x.Project)
             .Include(x => x.JiraProject);
 
-        public List<LinkedJiraProject> GetUnLinkedJiraProjects(int settingId)
+        public List<LinkedJiraProject> GetLinkedJiraProjects(int settingId)
         {
             return GetQuery()
                 .Where(x => x.JiraProject.JiraSettingId == settingId)

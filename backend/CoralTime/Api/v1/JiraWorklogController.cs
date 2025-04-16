@@ -1,0 +1,25 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using CoralTime.BL.Interfaces;
+using Microsoft.Extensions.Logging;
+using static CoralTime.Common.Constants.Constants.Routes;
+using CoralTime.DAL.Models.Jira;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+
+namespace CoralTime.Api.v1
+{
+    [Authorize]
+    [Route(BaseControllerRoute)]
+    public class JiraWorklogController : BaseController<JiraWorklogController, IJiraWorklogSerivce>
+    {
+        public JiraWorklogController(IJiraWorklogSerivce service, ILogger<JiraWorklogController> logger)
+            : base(logger, service) { }
+
+        [HttpPost(GetWorklogs)]
+        public async Task<IActionResult> GetWorklogAsync([FromBody] JiraWorklogFilterView filter)
+        {
+            
+            return Ok(await _service.GetWorklogAsync(filter));
+        }
+    }
+}

@@ -27,6 +27,14 @@ namespace CoralTime.DAL.Repositories.Jira
                 .Count();
         }
 
+        public string GetJiraUserId(int jiraSettingId, int memberId) 
+        {
+            return GetQuery()
+                .Where(j => j.JiraSettingId == jiraSettingId && j.MemberId == memberId)
+                .Select(j => j.JiraUserId)
+                .FirstOrDefault();
+        }
+
         public List<JiraMemberSettingView> GetJiraMemberSettings(int memberId)
         {
             return GetQuery()

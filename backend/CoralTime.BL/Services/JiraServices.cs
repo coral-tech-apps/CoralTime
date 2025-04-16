@@ -125,6 +125,10 @@ namespace CoralTime.BL.Services
 
         public List<JiraMemberSettingView> GetMemberSetting(int memberId)
         {
+            if(memberId == 0)
+            {
+                memberId = Uow.MemberCurrent.Id;
+            }
             return Uow.jiraMemberSettingsRepository.GetJiraMemberSettings(memberId);
              
         }

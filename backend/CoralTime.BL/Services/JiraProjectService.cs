@@ -121,7 +121,7 @@ namespace CoralTime.BL.Services
         public List<JiraProjectView> GetUnAssignJiraProject(int jiraSettingId)
         {
             var linkedProjectIds = Uow.LinkedJiraProjectRepository
-                .GetUnLinkedJiraProjects(jiraSettingId)
+                .GetLinkedJiraProjects(jiraSettingId)
                 .Select(j => j.JiraProjectId);
 
             var unLinkedProjects = Uow.JiraProjectRepository
@@ -137,7 +137,7 @@ namespace CoralTime.BL.Services
         public List<JiraProjectLinkedView> GetAssingJiraProject(int jiraSettingId)
         {
             var linkedProject = Uow.LinkedJiraProjectRepository
-              .GetUnLinkedJiraProjects(jiraSettingId)
+              .GetLinkedJiraProjects(jiraSettingId)
               .Select(j => new JiraProjectLinkedView
               {
                   Id = j.Id,

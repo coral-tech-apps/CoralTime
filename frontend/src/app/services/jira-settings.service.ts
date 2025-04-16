@@ -152,7 +152,7 @@ export class JiraSettingService {
     return this.http.patch(query, jiraSetting)
   }
 
-  getJiraMemberSetting(id: number){
+  getJiraMemberSetting(id: number = 0){
   return this.http.get<any[]>(this.constantService.jiraApi + `/GetMemberSettings?id=${id}`).pipe(
       map(response => {
         return response;

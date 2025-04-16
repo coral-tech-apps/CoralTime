@@ -1,0 +1,115 @@
+<div class="ct-reports-page">
+  <div class="ct-page-container">
+
+      <div>
+          <div class="ct-reports-sidebar">
+            <div class="ct-reports-sidebar-container">
+              <div class="ct-sidebar-block">
+
+                <h3 class="ct-header">Filters</h3>
+                <div class="ct-reports-time-period-block">
+                  <div class="ct-reports-time-period">
+                    <a class="fa fa-angle-left" (click)="getNewPeriod(false)"></a>
+                    <div>
+                      <span (click)="openRangeDatepicker()" [title]="dateString">{{dateString}}</span>
+                                    <i *ngIf="isDatepickerShown" class="fa fa-times" (click)="cancelUpdatingReportGrid()"></i>
+                                    <i *ngIf="!isDatepickerShown" class="fa fa-angle-down" (click)="toggleRangeDatepicker()"></i>
+                    </div>
+                    <a class="fa fa-angle-right" (click)="getNewPeriod()"></a>
+
+                    <ct-range-datepicker *ngIf="isDatepickerShown"
+                                                 [class.ct-datepicker-opened]="isDatepickerAnimating"
+                                                 [dateResponse]="dateResponse"
+                                                 [datePeriodList]="reportDropdowns?.values.dateStatic"
+                                                 [firstDayOfWeek]="firstDayOfWeek"
+                                                 (clickOutside)="toggleRangeDatepicker($event)"
+                                                 (onPeriodChanged)="datePeriodOnChange($event)"
+                                                 (closed)="toggleRangeDatepicker()"></ct-range-datepicker>
+
+                  </div>
+                </div>
+
+                <div class="ct-report-filters-block">
+                    <div>
+                      <ct-select [name]="'defaultProject'"
+                                [displayName]="'settingName'"
+                                [trackBy]="'id'"
+                                [defaultValue]="'choose setting'"
+                                [options]="jiraSettings"
+                                [(ngModel)]="selectedJiraSetting"
+                                (ngModelChange)="onClickJiraSetting(selectedJiraSetting)">
+                      </ct-select>
+                    </div>
+                    <div>
+                        <ct-multiselect
+                                  [(ngModel)]="assignedJiraProjectsIds"
+                                  [appendTo]="'body'"
+                                  [placeholder]="'All Projects'"
+                                  [showSubmitButton]="true"
+                                  [options]="assignedJiraProjectsItems"
+                                  [maxSelectedLabels]="1"
+                                  [selectedItemsLabel]="'Projects ({0})'"
+                                  [disabled]="!isAvaliableCheckProject || isEmptyProjects">
+
+                        </ct-multiselect>
+                        <div *ngIf="!isAvaliableCheckProject" class="ct-hint-text">
+                          Select Jira setting before choosing project.
+                        </div>
+                        <div *ngIf="isEmptyProjects && isAvaliableCheckProject" class="ct-hint-text">
+                          Threre are no assigned project yet.
+                        </div>
+                    </div>
+                </div>
+
+                <button mat-raised-button class="ct-blue-button"  (click)="applyFilters()">
+                  Apply filters
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ct-reports-grid-container">
+
+            <div class="ct-page-header">
+              <h3 class="ct-header">Worklogs</h3>
+              </div>
+              <div class="ct-reports-data">
+
+                <p-table class="ct-grid-container" class="ct-reports-grid"
+                    [value]="worklogs"
+                    [loading]="!isWorklogsLoaded"
+                    >
+
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="ct-info-col" style="width: 30px;">
+                    <input type="checkbox" [(ngModel)] = "isAllSelected" (change)="toggleSelectAll()"/>
+                  </th>
+                  <th class="ct-info-col">Date</th>
+                  <th class="ct-info-col">Description</th>
+                  <th class="ct-info-col">Log time</th>
+                  <th class="ct-info-col">Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-item let-i="rowIndex">
+                <tr>
+                  <td>
+                    <input type="checkbox" [(ngModel)] = "item.selected" (change)="checkAllSelected()"/>
+                  </td>
+                  <td class="ct-info-col">{{item.date}}</td>
+                  <td>{{item.description}}</td>
+                  <td>{{item.timeActual}}</td>
+                  <td></td>
+                </tr>
+              </ng-template>
+
+            </p-table>
+          </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+

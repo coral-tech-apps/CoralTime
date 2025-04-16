@@ -70,6 +70,10 @@ export const appRoutes: Routes = [
     path: 'jira-integration',
     loadChildren: () => import('./pages/jira-integration/jira-integration.module').then(m => m.JiraIntegrationModule)
   },
+  {
+    path: 'worklogs',
+    loadChildren: () => import('./pages/worklogs/worklogs.module').then(m => m.WorklogsModule)
+  },
 	{
 		path: 'error',
 		component: ServerErrorComponent
