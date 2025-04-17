@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, ViewContainerRef, ViewChild, ElementRef, TemplateRef } from '@angular/core';
 import { DateUtils, TimeEntry } from '../../../../models/calendar';
 import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
@@ -12,18 +12,39 @@ import DayJs = dayjs.Dayjs;
 export class MultipleDatepickerComponent {
 	@Input() firstDayOfWeek: number;
 	@Input() timeEntry: TimeEntry;
+  isProcessing: boolean = false;
 
 	@Output() onSubmit: EventEmitter<string[]> = new EventEmitter();
 
-	dateList: string[];
+	dateList: string[] = [];
+  selectedDate: DayJs[] = [];
+
 	isCalendarShown: boolean = true;
+  isValidForm: boolean = false
 
 	dateOnChange(date: DayJs[]): void {
-		this.dateList = [];
-		date.forEach((m: DayJs) => {
-			this.dateList.push(DateUtils.formatDateToString(m));
-		});
+    if(this.isProcessing) return;
+    this.isProcessing = true;
+    date.forEach((m: DayJs) => {
+      const formateDate = DateUtils.formatDateToString(m);
+
+      if(!this.dateList.includes(formateDate)){
+        this.dateList.push(formateDate);
+        this.selectedDate.push(m);
+      }
+      this.selectedDate = date;
+    });
+    this.checkValidForm();
+    this.isProcessing = false
 	}
+
+  checkValidForm(): void{
+    if(this.dateList.length > 0){
+      this.isValidForm = true;
+    }else{
+      this.isValidForm = false;
+    }
+  }
 
 	getHours(time: number = 0): string {
 		let hours = Math.floor(time / 3600 );

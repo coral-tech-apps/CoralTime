@@ -7,6 +7,7 @@
                        [disabledDays]="[timeEntry.date]"
                        [displayDate]="timeEntry.date"
                        [multiselect]="true"
+                       [(ngModel)] = "selectedDate"
                        (dateChanged)="dateOnChange($event)"></ct-datepicker>
     </div>
 
@@ -47,7 +48,7 @@
             <button class="ct-close" mat-dialog-close>Cancel</button>
             <button mat-button mat-dialog-close class="ct-submit ct-blue-button"
                     (click)="submit()"
-                    [disabled]="!form.valid">Add hours
+                    [disabled]="!isValidForm">Add hours
             </button>
         </div>
     </div>

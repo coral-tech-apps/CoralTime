@@ -77,7 +77,7 @@
               </div>
               <div class="ct-reports-data">
 
-                <p-table class="ct-grid-container" class="ct-reports-grid"
+            <p-table class="ct-grid-container" class="ct-reports-grid"
                     [value]="worklogs"
                     [loading]="!isWorklogsLoaded"
                     >
@@ -106,6 +106,8 @@
                   <td>{{item.projectName}}</td>
                   <td>
                     <ct-select
+                      [ngClass]="'worklog-class'"
+                      [defaultValue] = "'Select task'"
                       [name]="'task'"
                       [displayName]="'name'"
                       [trackBy]="'id'"

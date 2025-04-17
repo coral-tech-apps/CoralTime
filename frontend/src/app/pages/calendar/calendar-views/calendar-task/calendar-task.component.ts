@@ -120,12 +120,12 @@ export class CalendarTaskComponent implements OnInit {
 	}
 
 	dateOnChange(date: DayJs[] | string[]): void {
-		if (date instanceof DayJs) {
+		if (dayjs.isDayjs(date[0])) {
 			return;
 		}
 
 		let currentTimeEntry = new TimeEntry(this.timeEntry);
-		currentTimeEntry.date = date[0] ? DateUtils.formatDateToString(date[0]) : currentTimeEntry.date;
+    currentTimeEntry.date = date[0] ? DateUtils.formatDateToString(date[0]) : currentTimeEntry.date;
 
 		if (!this.isSubmitDataValid(currentTimeEntry.date)) {
 			this.closeAllMenus();
