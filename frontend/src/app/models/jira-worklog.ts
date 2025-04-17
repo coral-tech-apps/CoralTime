@@ -2,6 +2,8 @@ export class JiraWorklog{
   selected: boolean;
   date: string;
 	description: string;
+  projectName: string;
+  projectId: number;
 	timeActual: string;
 
 
@@ -10,6 +12,8 @@ export class JiraWorklog{
 			this.date = data.date;
 			this.description = data.description;
 			this.timeActual = this.formatSecondsToTime(data.timeActual);
+      this.projectName = data.projectName;
+      this.projectId = data.projectId;
 		}
 	}
 

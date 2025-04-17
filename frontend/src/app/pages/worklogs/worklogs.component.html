@@ -88,7 +88,8 @@
                   <th class="ct-info-col">Date</th>
                   <th class="ct-info-col">Description</th>
                   <th class="ct-info-col">Log time</th>
-                  <th class="ct-info-col">Action</th>
+                  <th class="ct-info-col">Project name</th>
+                  <th class="ct-info-col">Task</th>
                 </tr>
               </ng-template>
 
@@ -100,7 +101,12 @@
                   <td class="ct-info-col">{{item.date}}</td>
                   <td>{{item.description}}</td>
                   <td>{{item.timeActual}}</td>
-                  <td></td>
+                  <td>{{item.projectName}}</td>
+                  <td>
+                    <ct-select>
+
+                    </ct-select>
+                  </td>
                 </tr>
               </ng-template>
 

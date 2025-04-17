@@ -21,11 +21,8 @@ using NLog.Filters;
 
 namespace CoralTime.BL.Services
 {
-
-
     public class JiraWokrlogService : BaseService, IJiraWorklogSerivce
     {
-
         public JiraWokrlogService(UnitOfWork uow, IMapper mapper) 
             : base(uow, mapper)
         {
@@ -55,9 +52,14 @@ namespace CoralTime.BL.Services
             }
         }
 
-        private async Task<List<string>> GetIssuesAsync(string email, string apiToken, string domain, string urlQuery)
+        private async Task<List<IssuesWithProject>> GetIssuesAsync(
+            string email, 
+            string apiToken, 
+            string domain, 
+            string urlQuery,
+            Dictionary<string, int> projectKeyToInternalId)
         {
-            var issues = new List<string>();
+            var issues = new List<IssuesWithProject>();
 
             var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
 
@@ -69,7 +71,19 @@ namespace CoralTime.BL.Services
 
                 foreach (var issue in jsonResponse["issues"])
                 {
-                    issues.Add(issue["id"].ToString());
+                    var issueId = issue["id"].ToString();
+                    var projectKey = issue["fields"]["project"]["key"].ToString();
+
+                    if(projectKeyToInternalId.TryGetValue(projectKey, out var projectId))
+                    {
+                        issues.Add(new IssuesWithProject
+                        {
+                            IssueId = issueId,
+                            ProjectId = projectId
+                        });
+                    }
+                    
+                    //issues.Add(issue["id"].ToString());
                 }
 
                 return issues;
@@ -82,13 +96,21 @@ namespace CoralTime.BL.Services
             }
         }
 
-        private async Task<List<JiraWorklogView>> GetWorklogsAsync(string email, string apiToken, string domain, long startedAfter, long startedBefore, List<string> issueIds)
+        private async Task<List<JiraWorklogView>> GetWorklogsAsync(
+            string email, 
+            string apiToken, 
+            string domain, 
+            long startedAfter, 
+            long startedBefore, 
+            List<IssuesWithProject> issues)
         {
             var result = new List<JiraWorklogView>();
 
-            foreach (var issueId in issueIds)
+            foreach (var item in issues)
             {
-                var urlQuery = $"/rest/api/3/issue/{issueId}/worklog?startedAfter={startedAfter}&startedBefore={startedBefore}";
+                var project = Uow.ProjectRepository.GetById(item.ProjectId);
+
+                var urlQuery = $"/rest/api/3/issue/{item.IssueId}/worklog?startedAfter={startedAfter}&startedBefore={startedBefore}";
 
                 var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
 
@@ -103,7 +125,10 @@ namespace CoralTime.BL.Services
                         {
                             Description = (string)x["comment"]?["content"]?[0]?["content"]?[0]?["text"],
                             TimeActual = (int)x["timeSpentSeconds"],
-                            Date = (string)x["created"]
+                            Date = (string)x["created"],
+                            ProjectId = item.ProjectId,
+                            ProjectName = project.Name
+                            
                         }).FirstOrDefault();
 
                     result.Add(timeEntry);
@@ -116,6 +141,7 @@ namespace CoralTime.BL.Services
         private string GenerateUrlFoIssues(JiraWorklogFilterView filter, int currentMemberId)
         {
             var assignedProjects = Uow.LinkedJiraProjectRepository.GetLinkedJiraProjects(filter.JiraSettingId)
+                .Where(j => filter.ProjectIds.Contains(j.Id))
                 .Select(j => j.JiraProject.Key)
             .ToArray();
 
@@ -125,6 +151,34 @@ namespace CoralTime.BL.Services
             var jql = $"/rest/api/3/search?jql=project IN ({projectList}) AND worklogAuthor = {jiraAccountId} AND worklogDate >= \"{filter.DateFrom.ToString("yyyy-MM-dd")}\" AND worklogDate <= \"{filter.DateTo.ToString("yyyy-MM-dd")}\"";
 
             return jql;
+        }
+
+        private Dictionary<string, int> GetKeyToPrjId(JiraWorklogFilterView filter)
+        {
+            var linked = new List<LinkedJiraProject>();
+            foreach (var id in filter.ProjectIds)
+            {
+                linked.Add(Uow.LinkedJiraProjectRepository.GetById(id));
+            }
+
+            var jiraProjects = new List<JiraProject>();
+            foreach (var item in linked)
+            {
+                jiraProjects.Add(Uow.JiraProjectRepository.GetById(item.JiraProjectId));
+            }
+
+            var projectKeyToId = linked
+                .Join(jiraProjects,
+                        linkedItem => linkedItem.JiraProjectId,
+                        jiraProject => jiraProject.Id,
+                        (linkedItem, jiraProject) => new
+                        {
+                            jiraProject.Key,
+                            linkedItem.ProjectId
+                        })
+                .ToDictionary(x => x.Key, x => x.ProjectId);
+
+            return projectKeyToId;
         }
 
 
@@ -141,15 +195,16 @@ namespace CoralTime.BL.Services
             string email = jiraMemberSetting.UserEmail;
             string apiToken = jiraMemberSetting.ApiToken;
 
+            var projectKeyToId = GetKeyToPrjId(filter);
+
             var urlStringIssues = GenerateUrlFoIssues(filter, currentMemberId);
 
-            var issues = await GetIssuesAsync(email, apiToken, domain, urlStringIssues);
+            var issues = await GetIssuesAsync(email, apiToken, domain, urlStringIssues, projectKeyToId);
 
             long startedAfter = new DateTimeOffset(filter.DateFrom).ToUnixTimeMilliseconds();
             long startedBefore = new DateTimeOffset(filter.DateTo).ToUnixTimeMilliseconds();
 
             return await GetWorklogsAsync(email, apiToken, domain, startedAfter, startedBefore, issues);
         }
-
     }
 }
