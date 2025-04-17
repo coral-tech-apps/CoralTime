@@ -5,6 +5,8 @@ using static CoralTime.Common.Constants.Constants.Routes;
 using CoralTime.DAL.Models.Jira;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using CoralTime.ViewModels.Jira;
+using System;
 
 namespace CoralTime.Api.v1
 {
@@ -20,6 +22,20 @@ namespace CoralTime.Api.v1
         {
             
             return Ok(await _service.GetWorklogAsync(filter));
+        }
+
+        [HttpPost(LoadTimeEntryWorklogs)]
+        public IActionResult LoadWorklog([FromBody] JiraWorklogView[] worklogs)
+        {
+            try
+            {
+                _service.LoadWorklog(worklogs);
+                return Ok();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e);
+            }
         }
     }
 }

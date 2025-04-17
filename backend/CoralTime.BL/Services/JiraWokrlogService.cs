@@ -23,32 +23,41 @@ namespace CoralTime.BL.Services
 {
     public class JiraWokrlogService : BaseService, IJiraWorklogSerivce
     {
+        private readonly HttpClient _client;
         public JiraWokrlogService(UnitOfWork uow, IMapper mapper) 
             : base(uow, mapper)
         {
+            _client = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+        }
+
+        private void SetClientAuthorization(string email, string apiToken, string domain)
+        {
+            if (_client.DefaultRequestHeaders.Authorization == null) 
+            {
+                _client.BaseAddress = new Uri($"https://{domain}.atlassian.net");
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(Encoding.ASCII.GetBytes($"{email}:{apiToken}")));
+            }
         }
 
         private async Task<HttpResponseMessage> SendRequestAsync(string email, string apiToken, string domain, string urlQuery)
         {
-            using (var client = new HttpClient())
+            SetClientAuthorization(email, apiToken, domain);
+
+            try
             {
-                client.BaseAddress = new Uri($"https://{domain}.atlassian.net");
+                var response = await _client.GetAsync(urlQuery);
 
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(Encoding.ASCII.GetBytes($"{email}:{apiToken}")));
+                return response;
 
-                try
-                {
-                    var response = await client.GetAsync(urlQuery);
-
-                    return response;
-
-                }
-                catch (Exception ex)
-                {
-                    //exception
-                    throw;
-                }
+            }
+            catch (Exception ex)
+            {
+                //exception
+                throw;
             }
         }
 
@@ -65,29 +74,36 @@ namespace CoralTime.BL.Services
 
             if (response.IsSuccessStatusCode)
             {
-                var content = await response.Content.ReadAsStringAsync();
-
-                var jsonResponse = JObject.Parse(content);
-
-                foreach (var issue in jsonResponse["issues"])
+                try
                 {
-                    var issueId = issue["id"].ToString();
-                    var projectKey = issue["fields"]["project"]["key"].ToString();
+                    var content = await response.Content.ReadAsStringAsync();
 
-                    if(projectKeyToInternalId.TryGetValue(projectKey, out var projectId))
+                    var jsonResponse = JObject.Parse(content);
+
+                    foreach (var issue in jsonResponse["issues"])
                     {
-                        issues.Add(new IssuesWithProject
-                        {
-                            IssueId = issueId,
-                            ProjectId = projectId
-                        });
-                    }
-                    
-                    //issues.Add(issue["id"].ToString());
-                }
+                        var issueId = issue["id"].ToString();
+                        var projectKey = issue["fields"]["project"]["key"].ToString();
 
-                return issues;
-                //found
+                        if (projectKeyToInternalId.TryGetValue(projectKey, out var projectId))
+                        {
+                            issues.Add(new IssuesWithProject
+                            {
+                                IssueId = issueId,
+                                ProjectId = projectId
+                            });
+                        }
+
+                        //issues.Add(issue["id"].ToString());
+                    }
+
+                    return issues;
+                    //found
+                }
+                catch(Exception e)
+                {
+                    throw;
+                }
             }
             else
             {
@@ -108,30 +124,37 @@ namespace CoralTime.BL.Services
 
             foreach (var item in issues)
             {
-                var project = Uow.ProjectRepository.GetById(item.ProjectId);
-
-                var urlQuery = $"/rest/api/3/issue/{item.IssueId}/worklog?startedAfter={startedAfter}&startedBefore={startedBefore}";
-
-                var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    var content = await response.Content.ReadAsStringAsync();
+                    var project = Uow.ProjectRepository.GetById(item.ProjectId);
 
-                    var jsonResponse = JsonConvert.DeserializeObject<JObject>(content);
+                    var urlQuery = $"/rest/api/3/issue/{item.IssueId}/worklog?startedAfter={startedAfter}&startedBefore={startedBefore}";
 
-                    var timeEntry = jsonResponse["worklogs"]
-                        .Select(x => new JiraWorklogView
-                        {
-                            Description = (string)x["comment"]?["content"]?[0]?["content"]?[0]?["text"],
-                            TimeActual = (int)x["timeSpentSeconds"],
-                            Date = (string)x["created"],
-                            ProjectId = item.ProjectId,
-                            ProjectName = project.Name
-                            
-                        }).FirstOrDefault();
+                    var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
 
-                    result.Add(timeEntry);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+
+                        var jsonResponse = JsonConvert.DeserializeObject<JObject>(content);
+
+                        var timeEntry = jsonResponse["worklogs"]
+                            .Select(x => new JiraWorklogView
+                            {
+                                Description = (string)x["comment"]?["content"]?[0]?["content"]?[0]?["text"],
+                                TimeActual = (int)x["timeSpentSeconds"],
+                                Date = (string)x["created"],
+                                ProjectId = item.ProjectId,
+                                ProjectName = project.Name
+
+                            }).FirstOrDefault();
+
+                        result.Add(timeEntry);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw;
                 }
             }
 
@@ -205,6 +228,42 @@ namespace CoralTime.BL.Services
             long startedBefore = new DateTimeOffset(filter.DateTo).ToUnixTimeMilliseconds();
 
             return await GetWorklogsAsync(email, apiToken, domain, startedAfter, startedBefore, issues);
+        }
+
+        public void LoadWorklog(JiraWorklogView[] worklogs)
+        {
+            var currentUserId = Uow.MemberCurrent.UserId;
+            var currentMemberId = Uow.MemberCurrent.Id;
+
+            foreach(var item in worklogs)
+            {
+                if(DateTime.TryParse(item.Date, out DateTime date))
+                {
+                    
+                }
+
+                var timeEntry = new TimeEntry
+                {
+                    ProjectId = item.ProjectId,
+                    Description = item.Description,
+                    Date = date,
+                    TimeActual = item.TimeActual,
+                    TaskTypesId = item.TaskId,
+                    MemberId = currentMemberId
+                };
+
+                try
+                {
+                    Uow.TimeEntryRepository.Insert(timeEntry, currentUserId);
+                }
+                catch (Exception e)
+                {
+                    throw new CoralTimeDangerException("An error occured while creating worklog time entry");
+                }
+
+            }
+
+            Uow.Save();
         }
     }
 }

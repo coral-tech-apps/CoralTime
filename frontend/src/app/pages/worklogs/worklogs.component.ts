@@ -1,3 +1,4 @@
+import { NotificationService } from './../../core/notification.service';
 import { JiraProjectService } from 'src/app/services/jira-project.service';
 import {debounceTime, finalize, switchMap} from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -20,7 +21,10 @@ import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
 import { PagedResult } from 'src/app/services/odata';
 import { HttpClient } from '@angular/common/http';
 import { JiraWorklog } from 'src/app/models/jira-worklog';
+import { Task } from 'src/app/models/task';
 import { Subject } from 'rxjs';
+import { TasksService } from 'src/app/services/tasks.service';
+import { WorkglogService } from 'src/app/services/worklog.service';
 
 const ROWS_TOTAL_NUMBER = 50;
 
@@ -34,6 +38,9 @@ export class WorklogsComponent implements OnInit {
   isAvaliableCheckProject: boolean = false;
   isEmptyProjects: boolean = true;
 	reportDropdowns: ReportDropdowns;
+
+  tasks: Task[] =[]
+  isTasksLoading: boolean;
 
   isAllSelected: boolean = false;
   worklogs: JiraWorklog[] = []
@@ -71,6 +78,9 @@ export class WorklogsComponent implements OnInit {
 	            private rangeDatepickerService: RangeDatepickerService,
 	            private reportsService: ReportsService,
 	            private route: ActivatedRoute,
+              private tasksService: TasksService,
+              private norificationService: NotificationService,
+              private worklogService: WorkglogService,
               private http: HttpClient) {
 	}
 
@@ -92,6 +102,7 @@ export class WorklogsComponent implements OnInit {
 			.subscribe((reportFilters: ReportDropdowns) => {
 				this.setReportDropdowns(reportFilters);
 			});
+    this.loadTasks();
 	}
 
 	setReportDropdowns(worklogDropdowns: ReportDropdowns): void {
@@ -99,14 +110,55 @@ export class WorklogsComponent implements OnInit {
 		this.rangeDatepickerService.dateStaticList = worklogDropdowns.values.dateStatic;
 	}
 
+  // send timeEntries
+  addTimeEntries(): void{
+    const selectedWorklog = this.worklogs.filter(worklog => worklog.selected);
+
+    if(selectedWorklog.length == 0){
+      this.norificationService.danger("No worklogs selected.");
+      return;
+    }
+
+    selectedWorklog.forEach(worklog => {
+      if(worklog.taskId == 0){
+        this.norificationService.danger(`No task selected for ${worklog.projectName}`);
+        return;
+      }
+    })
+
+    this.worklogService.sendWorklogs(selectedWorklog).subscribe(res => {
+
+    })
+  }
+
+  // tasks
+  private loadTasks(): void {
+    console.log('this');
+      this.tasksService.getActiveTasks().subscribe(result => {
+        this.tasks = result.data;
+        console.log(result.data);
+      })
+    }
+
+  addTaskToWorklog(task: Task, worklogIndex: number): void{
+    this.worklogs[worklogIndex].taskId = task.id;
+  }
+
   // checkbox
 
     toggleSelectAll(){
-      this.worklogs.forEach(item => item.selected = this.isAllSelected);
+      this.worklogs.forEach(item =>
+        {
+          if(item.timeActual <= 86400){
+            item.selected = this.isAllSelected;
+          }
+        });
     }
 
     checkAllSelected(){
-      this.isAllSelected = this.worklogs.every(item => item.selected);
+      this.isAllSelected = this.worklogs
+        .filter(item => item.timeActual <= 86400)
+        .every(item => item.selected);
     }
 
   // Apply filters
@@ -129,11 +181,11 @@ export class WorklogsComponent implements OnInit {
   }
 
   getWorklogs(filters: any): void{
-    this.http.post('http://localhost:4200/api/v1/JiraWorklog/GetWorklogs', filters)
-    .subscribe((res: JiraWorklog[]) => {
-      this.worklogs = res;
-      this.isWorklogsLoaded = true;
-    });
+    this.worklogService.getWorklogs(filters)
+      .subscribe((res: JiraWorklog[]) => {
+        this.worklogs = res.map(item => new JiraWorklog(item));
+        this.isWorklogsLoaded = true;
+      })
   }
 
   // Jira Setting Select

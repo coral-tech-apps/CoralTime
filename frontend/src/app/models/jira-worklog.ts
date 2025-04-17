@@ -4,14 +4,17 @@ export class JiraWorklog{
 	description: string;
   projectName: string;
   projectId: number;
-	timeActual: string;
+  timeActualString: string
+	timeActual: number;
+  taskId: number;
 
 
 	constructor(data = null) {
 		if (data) {
 			this.date = data.date;
 			this.description = data.description;
-			this.timeActual = this.formatSecondsToTime(data.timeActual);
+			this.timeActualString = this.formatSecondsToTime(data.timeActual);
+      this.timeActual = data.timeActual;
       this.projectName = data.projectName;
       this.projectId = data.projectId;
 		}
@@ -21,6 +24,7 @@ export class JiraWorklog{
     const hours = Math.floor(totalSecond / 3600);
     const minutes = Math.floor((totalSecond % 3600) / 60);
 
-    return `${hours}:${minutes}`;
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    return `${hours}:${paddedMinutes}`;
   }
 }

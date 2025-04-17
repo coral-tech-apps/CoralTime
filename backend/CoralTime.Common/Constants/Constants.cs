@@ -197,6 +197,7 @@ namespace CoralTime.Common.Constants
             public const string LinkProjects = "LinkProjects";
             public const string RemovProjectJiraLink = "RemoveProjectJiraLink";
             public const string GetWorklogs = "GetWorklogs";
+            public const string LoadTimeEntryWorklogs = "LoadTimeEntryWorklogs";
 
             private const string WithMembers = "/members";
             private const string WithProjects = "/projects";

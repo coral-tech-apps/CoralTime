@@ -6,7 +6,7 @@
             <div class="ct-reports-sidebar-container">
               <div class="ct-sidebar-block">
 
-                <h3 class="ct-header">Filters</h3>
+                <h3 class="ct-header">Jira</h3>
                 <div class="ct-reports-time-period-block">
                   <div class="ct-reports-time-period">
                     <a class="fa fa-angle-left" (click)="getNewPeriod(false)"></a>
@@ -61,8 +61,9 @@
                     </div>
                 </div>
 
-                <button mat-raised-button class="ct-blue-button"  (click)="applyFilters()">
-                  Apply filters
+                <button mat-raised-button class="ct-blue-button"  (click)="applyFilters()"
+                    [disabled]="!isAvaliableCheckProject || isEmptyProjects">
+                  Get worklogs
                 </button>
               </div>
             </div>
@@ -72,6 +73,7 @@
 
             <div class="ct-page-header">
               <h3 class="ct-header">Worklogs</h3>
+              <button mat-raised-button class="ct-blue-button" (click)="addTimeEntries()">Add time entries</button>
               </div>
               <div class="ct-reports-data">
 
@@ -93,18 +95,22 @@
                 </tr>
               </ng-template>
 
-              <ng-template pTemplate="body" let-item let-i="rowIndex">
-                <tr>
+              <ng-template pTemplate="body" let-item let-rowIndex="rowIndex" >
+                <tr [class.disabled]="item.timeActual > 86400">
                   <td>
                     <input type="checkbox" [(ngModel)] = "item.selected" (change)="checkAllSelected()"/>
                   </td>
                   <td class="ct-info-col">{{item.date}}</td>
                   <td>{{item.description}}</td>
-                  <td>{{item.timeActual}}</td>
+                  <td>{{item.timeActualString}}</td>
                   <td>{{item.projectName}}</td>
                   <td>
-                    <ct-select>
-
+                    <ct-select
+                      [name]="'task'"
+                      [displayName]="'name'"
+                      [trackBy]="'id'"
+                      [options]="tasks"
+                      (change)="addTaskToWorklog($event.value, rowIndex)">
                     </ct-select>
                   </td>
                 </tr>
