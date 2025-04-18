@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using CoralTime.ViewModels.Jira;
 using System;
 
-namespace CoralTime.Api.v1
+namespace CoralTime.Services.API.Api.v1
 {
     [Authorize]
     [Route(BaseControllerRoute)]
-    public class JiraWorklogController : BaseController<JiraWorklogController, IJiraWorklogSerivce>
+    public class JiraWorklogController :  BaseController<JiraWorklogController, IJiraWorklogSerivce>
     {
         public JiraWorklogController(IJiraWorklogSerivce service, ILogger<JiraWorklogController> logger)
             : base(logger, service) { }

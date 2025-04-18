@@ -47,6 +47,7 @@ using CoralTime.Common.Attributes;
 using CoralTime.DAL.Repositories;
 using Microsoft.OData.ModelBuilder;
 using CoralTime.Services.API;
+using CoralTime.ViewModels.JiraSettings;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
@@ -194,6 +195,8 @@ builder.Services.AddScoped<IMemberActionService, MemberActionService>();
 builder.Services.AddScoped<IVstsService, VstsService>();
 builder.Services.AddScoped<IVstsAdminService, VstsService>();
 builder.Services.AddScoped<IJiraServices, JiraServices>();
+builder.Services.AddScoped<IJiraProjectService, JiraProjectService>();
+builder.Services.AddScoped<IJiraWorklogSerivce, JiraWokrlogService>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -307,6 +310,7 @@ IEdmModel GetEdmModel()
     odataBuilder.EntitySet<ProjectNameView>("ProjectsNames");
     odataBuilder.EntitySet<MemberActionView>("MemberActions");
     odataBuilder.EntitySet<VstsProjectIntegrationView>("VstsProjectIntegration");
+    odataBuilder.EntitySet<JiraSettingsView>("GetAssignedUsers");
     odataBuilder.EnableLowerCamelCase();
     return odataBuilder.GetEdmModel();
 }

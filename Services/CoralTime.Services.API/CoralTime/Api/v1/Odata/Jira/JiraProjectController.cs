@@ -15,7 +15,7 @@ using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
 using static Duende.IdentityServer.Models.IdentityResources;
 
-namespace CoralTime.Api.v1.Odata.Jira
+namespace CoralTime.Services.API.Api.v1.Odata.Jira 
 {
     [Authorize]
     [Route(BaseODataControllerRoute)]

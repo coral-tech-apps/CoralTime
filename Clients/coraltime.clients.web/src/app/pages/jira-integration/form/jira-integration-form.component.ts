@@ -119,7 +119,7 @@ export class JiraIntegrationFormComponent implements OnInit {
     const isClientIsValid = observableOf(!!this.model.clientId);
     const isDomainValid = observableOf(form.controls['domain'].valid);
 
-    return observableForkJoin([isSettingNameValid, isClientIsValid, isDomainValid])
+    return observableForkJoin([isSettingNameValid, isDomainValid])
       .pipe(map((results: boolean[]) => {
         results.forEach((isValid, index) => this.showErrors[index] = !isValid);
         return results.every(valid => valid);

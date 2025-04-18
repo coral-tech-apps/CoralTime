@@ -7,14 +7,13 @@ using CoralTime.ViewModels.JiraSettings;
 using System.Threading.Tasks;
 using CoralTime.ViewModels.Jira;
 using System;
-using CoralTime.Api.v1.Odata.Members;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
 using static CoralTime.Common.Constants.Constants.Routes.OData;
 using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Formatter;
 
-namespace CoralTime.Api.v1.Odata.Jira
+namespace CoralTime.Services.API.Api.v1.Odata.Jira
 {
     [Authorize]
     [Route(BaseODataControllerRoute)]
