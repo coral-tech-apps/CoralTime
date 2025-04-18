@@ -42,7 +42,13 @@
   <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
     <tr>
       <td class="ct-info-col">{{row.settingName}}</td>
-      <td>{{row.apiToken}}</td>
+      <td>
+        <i class="fa"
+          [ngClass]="row.apiTokenStatus ? 'fa-check' : 'fa-times'"
+          [style.color]="row.apiTokenStatus ? 'green' : 'red'"
+          >
+        </i>
+      </td>
       <td>{{row.domain}}</td>
       <td class="ct-info-col">{{row.userEmail}}</td>
       <td>

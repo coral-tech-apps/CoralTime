@@ -20,6 +20,8 @@ namespace CoralTime.ViewModels.Jira
 
         public string ApiToken { get; set; }
 
+        public bool ApiTokenStatus { get; set; }
+
         public string Domain { get; set; }
     }
 }

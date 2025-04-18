@@ -11,6 +11,7 @@ export class FormJiraSetting {
   userEmail: string;
   domain: string;
   apiToken: string;
+  apiTokenStatus: boolean;
 
   static formJiraSetting(setting: JiraMemberSetting): FormJiraSetting {
     let instance = new this();
@@ -19,6 +20,7 @@ export class FormJiraSetting {
     instance.domain = setting.domain;
     instance.apiToken = setting.apiToken;
     instance.userEmail = setting.userEmail;
+    instance.apiTokenStatus = setting.apiTokenStatus;
     return instance;
   }
 
@@ -28,7 +30,8 @@ export class FormJiraSetting {
       settingName: this.settingName,
       userEmail: this.userEmail,
       domain: this.domain,
-      apiToken: this.apiToken
+      apiToken: this.apiToken,
+      apiTokenStatus: this.apiTokenStatus
     });
   }
 }

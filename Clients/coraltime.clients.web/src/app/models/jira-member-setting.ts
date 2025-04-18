@@ -6,6 +6,7 @@ export class JiraMemberSetting{
   isEnableConntection: boolean;
 	domain: string;
   apiToken: string;
+  apiTokenStatus: boolean;
 
 	constructor(data = null) {
 		if (data) {
@@ -16,6 +17,7 @@ export class JiraMemberSetting{
       this.isEnableConntection = data.isEnableConntection;
       this.domain = data.domain;
       this.apiToken = data.apiToken;
+      this.apiTokenStatus = data.apiTokenStatus;
 		}
 	}
 }

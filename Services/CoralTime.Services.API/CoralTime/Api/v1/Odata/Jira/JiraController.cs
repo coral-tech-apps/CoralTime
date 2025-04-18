@@ -38,7 +38,6 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             try
             {
                 await _service.FillJiraUserId(id);
-                //retun jirasettingViewModel new
                 return Ok();
             }
             catch(Exception e)
