@@ -7,20 +7,6 @@
 
   <form #jiraForm="ngForm" class="ct-form-add" autocomplete="off">
     <div class="ct-form-block">
-      <!-- Setting Name -->
-      <div>
-        <label class="ct-form-label">Setting Name</label>
-        <div class="ct-required-field-container">
-          <input class="ct-input ct-full-width" name="settingName"
-                 [(ngModel)]="model.settingName"
-                 (ngModelChange)="showErrors[0] = false"
-                 maxlength="200" required/>
-        </div>
-        <div *ngIf="showErrors[0] && !model.settingName" class="ct-error-text">
-          Setting name is required!
-        </div>
-      </div>
-
       <!-- Email -->
       <div>
         <label class="ct-form-label">Email</label>
@@ -35,20 +21,6 @@
         </div>
         <div *ngIf="showErrors[1] && email.errors?.email" class="ct-error-text">
           Email is invalid!
-        </div>
-      </div>
-
-      <!-- Domain -->
-      <div>
-        <label class="ct-form-label">Domain</label>
-        <div class="ct-required-field-container">
-          <input class="ct-input ct-full-width" name="domain" #domain="ngModel"
-                 [(ngModel)]="model.domain"
-                 (ngModelChange)="showErrors[2] = false"
-                 required/>
-        </div>
-        <div *ngIf="showErrors[2] && !model.domain" class="ct-error-text">
-          Domain is required!
         </div>
       </div>
 
@@ -68,7 +40,7 @@
     </div>
 
     <div class="ct-buttons-block" mat-dialog-actions>
-      <button mat-raised-button class="ct-button ct-blue-button"
+      <button type="button" mat-raised-button class="ct-button ct-blue-button"
               [class.ct-loading]="isValidateLoading"
               [disabled]="isValidateLoading || isRequestLoading"
               (click)="validateAndSubmit(jiraForm)">

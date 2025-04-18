@@ -137,7 +137,9 @@ export class UsersComponent implements OnInit {
 	}
 
 	openProjectAssignmentDialog(user: User = null): void {
-		this.dialogProjectAssignmentRef = this.dialog.open(UserProjectAssignmentComponent);
+		this.dialogProjectAssignmentRef = this.dialog.open(UserProjectAssignmentComponent, {
+      panelClass: 'scrollable-dialog'
+    });
 		this.dialogProjectAssignmentRef.componentInstance.user = user;
 	}
 

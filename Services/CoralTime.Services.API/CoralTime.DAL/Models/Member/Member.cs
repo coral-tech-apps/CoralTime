@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CoralTime.Common.Constants;
+using CoralTime.DAL.Models.Jira;
 
 namespace CoralTime.DAL.Models.Member
 {
@@ -48,6 +49,6 @@ namespace CoralTime.DAL.Models.Member
 
         public bool EnableJira { get; set; } = false;
 
-        public List<JiraSetting> JiraSettings { get; set; }
+        public List<JiraMemberSettings> JiraMemberSettings { get; set; }
     }
 }

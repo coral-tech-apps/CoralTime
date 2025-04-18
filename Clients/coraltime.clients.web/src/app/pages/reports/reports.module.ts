@@ -22,7 +22,7 @@ import { ConfirmationComponent } from '../../shared/confirmation/confirmation.co
     declarations: [
         ReportsComponent,
         ReportsGridComponent,
-        RangeDatepickerComponent,
+       // RangeDatepickerComponent,
         ReportsSendComponent,
         ReportsSendFormComponent,
         EmailsEqualValidatorDirective,

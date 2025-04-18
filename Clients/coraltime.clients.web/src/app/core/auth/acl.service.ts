@@ -29,8 +29,6 @@ export class AclService {
 	isGrantedForRole(policy: string, roles: string[]): boolean {
 		return roles.some(role => {
 			if(!this.authService.authUser.policies){
-				console.log(this.authService.policies);
-				console.log(this.authService.authUser.policies);
 				return false;
 			}
 			var policies = this.authService.authUser.policies as string[];

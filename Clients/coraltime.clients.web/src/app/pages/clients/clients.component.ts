@@ -127,7 +127,9 @@ export class ClientsComponent implements OnInit {
 	}
 
 	openProjectAssignmentDialog(client: Client = null): void {
-		this.dialogProjectAssignmentRef = this.dialog.open(ClientProjectAssignmentComponent);
+		this.dialogProjectAssignmentRef = this.dialog.open(ClientProjectAssignmentComponent, {
+      panelClass: 'scrollable-dialog'
+    });
 		this.dialogProjectAssignmentRef.componentInstance.client = client;
 	}
 

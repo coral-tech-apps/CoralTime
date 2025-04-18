@@ -1,5 +1,5 @@
 
-import {forkJoin as observableForkJoin,  Observable } from 'rxjs';
+import {forkJoin as observableForkJoin,  Observable, finalize } from 'rxjs';
 import {
 	Component, Input, ViewChild, EventEmitter, Output, OnInit, QueryList, ViewChildren, ElementRef
 } from '@angular/core';
@@ -7,7 +7,7 @@ import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
-import { TimeEntry, DateUtils, CalendarDay } from '../../../../models/calendar';
+import { TimeEntry, DateUtils, CalendarDay, Time } from '../../../../models/calendar';
 import { User } from '../../../../models/user';
 import { AclService } from '../../../../core/auth/acl.service';
 import { NotificationService } from '../../../../core/notification.service';
@@ -18,6 +18,7 @@ import { MultipleDatepickerComponent } from '../../entry-time/multiple-datepicke
 import { numberToHex } from '../../../../shared/form/color-picker/color-picker.component';
 import { MenuComponent } from '../../../../shared/menu/menu.component';
 import { MAX_TIMER_VALUE } from '../../timer/timer.component';
+import { cU } from '@fullcalendar/core/internal-common';
 
 @Component({
     selector: 'ct-calendar-task',
@@ -45,6 +46,8 @@ export class CalendarTaskComponent implements OnInit {
 	lockReason: string = '';
 	selectedDate: string;
 	timeFormat: number;
+
+  private isMovingDate = false;
 
 	constructor(private aclService: AclService,
 	            private route: ActivatedRoute,
@@ -88,6 +91,11 @@ export class CalendarTaskComponent implements OnInit {
 	}
 
 	moveAction(trigger: MenuComponent): void {
+    if(this.isCalendarShown){
+      this.isCalendarShown = false;
+      return;
+    }
+
 		this.isCalendarShown = true;
 		this.isOpenRight = this.isRightSideClear(this.elementRef.nativeElement);
 		this.isOpenLeft = !this.isOpenRight && this.isLeftSideClear(this.elementRef.nativeElement);
@@ -120,30 +128,49 @@ export class CalendarTaskComponent implements OnInit {
 	}
 
 	dateOnChange(date: DayJs[] | string[]): void {
-		if (date instanceof DayJs) {
+		if (dayjs.isDayjs(date[0])) {
 			return;
 		}
 
-		let currentTimeEntry = new TimeEntry(this.timeEntry);
-		currentTimeEntry.date = date[0] ? DateUtils.formatDateToString(date[0]) : currentTimeEntry.date;
+		const picked = dayjs(date[0]).format('YYYY-MM-DD');
+    const original = dayjs(this.timeEntry.date).format('YYYY-MM-DD');
 
-		if (!this.isSubmitDataValid(currentTimeEntry.date)) {
-			this.closeAllMenus();
-			return;
-		}
+		if(picked === original){
+      return;
+    }
 
-		let observable = this.calendarService.Put(currentTimeEntry, currentTimeEntry.id.toString());
+    if(this.isMovingDate){
+      return;
+    }
 
-		observable.subscribe(
-			() => {
-				this.notificationService.success('New Time Entry has been successfully moved.');
-				this.calendarService.timeEntriesUpdated.emit();
-				this.closeEntryTimeForm.emit();
-			},
-			() => {
-				this.notificationService.danger('Error moving Time Entry.');
-			});
-		this.closeAllMenus();
+    this.isMovingDate = true;
+
+    let currentTimeEntry = new TimeEntry(this.timeEntry);
+    currentTimeEntry.date = picked;
+
+    if(!this.isSubmitDataValid(currentTimeEntry.date)){
+      this.isMovingDate = false;
+      this.closeAllMenus();
+      return;
+    }
+
+		this.calendarService
+        .Put(currentTimeEntry, currentTimeEntry.id.toString())
+        .pipe(
+          finalize(() => {
+            this.isMovingDate = false;
+            this.closeAllMenus();
+          })
+        )
+        .subscribe(
+          () => {
+            this.notificationService.success('New Time Entry has been successfully moved.');
+            this.calendarService.timeEntriesUpdated.emit();
+            this.closeEntryTimeForm.emit();
+          },
+          () => {
+            this.notificationService.danger('Error moving Time Entry.');
+          });
 	}
 
 	onSubmitDialog(dateList: string[]): void {

@@ -1,22 +1,90 @@
-import { catchError, map, Observable, of } from 'rxjs';
+import { first, filter } from 'rxjs/operators';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, QueryList } from '@angular/core';
 import { ODataServiceFactory, ODataService } from './odata';
 import { JiraSetting } from '../models/jira-setting';
 import { ConstantService } from '../core/constant.service';
 import { User } from '../models/user';
+import { JiraMemberSetting } from '../models/jira-member-setting';
+import { Project } from '../models/project';
 
 @Injectable()
 export class JiraSettingService {
   authService: any;
 
 	constructor(private constantService: ConstantService,
+              private odataFactory: ODataServiceFactory,
 	            private http: HttpClient) {
 ;
 	}
 
+  getAssignedUsers(id: number, event, filterStr = ''): any{
+    let odata = this.odataFactory.CreateService<User>('jira/GetAssignedUsers/'+id);
+    let filters: string[] = []
+
+    let query = odata
+      .Query();
+
+    if (event.sortField) {
+      query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    } else {
+      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    }
+    if(filterStr){
+      filters.push('contains(tolower(fullName),\'' + filterStr.trim().toLowerCase() + '\')');
+    }
+
+    query.Filter(filters.join('and'));
+
+    return query.ExecWithCount().pipe(map(res => {
+			res.data = res.data.map((x: Object) => new User(x));
+			return res;
+		}));
+  }
+
+  getNotAssignedUsers(id: number, event, filterStr = ''): any{
+    let odata = this.odataFactory.CreateService<User>('jira/GetNotAssignedUsers/'+id);
+    let filters: string[] = []
+
+    let query = odata
+      .Query();
+
+    if (event.sortField) {
+      query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    } else {
+      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    }
+    if(filterStr){
+      filters.push('contains(tolower(fullName),\'' + filterStr.trim().toLowerCase() + '\')');
+    }
+
+    query.Filter(filters.join('and'));
+
+    return query.ExecWithCount().pipe(map(res => {
+			res.data = res.data.map((x: Object) => new User(x));
+			return res;
+		}));
+  }
+
+  assignUserToIntegration(memberId: number, jiraSettingId: number): Observable<any>{
+    return this.http.post(this.constantService.jiraApi + `/AssignToIntegration?memberId=${memberId}&jiraSettingId=${jiraSettingId}`, {}).pipe(
+      map((response) => {
+        return response;
+      })
+    )
+  }
+
   isEnableJira(): Observable<boolean>{
     return this.http.get<boolean>(this.constantService.apiBaseUrl + '/odata/Members/IsJiraEnable').pipe(
+      map(response => {
+        return response;
+      })
+    )
+  }
+
+  getJiraUserIdStatus(id: number): Observable<boolean>{
+    return this.http.get<boolean>(this.constantService.jiraApi + `/GetJiraUserIdStatus?id=${id}`).pipe(
       map(response => {
         return response;
       })
@@ -40,21 +108,55 @@ export class JiraSettingService {
     )
   }
 
-  loadSettingsTable(id: number): any{
-    return this.http.get<any[]>(this.constantService.jiraApi + `?memberId=${id}`).pipe(
-      map(response => {
-        return response;
-      })
+  removeIntegrationFromUser(memberId: number, jiraSettingId: number): Observable<boolean>{
+    return this.http.delete<void>(this.constantService.jiraApi + `/UnAssignToIntegration?memberId=${memberId}&jiraSettingId=${jiraSettingId}`).pipe(
+      map( () => true)
     )
+  }
+
+  loadSettingsTable(id: number, event, filterStr = ''): any{
+    let odata = this.odataFactory.CreateService<JiraSetting>('Jira');
+    let filters: string[] = []
+
+    let query = odata
+      .Query();
+
+    if (event.sortField) {
+      query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    } else {
+      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+    }
+    if(filterStr){
+      filters.push('contains(tolower(settingName),\'' + filterStr.trim().toLowerCase() + '\')');
+    }
+
+    query.Filter(filters.join('and'));
+
+    return query.ExecWithCount().pipe(map(res => {
+			res.data = res.data.map((x: Object) => new JiraSetting(x));
+			return res;
+		}));
   }
 
   createNewSetting(jiraSetting: JiraSetting): Observable<any>{
     return this.http.post(this.constantService.jiraApi, jiraSetting)
   }
 
-  updateSetting(jiraSetting: JiraSetting, id: string): Observable<any>{
-    const query = this.constantService.jiraApi + `?id=${id}`;
-
+  updateSetting(jiraSetting: JiraSetting, id: number): Observable<any>{
+    const query = this.constantService.jiraApi + `/?id=${id}`;
     return this.http.patch(query, jiraSetting)
+  }
+
+  fillJiraMemberSetting(jiraSetting: JiraMemberSetting, id: number): Observable<any>{
+    const query = this.constantService.jiraApi + `/FillJiraMemberSetting?id=${id}`;
+    return this.http.patch(query, jiraSetting)
+  }
+
+  getJiraMemberSetting(id: number = 0){
+  return this.http.get<any[]>(this.constantService.jiraApi + `/GetMemberSettings?id=${id}`).pipe(
+      map(response => {
+        return response;
+      })
+    )
   }
 }

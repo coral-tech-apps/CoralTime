@@ -1,11 +1,11 @@
-<div class="ct-page-container ct-clients-page" style="width: 1000px;">
+<div class="ct-page-container ct-clients-page ct-max-width">
   <div class="ct-page-header">
     <mat-checkbox [(ngModel)]="showJiraTable" (ngModelChange)="onToggle()">
         Jira Enable
     </mat-checkbox>
 
-    <div *ngIf="showJiraTable" (click)="openConnectionDialog()" class="ct-add-link">
-      <a class="ct-manage-add" style="padding-top: 3px;" >Create New Jira Setting</a>
+    <div *ngIf="showJiraTable" (click)="checkConncetion()" class="ct-add-link">
+      <a  style="padding-top: 3px;" >Check connections</a>
     </div>
   </div>
 <div class="ct-data-table-wrapper">
@@ -28,10 +28,13 @@
         User Email
       </th>
       <th>
+        Account id
+      </th>
+      <th>
         Edit
       </th>
       <th>
-        Delete
+        Projects
       </th>
     </tr>
   </ng-template>
@@ -42,11 +45,17 @@
       <td>{{row.apiToken}}</td>
       <td>{{row.domain}}</td>
       <td class="ct-info-col">{{row.userEmail}}</td>
+      <td>
+        <i class="fa"
+          [ngClass]="row.isEnableConntection ? 'fa-check' : 'fa-times'"
+          [style.color]="row.isEnableConntection ? 'green' : 'red'"
+          ></i>
+      </td>
       <td class="ct-small-padding">
           <a class="ct-grid-settings-icon" (click) = "openConnectionDialog(row)"></a>
       </td>
-      <td>
-        <a class="fa fa-times" (click) = "deleteSetting(rowIndex)"></a>
+      <td class="ct-small-padding">
+        <a class="ct-grid-settings-icon" (click)="onJiraProjectDialog(row)"></a>
       </td>
     </tr>
   </ng-template>

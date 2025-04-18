@@ -1,0 +1,99 @@
+<div class="ct-dialog ct-data-dialog">
+  <div class="ct-dialog-title">
+      <span>Team members of</span><span>{{jiraSetting.settingName}}</span>
+      <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
+  </div>
+
+  <div class="ct-search-container">
+      <div class="ct-grid-search-filter">
+          <input class="ct-input-element" #gb placeholder="Search to add or remove members"
+                [(ngModel)]="filterStr"
+                (input)="onGlobalFilter($event.target.value)">
+          <i class="ct-search-icon"></i>
+      </div>
+  </div>
+
+  <div class="ct-grid" #grid>
+      <div class="ct-popup-table-wrapper">
+          <p-table #assignedTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
+                   [value]="assignedUsersPagedResult?.data"
+                   scrollable="true" [sortField]="'fullName'"
+                   [lazy]="true"
+                   [loading]="!isAllAssignedUsers"
+                   (onLazyLoad)="updateAssignedUsers($event)"
+                   (onMoreContent)="updateAssignedUsers()">
+
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th pSortableColumn="fullName" [style]="{'width':'330px'}" class="ct-info-col">
+                          {{assignedUsersPagedResult?.count}} team members
+                          <p-sortIcon field="fullName"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="email" [style]="{'width':'470px'}">
+                          Email
+                          <p-sortIcon field="email"></p-sortIcon>
+                      </th>
+                      <th class="ct-small-padding">Actions</th>
+                  </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-userProject>
+                  <tr>
+                      <td>
+                          <span class="ct-grid-userpic">
+                              <ct-user-pic [urlIcon]="userProject.urlIcon"></ct-user-pic>
+                          </span>
+                          <span class="ct-grid-link-text">
+                            {{userProject.fullName}}
+                        </span>
+                      </td>
+                      <td>{{userProject.email}}</td>
+                      <td *ctIsGranted="'AssignProjectMember'">
+                        <span class="ct-grid-button" (click)="removeIntegrationFromUser(userProject.id, $event.target)">Remove user</span>
+                    </td>
+                  </tr>
+              </ng-template>
+          </p-table>
+
+          <p-table #notAssignTable class="ct-grid-container ct-grid-row-border"
+                   [value]="notAssignedUsersPagedResult?.data"
+                   scrollable="true" [sortField]="'fullName'"
+                   [lazy]="true"
+                   [loading]="!isAllNotAssignedUsers"
+                   (onLazyLoad)="updateNotAssignedUsers($event)"
+                   (onMoreContent)="updateNotAssignedUsers()">
+
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th pSortableColumn="fullName" [style]="{'width':'330px'}" class="ct-info-col">
+                          {{notAssignedUsersPagedResult?.count}} Unassigned
+                          <p-sortIcon field="fullName"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="email" [style]="{'width':'470px'}">
+                          Email
+                          <p-sortIcon field="email"></p-sortIcon>
+                      </th>
+                      <th class="ct-small-padding">Actions</th>
+                  </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-user>
+                  <tr>
+                      <td>
+                          <span class="ct-grid-userpic">
+                              <ct-user-pic [urlIcon]="user.urlIcon"></ct-user-pic>
+                          </span>
+                          <span class="ct-grid-link-text">
+                              {{user.fullName}}
+                          </span>
+                      </td>
+                      <td>{{user.email}}</td>
+                      <td *ctIsGranted="'AssignProjectMember'">
+                          <span class="ct-grid-button" (click)="addIntegrationToUser(user.id, $event.target)">Add to user</span>
+                      </td>
+                  </tr>
+              </ng-template>
+          </p-table>
+      </div>
+  </div>
+</div>

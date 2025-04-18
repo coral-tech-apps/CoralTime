@@ -91,10 +91,7 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
         });
         this.datePicker.onChange.subscribe((value: string[] | DayJs[]) => {
           if (value) {
-            this.date = Array.isArray(value) ?
-              value.map(d => typeof d === 'string' ? d : d.format('YYYY-MM-DD')) :
-              [value];
-            this.changeSelectedDate(this.date);
+            this.changeSelectedDate();
           }
         });
       }
@@ -166,11 +163,10 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
         this.date.push(dateStr);
       }
     }
-    this.changeSelectedDate(this.date);
+    this.changeSelectedDate();
   }
 
   dayClicked(day: IDay): void {
-    console.log('Legacy dayClicked method called');
     this.dateClicked.emit(day.date);
     this.handleDateSelection(day);
   }
@@ -179,7 +175,7 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
 	 * Implemented as part of ControlValueAccessor.
 	 */
 	writeValue(date: any) {
-      //this.date = this.convertValueToArrayOfString(date);
+      this.date = this.convertValueToArrayOfString(date);
 			this._controlValueAccessorChangeFn(this.date);
 	}
 
@@ -214,9 +210,9 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
 		}
 	}
 
-	changeSelectedDate(date: string[]): void {
-		this._controlValueAccessorChangeFn(date);
-    this.dateChanged.emit(date);
+	changeSelectedDate(): void {
+		this._controlValueAccessorChangeFn(this.date);
+    this.dateChanged.emit(this.date);
 	}
 
 	private convertValueToArrayOfString(date: any): string[] {

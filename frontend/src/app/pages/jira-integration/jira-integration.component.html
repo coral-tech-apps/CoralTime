@@ -1,0 +1,79 @@
+<div class="ct-grid-search-filter position-fixed">
+  <!-- filtration  -->
+  <input class="ct-input-element" #globalFilter placeholder="Search setting..."
+          [(ngModel)]="filterStr"
+         (input)="filterTable($event.target.value)">
+  <i class="fa fa-search"></i>
+</div>
+
+<div #pageContainer class="ct-page-container ct-integration-page">
+  <div class="ct-page-header">
+    <h3 class="ct-header">Jira settings</h3>
+    <div class="ct-add-link">
+      <a class="ct-manage-add" (click)="openFormDialog()">Create New Connection</a>
+    </div>
+  </div>
+
+  <div class="ct-data-table-wrapper">
+    <p-table #dt class="ct-grid-container ct-grid-row-border"
+          [sortField]="'settingName'"
+          [value]="pagedResult?.data"
+          [lazy]="true"
+          [loading]="!isAllSettings"
+          (onLazyLoad)="loadLazy($event)"
+          (onMoreContent)="loadLazy()">
+
+        <!-- header -->
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="settingName" class="ct-info-col">
+              Setting name <p-sortIcon field="settingName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="domain" class="ct-info-col">
+              Domain <p-sortIcon field="domain"></p-sortIcon>
+            </th>
+            <th class="ct-info-col">Client</th>
+            <th class="ct-info-col">Assign to user</th>
+            <th class="ct-info-col">Edit</th>
+            <th class="ct-info-col">Projects</th>
+            <th class="ct-info-col">Delete setting</th>
+          </tr>
+        </ng-template>
+
+        <!-- body -->
+        <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+          <tr>
+            <td class="ct-info-col">{{row.settingName}}</td>
+            <td>{{row.domain}}</td>
+            <td>{{row.clientName}}</td>
+            <td class="ct-info-col ct-small-padding" style="width: 140px;">
+              <span class="ct-user-circle-icon"></span>
+              <a (click)="openJiraUsersDialog(row)" class="ct-grid-link ct-grid-count">
+                {{ row.memberCount }}
+                <span class="ct-manage-text">Manage</span>
+              </a>
+            </td>
+            <td class="ct-small-padding">
+              <a class="ct-grid-settings-icon" (click)="openFormDialog(row)"></a>
+            </td>
+            <td class="ct-small-padding">
+              <a class="ct-grid-settings-icon" (click)="opennLinkedJiraDialog(row)"></a>
+            </td>
+            <td>
+              <i class="fa fa-times" (click)="deleteSetting(rowIndex)" style="cursor: pointer;"></i>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- empty data -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5">
+              Sorry, you don't have any settings at this time period.
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+  </div>
+</div>

@@ -1,4 +1,5 @@
-﻿using CoralTime.DAL.Repositories.Member;
+﻿using CoralTime.DAL.Repositories.Jira;
+using CoralTime.DAL.Repositories.Member;
 using CoralTime.DAL.Repositories.User;
 using CoralTime.DAL.Repositories.Vsts;
 
@@ -71,6 +72,18 @@ namespace CoralTime.DAL.Repositories
         public JiraSettingsRepository JiraSettingsRepository => _jiraSettingsRepository ?? (_jiraSettingsRepository = new JiraSettingsRepository(AppDbContext, MemoryCache, UserId));
 
         private JiraSettingsRepository _jiraSettingsRepository;
+
+        public JiraMemberSettingsRepository jiraMemberSettingsRepository => _jiraMemberSettingsRepository ?? (_jiraMemberSettingsRepository = new JiraMemberSettingsRepository(AppDbContext, MemoryCache, UserId));
+
+        private JiraMemberSettingsRepository _jiraMemberSettingsRepository;
+
+        public JiraProjectRepository JiraProjectRepository => _jiraProjectRepository ?? (_jiraProjectRepository = new JiraProjectRepository(AppDbContext, MemoryCache, UserId));
+
+        private JiraProjectRepository _jiraProjectRepository;
+
+        public LinkedJiraProjectRepository LinkedJiraProjectRepository => _linkedJiraProjectRepository ?? (_linkedJiraProjectRepository = new LinkedJiraProjectRepository(AppDbContext, MemoryCache, UserId));
+
+        private LinkedJiraProjectRepository _linkedJiraProjectRepository;
 
         #endregion List of Repositories
     }

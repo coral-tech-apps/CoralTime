@@ -182,6 +182,23 @@ namespace CoralTime.Common.Constants
             public const string TimeEntries = "TimeEntries";
             public const string Setup = "Setup";
 
+            //TODO: delete this
+            public const string GetJiraUserIdStatus = "GetJiraUserIdStatus";
+            public const string GetAssignedUsers = "GetAssignedUsers/{id}";
+            public const string GetNotAssignedUsers = "GetNotAssignedUsers/{id}";
+            public const string GetMemberSettings = "GetMemberSettings";
+            public const string AssignToIntegration = "AssignToIntegration";
+            public const string FillJiraMemberSetting = "FillJiraMemberSetting";
+            public const string UnAssignToIntegration = "UnAssignToIntegration";
+            public const string GetAllJiraProjectsBySettingId = "GetAllJiraProjectsBySettingId";
+            public const string GetUnAssignJiraProject = "GetUnAssignJiraProject/{id}";
+            public const string GetAssignJiraProject = "GetAssignJiraProject/{id}";
+            public const string LoadJiraProject = "LoadJiraProject";
+            public const string LinkProjects = "LinkProjects";
+            public const string RemovProjectJiraLink = "RemoveProjectJiraLink";
+            public const string GetWorklogs = "GetWorklogs";
+            public const string LoadTimeEntryWorklogs = "LoadTimeEntryWorklogs";
+
             private const string WithMembers = "/members";
             private const string WithProjects = "/projects";
             private const string WithNotifications = "/Notifications";
@@ -208,6 +225,12 @@ namespace CoralTime.Common.Constants
                 public const string VstsProjectIntegrationMembersByProject = "VstsProjectIntegration(" + IdRoute + ")" + WithMembers;
                 public const string IsJiraEnableRoute = "IsJiraEnable";
                 public const string ChangeJiraFieldRoute = "ChangeJiraField";
+                public const string GetAssignedUsersRoute = "GetAssignedUsers(" + IdRoute + ")";
+                public const string GetNosAssignedUsersRoute = "GetNotAssignedUsers(" + IdRoute + ")";
+                public const string GetSettingsRoute = "GetSettings";
+                public const string GetAllJiraProjectsBySettingIdRotute = "GetAllJiraProjectsBySettingId(" + IdRoute + ")";
+                public const string GetUnAssignedJiraProjectRoute = "GetUnAssignJiraProject(" + IdRoute + ")";
+                public const string GetAssignedJiraProjectRoute = "GetAssignJiraProject(" + IdRoute + ")";
             }
         }
 

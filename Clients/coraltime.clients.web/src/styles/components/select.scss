@@ -138,6 +138,14 @@
   opacity: 0.6;
 }
 
+.worklog-class{
+  .ct-select{
+    height: $selectHeight;
+    border: 0;
+    border-bottom: 1px solid $gray-page-background;
+  }
+}
+
 .ct-select {
   position: relative;
   height: $selectHeight;

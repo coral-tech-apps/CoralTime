@@ -77,6 +77,10 @@
       }
     }
 
+    .ct-form.max-width{
+      width: 100% !important;
+    }
+
     .ct-form-label + div {
       margin-bottom: 10px;
     }
@@ -152,6 +156,7 @@
     }
 
     .ct-button {
+      --mdc-protected-button-container-color: #00a0de !important;
       float: right;
       height: 40px;
       margin-top: 122px;

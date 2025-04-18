@@ -3,10 +3,10 @@ import { Component, OnInit } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { AuthService } from "src/app/core/auth/auth.service";
 import { JiraSettingFormComponent } from "./form/jira-settings-form.component";
-import { JiraSetting } from "src/app/models/jira-setting";
 import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { NotificationService } from "src/app/core/notification.service";
-import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.component";
+import { JiraMemberSetting } from "src/app/models/jira-member-setting";
+import { JiraProjectProjectComponent } from "./jira-project-project/jira-project-project.component";
 
 @Component({
   selector: 'ct-jira-settings',
@@ -16,9 +16,10 @@ import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.compone
 
 export class JiraSettings implements OnInit{
 showJiraTable: boolean;
-tableData: any[] = [];
+tableData: JiraMemberSetting[] = [];
 
 private dialogRef: MatDialogRef<JiraSettingFormComponent>;
+private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
 
   constructor(private http: HttpClient,
               public authService: AuthService,
@@ -51,30 +52,7 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
     }
   }
 
-  deleteSetting(index: number): void{
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Delete Setting?',
-        message: `Are you sure you want to delete "${this.tableData[index].settingName}"?`
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.jiraSettingService.deleteSetting(this.tableData[index].id).subscribe(result => {
-          if(result){
-            this.tableData.splice(index, 1);
-            this.tableData = [...this.tableData];
-            this.notificationService.success('Jira setting successfuly deleted.');
-          }else{
-            this.notificationService.success('Error deleting jira setting.');
-          }
-        });
-      }
-    });
-  }
-
-  openConnectionDialog(setting: JiraSetting = null): void {
+  openConnectionDialog(setting: JiraMemberSetting = null): void {
     this.dialogRef = this.dialog.open(JiraSettingFormComponent);
     this.dialogRef.componentInstance.setting = setting;
     this.dialogRef.componentInstance.onSubmit.subscribe((response) => {
@@ -83,22 +61,37 @@ private dialogRef: MatDialogRef<JiraSettingFormComponent>;
     });
   }
 
+  checkConncetion(): void{
+    this.tableData.forEach(item => {
+      if(!item.isEnableConntection){
+        this.jiraSettingService.getJiraUserIdStatus(item.jiraSettingId).subscribe(response => {
+          this.loadJiraTable();
+        })
+      }
+    })
+  }
+
   private onSubmit(response: any): void {
 		if (response.error) {
 			this.notificationService.danger('Error saving jira setting.');
 			return;
 		}
-
-		if (response.isNewSetting) {
-			this.notificationService.success('New Jira setting has been successfully created.');
-		} else {
-			this.notificationService.success('New Jira setting has been successfully changed.');
-		}
+		this.notificationService.success('Jira setting has been successfully changed.');
     this.loadInitialState();
 	}
 
+  onJiraProjectDialog(setting: JiraMemberSetting = null): void {
+    this.jiraProjectDialogRef = this.dialog.open(JiraProjectProjectComponent);
+    this.jiraProjectDialogRef.componentInstance.jiraSettingId = setting.jiraSettingId;
+    this.jiraProjectDialogRef.componentInstance.jiraSetting = setting;
+    /*this.jiraProjectDialogRef.componentInstance.onSubmit.subscribe((response) => {
+      this.jiraProjectDialogRef.close();
+      this.onSubmit(response);
+    });*/
+  }
+
   private loadJiraTable(){
-    this.jiraSettingService.loadSettingsTable(this.authService.authUser.id).subscribe(result => {
+    this.jiraSettingService.getJiraMemberSetting(this.authService.authUser.id).subscribe(result => {
       this.tableData = [],
       this.tableData = result;
     })

@@ -10,12 +10,16 @@ namespace CoralTime.ViewModels.JiraSettings
 {
     public class JiraSettingsView
     {
-        public string SettingName { get; set; }
+        public int Id { get; set; }
 
-        public string UserEmail { get; set; }
+        public int ClientId { get; set; }
+
+        public string ClientName { get; set; }
+
+        public string SettingName { get; set; }
 
         public string Domain { get; set; }
 
-        public string ApiToken { get; set; }
+        public int MemberCount { get; set; }
     }
 }

@@ -1,17 +1,19 @@
 export class JiraSetting{
-  id: string;
+  id: number;
 	settingName: string;
-	userEmail: string;
 	domain: string;
-  apiToken: string;
+  memberCount: number;
+  clientId: number;
+  clientName: string;
 
 	constructor(data = null) {
 		if (data) {
 			this.id = data.id;
 			this.settingName = data.settingName;
-			this.userEmail = data.userEmail;
 			this.domain = data.domain;
-      this.apiToken = data.apiToken;
+      this.memberCount = data.memberCount;
+      this.clientId = data.clientId;
+      this.clientName = data.clientName;
 		}
 	}
 }

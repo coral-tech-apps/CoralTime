@@ -350,7 +350,7 @@ p-table div div{
 
 .ct-blue-button,
 button.ct-blue-button.mat-mdc-raised-button {
-  background-color: $main-blue;
+  background-color: $main-blue !important;
   border: none;
   height: 40px;
   font-size: 14px;

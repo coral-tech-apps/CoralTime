@@ -9,6 +9,8 @@ import { TextareaComponent } from './textarea/textarea.component';
 import { InputListComponent } from './input-list/input-list.component';
 import { JiraSettings } from './jira-settings/jira-settings.component';
 import { JiraSettingFormComponent } from './jira-settings/form/jira-settings-form.component';
+import { JiraProjectProjectComponent } from './jira-settings/jira-project-project/jira-project-project.component';
+import { JiraIntegrationFormComponent } from 'src/app/pages/jira-integration/form/jira-integration-form.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { NgSlimScrollModule } from 'ngx-slimscroll';
 import { MaterialModule } from '../material.module';
@@ -37,6 +39,8 @@ import { TableModule } from 'primeng/table';
 		SelectComponent,
     JiraSettings,
     JiraSettingFormComponent,
+    JiraProjectProjectComponent,
+    JiraIntegrationFormComponent,
 		TextareaComponent
 	],
 	exports: [
@@ -48,6 +52,8 @@ import { TableModule } from 'primeng/table';
 		SelectComponent,
     JiraSettings,
     JiraSettingFormComponent,
+    JiraProjectProjectComponent,
+    JiraIntegrationFormComponent,
 		TextareaComponent,
 		ColorPickerModule,
 		NgSlimScrollModule

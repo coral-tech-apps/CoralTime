@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CoralTime.DAL.Models.Jira;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,5 +24,7 @@ namespace CoralTime.DAL.Models
 
         [MaxLength(200)]
         public string Email { get; set; }
+
+        public List<JiraSetting> JiraSettings { get; set; }
     }
 }

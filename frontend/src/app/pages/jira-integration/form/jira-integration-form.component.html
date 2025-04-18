@@ -1,0 +1,75 @@
+<div class="ct-dialog ct-dialog-add ct-project-dialog no-overflow">
+  <div class="ct-dialog-title">
+    <span>{{ dialogHeader }}</span>
+    <span *ngIf="setting.id">{{ setting.settingName }}</span>
+    <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
+  </div>
+
+  <form #jiraForm="ngForm" class="ct-form-add" autocomplete="off">
+    <div class="ct-form-block">
+
+      <div *ngIf="isChangeableLocker" class="ct-hint-text">
+        Jira setting cannot be changed because there are linked Jira Projects.
+      </div>
+
+      <!-- Setting Name -->
+      <div>
+        <label class="ct-form-label">Setting Name</label>
+        <div class="ct-required-field-container">
+          <input class="ct-input ct-full-width" name="settingName"
+                 [(ngModel)]="model.settingName"
+                 [disabled]="isChangeableLocker"
+                 (ngModelChange)="showErrors[0] = false"
+                 maxlength="200" required/>
+        </div>
+        <div *ngIf="showErrors[0] && !model.settingName" class="ct-error-text">
+          Setting name is required!
+        </div>
+      </div>
+
+      <!-- Client -->
+      <div>
+        <label class="ct-form-label">Client</label>
+        <div class="ct-required-field-container ">
+          <ct-select [name]="'defaultProject'"
+                      [displayName]="'name'"
+                      [trackBy]="'id'"
+                      [defaultValue]="setting.clientName"
+                      [(ngModel)]="model.client"
+                      [options]="clients"
+                      [disabled]="isChangeableLocker"
+                      (ngModelChange)="showErrors[1] = false">
+          </ct-select>
+        </div>
+        <div *ngIf="showErrors[1] && !model.client" class="ct-error-text">
+          Client is required!
+        </div>
+      </div>
+
+      <!-- Domain -->
+      <div>
+        <label class="ct-form-label">Domain</label>
+        <div class="ct-required-field-container">
+          <input class="ct-input ct-full-width" name="domain" #domain="ngModel"
+                 [(ngModel)]="model.domain"
+                 [disabled]="isChangeableLocker"
+                 (ngModelChange)="showErrors[2] = false"
+                 required/>
+        </div>
+        <div *ngIf="showErrors[2] && !model.domain" class="ct-error-text">
+          Domain is required!
+        </div>
+      </div>
+    </div>
+
+    <div class="ct-buttons-block" mat-dialog-actions>
+      <button mat-raised-button class="ct-button ct-blue-button"
+              [class.ct-loading]="isValidateLoading"
+              [disabled]="isValidateLoading || isRequestLoading"
+              (click)="validateAndSubmit(jiraForm)">
+        {{ submitButtonText }}
+      </button>
+      <button mat-dialog-close class="ct-cancel-button">Cancel</button>
+    </div>
+  </form>
+</div>

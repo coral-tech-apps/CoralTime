@@ -19,6 +19,8 @@ import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { ChartComponent } from './chart/chart.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
+import { RangeDatepickerComponent } from '../pages/reports/range-datepicker/range-datepicker.component';
+import { RangeDatepickerService } from '../pages/reports/range-datepicker/range-datepicker.service';
 
 
 @NgModule({
@@ -52,6 +54,7 @@ import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 		ConfirmationComponent,
 		UserPicComponent,
 		ChartComponent,
+    RangeDatepickerComponent,
 	],
 	exports: [
 		CommonModule,
@@ -73,6 +76,7 @@ import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 		ChartComponent,
 		TranslateModule,
 		MarkdownModule,
+    RangeDatepickerComponent,
 	]
 })
 

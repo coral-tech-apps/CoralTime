@@ -3,27 +3,27 @@ import { forkJoin as observableForkJoin, of as observableOf, Observable } from '
 import { map, finalize } from 'rxjs/operators';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
-import { JiraSetting } from 'src/app/models/jira-setting';
+import { JiraMemberSetting } from 'src/app/models/jira-member-setting';
 
 export class FormJiraSetting {
-  id: string;
+  id: number;
   settingName: string;
   userEmail: string;
   domain: string;
   apiToken: string;
 
-  static formJiraSetting(setting: JiraSetting): FormJiraSetting {
+  static formJiraSetting(setting: JiraMemberSetting): FormJiraSetting {
     let instance = new this();
     instance.id = setting.id;
     instance.settingName = setting.settingName;
-    instance.userEmail = setting.userEmail;
     instance.domain = setting.domain;
     instance.apiToken = setting.apiToken;
+    instance.userEmail = setting.userEmail;
     return instance;
   }
 
-  toSetting(setting: JiraSetting): JiraSetting {
-    return new JiraSetting({
+  toSetting(setting: JiraMemberSetting): JiraMemberSetting {
+    return new JiraMemberSetting({
       id: setting.id,
       settingName: this.settingName,
       userEmail: this.userEmail,
@@ -39,13 +39,11 @@ export class FormJiraSetting {
   standalone: false
 })
 export class JiraSettingFormComponent implements OnInit {
-  @Input() setting: JiraSetting;
+  @Input() setting: JiraMemberSetting;
   @Output() onSubmit = new EventEmitter();
 
   @ViewChild('email') emailControl: NgModel;
-  @ViewChild('domain') domainControl: NgModel;
   @ViewChild('token') tokenControl: NgModel;
-  @ViewChild('settingName') settingNameControl: NgModel;
 
   isNewSetting: boolean;
   isRequestLoading: boolean;
@@ -61,7 +59,7 @@ export class JiraSettingFormComponent implements OnInit {
   ngOnInit() {
     let setting = this.setting;
     this.isNewSetting = !setting;
-    this.setting = setting ? setting : new JiraSetting();
+    this.setting = setting ? setting : new JiraMemberSetting();
     this.submitButtonText = this.setting.id ? 'Save' : 'Create';
     this.dialogHeader = this.setting.id ? 'Edit' : 'Create New Jira Setting';
     this.model = FormJiraSetting.formJiraSetting(this.setting);
@@ -80,36 +78,19 @@ export class JiraSettingFormComponent implements OnInit {
 
   private submit(form: NgForm): void {
     const updatedSetting = this.model.toSetting(this.setting);
-    if(this.setting.id){
-      this.jiraSettingService.updateSetting(updatedSetting, this.setting.id).subscribe({
-        next: (res) => {
-          console.log('updated ', res);
-          this.onSubmit.emit({ isNewSetting: false});
-        },
-        error: (err) => {
-          console.error('failed ', err);
-        }
-      });
-    }else{
-      this.jiraSettingService.createNewSetting(updatedSetting).subscribe({
-        next: (res) => {
-          this.onSubmit.emit({ isNewSetting: true});
-        },
-        error: (err) => {
-          console.log('failed ', err);
-        }
-      });
-    }
+    this.jiraSettingService.fillJiraMemberSetting(updatedSetting, this.setting.id).subscribe({
+      next: (res) => {
+        this.onSubmit.emit({ isNewSetting: false});
+      }
+    });
   }
 
   private validateForm(form: NgForm): Observable<boolean> {
     this.showErrors = [false, false, false, false];
-    const isSettingNameValid = observableOf(form.controls['settingName'].valid);
     const isEmailValid = observableOf(form.controls['email'].valid);
-    const isDomainValid = observableOf(form.controls['domain'].valid);
     const isTokenValid = observableOf(form.controls['token'].valid);
 
-    return observableForkJoin([isSettingNameValid, isEmailValid, isDomainValid, isTokenValid])
+    return observableForkJoin([isEmailValid, isTokenValid])
       .pipe(map((results: boolean[]) => {
         results.forEach((isValid, index) => this.showErrors[index] = !isValid);
         return results.every(valid => valid);
