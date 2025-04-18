@@ -1,0 +1,99 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
+		<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+		<SpaRoot>..\..\..\Clients\coraltime.clients.web</SpaRoot>
+		<SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
+		<SpaProxyServerUrl>http://localhost:4200</SpaProxyServerUrl>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<LangVersion>13</LangVersion>
+		<!-- PreserveCompilationReferences & PreserveCompilationContext are needed for the PDF exports.
+         Without this, the RazorLight package will throw the error "Cannot find reference assembly 'Microsoft.AspNetCore.Antiforgery.dll'".
+         This is the suggested fix on the project's GitHub page.
+         https://github.com/toddams/RazorLight -->
+		<PreserveCompilationReferences>true</PreserveCompilationReferences>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="ConfigsNetCore2.0\**" />
+		<Content Remove="ConfigsNetCore2.0\**" />
+		<EmbeddedResource Remove="ConfigsNetCore2.0\**" />
+		<None Remove="ConfigsNetCore2.0\**" />
+		<Content Remove="Content\PDF\PDFMarkUpView.cshtml" />
+		<None Remove="tempkey.rsa" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Content\PDF\PDFMarkUpView.cshtml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<Content Include="Content\PDF\Site.css">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\PDF\SplitFileWkhtmltopdf\wkhtmltopdf.001">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\PDF\SplitFileWkhtmltopdf\wkhtmltopdf.002">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\PDF\SplitFileWkhtmltopdf\wkhtmltopdf.003">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="StaticFiles\Avatars\userpic.svg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="StaticFiles\Icons\userpic.svg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="coraltime.pfx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
+		<PackageReference Include="Duende.AccessTokenManagement" Version="3.2.0" />
+		<PackageReference Include="Duende.IdentityServer" Version="7.1.1" />
+		<PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.1.1" />
+		<PackageReference Include="Duende.IdentityServer.EntityFramework" Version="7.1.1" />
+		<PackageReference Include="GeekLearning.Testavior.Configuration" Version="1.4.1" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.2.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="NETCore.MailKit" Version="2.1.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="5.4.0" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+		<DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
+			<Version>9.*-*</Version>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CoralTime.BL\CoralTime.BL.csproj" />
+		<ProjectReference Include="..\CoralTime.Common\CoralTime.Common.csproj" />
+		<ProjectReference Include="..\CoralTime.DAL\CoralTime.DAL.csproj" />
+		<ProjectReference Include="..\CoralTime.MySqlMigrations\CoralTime.MySqlMigrations.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Clients\coraltime.clients.web\coraltime.clients.web.esproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
+	</ItemGroup>
+</Project>
