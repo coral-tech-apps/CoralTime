@@ -432,6 +432,7 @@ ct-entry-time {
     min-width: 175px;
 
     .ct-calendar-task &:before {
+      visibility: hidden;
       right: 2px;
     }
   }
@@ -589,6 +590,9 @@ ct-entry-time {
   }
 
   .ct-datepicker {
+    position: relative;
+    left: -210px !important;
+    top: -50px !important;
     display: inline-block;
     padding: 0 15px;
   }

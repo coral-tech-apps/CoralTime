@@ -133,10 +133,8 @@ export class WorklogsComponent implements OnInit {
 
   // tasks
   private loadTasks(): void {
-    console.log('this');
       this.tasksService.getActiveTasks().subscribe(result => {
         this.tasks = result.data;
-        console.log(result.data);
       })
     }
 
@@ -192,7 +190,6 @@ export class WorklogsComponent implements OnInit {
 
   getJiraSettings(){
     this.jiraSettingService.getJiraMemberSetting().subscribe(result => {
-      console.log(result);
       this.jiraSettings = result;
     })
   }

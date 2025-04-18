@@ -139,7 +139,6 @@ export class JiraIntegrationFormComponent implements OnInit {
     }
 
     this.jiraProjectService.getAssignedProjects(this.setting.id, this.assignedProjectsLastEvent, this.filterStr).subscribe((result: PagedResult<AssignedJiraProject>) => {
-      console.log(result.data)
       if(result.data.length > 0){
         this.isProjectAssigned = true;
       }else{

@@ -1,3 +1,13 @@
+.ct-datepicker-menu{
+  .ct-menu{
+    .ct-menu-content{
+      &.ct-menu-after {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
 .ct-menu {
   position: relative;
   font-size: 16px;
