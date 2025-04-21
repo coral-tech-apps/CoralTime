@@ -1,12 +1,13 @@
 import { NotificationService } from './../../core/notification.service';
 import { JiraProjectService } from 'src/app/services/jira-project.service';
-import {debounceTime, finalize, switchMap} from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;;
 import {
 	ReportDropdowns,
+  ReportQuery,
 } from '../../models/reports';
 import { User } from '../../models/user';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
@@ -79,7 +80,7 @@ export class WorklogsComponent implements OnInit {
 	            private reportsService: ReportsService,
 	            private route: ActivatedRoute,
               private tasksService: TasksService,
-              private norificationService: NotificationService,
+              private notificationService: NotificationService,
               private worklogService: WorkglogService,
               private http: HttpClient) {
 	}
@@ -100,35 +101,50 @@ export class WorklogsComponent implements OnInit {
 		this.reportsService.getReportDropdowns().pipe(
 			finalize(() => this.loadingService.removeLoading()))
 			.subscribe((reportFilters: ReportDropdowns) => {
-				this.setReportDropdowns(reportFilters);
+				this.setWorklogDropdowns(reportFilters);
 			});
     this.loadTasks();
+
 	}
 
-	setReportDropdowns(worklogDropdowns: ReportDropdowns): void {
+	setWorklogDropdowns(worklogDropdowns: ReportDropdowns): void {
 		this.reportDropdowns = worklogDropdowns;
 		this.rangeDatepickerService.dateStaticList = worklogDropdowns.values.dateStatic;
+
+    this.setWorkglogDatePeriog(worklogDropdowns.currentQuery);
 	}
+
+    private setWorkglogDatePeriog(worklogFilters: ReportQuery): void {
+      this.datePeriodOnChange({
+        datePeriod: new DatePeriod(dayjs(worklogFilters.dateFrom), dayjs(worklogFilters.dateTo)),
+        dateStaticId: worklogFilters.dateStaticId
+      });
+    }
 
   // send timeEntries
   addTimeEntries(): void{
     const selectedWorklog = this.worklogs.filter(worklog => worklog.selected);
 
     if(selectedWorklog.length == 0){
-      this.norificationService.danger("No worklogs selected.");
+      this.notificationService.danger("No worklogs selected.");
       return;
     }
 
     selectedWorklog.forEach(worklog => {
       if(worklog.taskId == 0){
-        this.norificationService.danger(`No task selected for ${worklog.projectName}`);
+        this.notificationService.danger(`No task selected for ${worklog.projectName}`);
         return;
       }
     })
 
-    this.worklogService.sendWorklogs(selectedWorklog).subscribe(res => {
-
-    })
+    this.worklogService.sendWorklogs(selectedWorklog).subscribe(
+    () => {
+      this.notificationService.success("Time entries successfully loaded");
+    },
+    () => {
+      this.notificationService.danger("Error while loading time entries");
+    }
+  )
   }
 
   // tasks

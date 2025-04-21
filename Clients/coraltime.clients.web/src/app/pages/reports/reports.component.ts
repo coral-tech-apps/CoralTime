@@ -114,6 +114,7 @@ export class ReportsComponent implements OnInit {
 			this.dateFormatId = this.userInfo.dateFormatId;
 			this.firstDayOfWeek = this.userInfo.weekStart;
 		});
+
 		this.isUsersFilterShown = this.authService.isUserAdminOrManager;
 		this.subscriptionAdminOrManager = this.authService.adminOrManagerParameterOnChange.subscribe(() => {
 			this.isUsersFilterShown = this.authService.isUserAdminOrManager;

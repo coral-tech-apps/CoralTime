@@ -103,8 +103,7 @@ deleteSetting(index: number): void{
       if (result) {
         this.jiraSettingService.deleteSetting(this.tableData[index].id).subscribe(result => {
           if(result){
-            this.tableData.splice(index, 1);
-            this.tableData = [...this.tableData];
+            this.loadLazy(null, true);
             this.notificationService.success('Jira setting successfuly deleted.');
           }else{
             this.notificationService.success('Error deleting jira setting.');

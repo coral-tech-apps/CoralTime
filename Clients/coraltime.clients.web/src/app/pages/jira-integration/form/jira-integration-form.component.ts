@@ -1,3 +1,4 @@
+import { NotificationService } from 'src/app/core/notification.service';
 import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { forkJoin as observableForkJoin, of as observableOf, Observable, Subject } from 'rxjs';
 import { map, finalize, debounceTime, switchMap } from 'rxjs/operators';
@@ -64,7 +65,8 @@ export class JiraIntegrationFormComponent implements OnInit {
 
   constructor(private jiraSettingService: JiraSettingService,
               private clienService: ClientsService,
-              private jiraProjectService: JiraProjectService
+              private jiraProjectService: JiraProjectService,
+              private notificationService: NotificationService,
   ) {}
 
   ngOnInit() {
@@ -97,17 +99,26 @@ export class JiraIntegrationFormComponent implements OnInit {
 
   private submit(form: NgForm): void {
     const updatedSetting = this.model.toSetting(this.setting);
-    updatedSetting.clientId = this.model.client.id;
+    updatedSetting.clientId = this.model?.client?.id ?? this.model.clientId;
+
     if(this.setting.id){
       this.jiraSettingService.updateSetting(updatedSetting, this.setting.id).subscribe({
         next: (res) => {
           this.onSubmit.emit({ isNewSetting: false});
+          this.notificationService.success("Successfully update Jira setting");
+        },
+        error: (err) => {
+          this.notificationService.danger("Erro while updation Jira setting");
         }
       });
     }else{
       this.jiraSettingService.createNewSetting(updatedSetting).subscribe({
         next: (res) => {
           this.onSubmit.emit({isNewSetting: true});
+          this.notificationService.success("Successfully create Jira setting");
+        },
+        error: (err) => {
+          this.notificationService.danger("Erro while creating Jira setting");
         }
       });
     }
@@ -116,12 +127,13 @@ export class JiraIntegrationFormComponent implements OnInit {
   private validateForm(form: NgForm): Observable<boolean> {
     this.showErrors = [false, false, false, false];
     const isSettingNameValid = observableOf(form.controls['settingName'].valid);
-    const isClientIsValid = observableOf(!!this.model.clientId);
+    const isClientIsValid = observableOf(!!this.model?.client?.id);
     const isDomainValid = observableOf(form.controls['domain'].valid);
 
-    return observableForkJoin([isSettingNameValid, isDomainValid])
+    return observableForkJoin([isSettingNameValid, isClientIsValid, isDomainValid])
       .pipe(map((results: boolean[]) => {
         results.forEach((isValid, index) => this.showErrors[index] = !isValid);
+
         return results.every(valid => valid);
       }));
   }

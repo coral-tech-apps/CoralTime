@@ -171,7 +171,6 @@ registerOnTouched(fn: any) {
       this.overlayRef.attach(portal);
       const pane = this.overlayRef.overlayElement;
       const width = this.el.nativeElement.getBoundingClientRect().width;
-      console.log(width);
       this.renderer.addClass(pane, 'ct-select-component');
       this.renderer.addClass(pane, 'ct-select-opened');
       this.renderer.addClass(pane, "ct-select-animate");

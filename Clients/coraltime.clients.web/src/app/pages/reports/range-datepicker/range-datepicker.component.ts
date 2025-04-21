@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 import { DateStatic } from '../../../models/reports';
 import { DatePeriod, DateResponse } from './range-datepicker.service';
+import { DateUtils } from 'src/app/models/calendar';
 
 @Component({
     selector: 'ct-range-datepicker',
@@ -37,6 +38,9 @@ export class RangeDatepickerComponent {
 	private dateTo: DayJs;
 	private daySelectedNumber: number = 0;
 	private oldDateResponse: DateResponse;
+
+  ngOnInit(): void{
+  }
 
 	dateOnClick(day: DayJs): void {
 		this.clickedDay = day;

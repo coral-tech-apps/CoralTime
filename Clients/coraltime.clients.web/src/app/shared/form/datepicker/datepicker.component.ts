@@ -174,8 +174,7 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
 	/**
 	 * Implemented as part of ControlValueAccessor.
 	 */
-	writeValue(date: any) {
-      this.date = this.convertValueToArrayOfString(date);
+	writeValue() {
 			this._controlValueAccessorChangeFn(this.date);
 	}
 
