@@ -71,6 +71,7 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
 
         // POST: api/v1/odata/Jira
         [HttpPost]
+        [Authorize(Policy = PolicyCreateJiraIntegration)]
         public IActionResult Create([FromBody] JiraSettingsView jiraSettingsView)
         {
             if (!ModelState.IsValid)
@@ -106,6 +107,7 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
 
         // PATCH: api/v1/odata/Jira
         [HttpPatch]
+        [Authorize(Policy = PolicyEditJiraIntegration)]
         public IActionResult Update(int id, [FromBody] JiraSettingsView jiraSettingsView)
         {
             if (!ModelState.IsValid)

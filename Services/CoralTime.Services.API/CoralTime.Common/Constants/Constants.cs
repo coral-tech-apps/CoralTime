@@ -41,6 +41,9 @@ namespace CoralTime.Common.Constants
         public const string PolicyViewAdminPanel = "ViewAdminPanel";
         public const string PolicyViewIntegrationPage = "ViewIntegrationPage";
         public const string PolicyManagesAllProjects = "ManagesAllProjects";
+        public const string PolicyJiraIntegration = "ViewJiraIntegrationPage";
+        public const string PolicyCreateJiraIntegration = "CreateJiraIntegration";
+        public const string PolicyEditJiraIntegration = "EditJriaIntegration";
 
         public static readonly IEnumerable<string> AdminPolicies = new[]
         {
@@ -62,7 +65,10 @@ namespace CoralTime.Common.Constants
             PolicyEditMember,
             PolicyViewAdminPanel,
             PolicyViewIntegrationPage,
-            PolicyManagesAllProjects
+            PolicyManagesAllProjects,
+            PolicyJiraIntegration,
+            PolicyCreateJiraIntegration,
+            PolicyEditJiraIntegration
         };
 
         public static readonly IEnumerable<string> PMPolicies = new[]
@@ -109,7 +115,10 @@ namespace CoralTime.Common.Constants
             PolicyEditMember,
             PolicyViewAdminPanel,
             PolicyViewIntegrationPage,
-            PolicyManagesAllProjects
+            PolicyManagesAllProjects,
+            PolicyJiraIntegration,
+            PolicyCreateJiraIntegration,
+            PolicyEditJiraIntegration
         };
 
         #endregion

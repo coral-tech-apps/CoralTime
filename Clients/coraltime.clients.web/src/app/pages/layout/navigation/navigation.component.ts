@@ -61,7 +61,7 @@ const FULL_MANAGE_ITEMS = [
     label: 'Jira Integration',
 		icon: 'ct-integration-icon',
 		routerLink: ['/jira-integration'],
-		permission: 'ViewIntegrationPage'
+		permission: 'ViewJiraIntegrationPage'
   }
 ];
 
@@ -120,7 +120,6 @@ export class NavigationComponent implements OnInit, OnDestroy {
         label: 'Worklogs',
         icon: 'ct-reports-icon',
         routerLink: ['/worklogs'],
-        permission: 'ViewIntegrationPage'
       }
 		];
 	}
