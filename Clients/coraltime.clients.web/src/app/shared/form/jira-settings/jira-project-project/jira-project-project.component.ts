@@ -132,11 +132,15 @@ export class JiraProjectProjectComponent implements OnInit{
 
   loadAllProjects(): void{
     this.isNotAssingedProjects = false;
-    this.jiraProjectService.loadJiraProjects(this.jiraSetting.jiraSettingId).subscribe( result => {
+    this.jiraProjectService.loadJiraProjects(this.jiraSetting.jiraSettingId).subscribe( () => {
       this.notAssignedProjectsSubject.next({
         event,
         filterStr: this.filterStr
       });
+        this.notificationService.success("Projects load succesfully");
+      },
+      () => {
+        this.notificationService.danger("Error while loading projects");
       }
     );
   }

@@ -64,10 +64,17 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
   checkConncetion(): void{
     this.tableData.forEach(item => {
       if(!item.isEnableConntection){
-        this.jiraSettingService.getJiraUserIdStatus(item.jiraSettingId).subscribe(response => {
-          this.loadJiraTable();
-        })
-      }
+        this.jiraSettingService.getJiraUserIdStatus(item.jiraSettingId).subscribe(
+          {
+            next: (response) => {
+              this.loadJiraTable();
+              this.notificationService.success("Connection has been checked");
+            },
+            error: (err) => {
+              this.notificationService.danger(`Error while checkink connection ${item.settingName}`);
+            }
+          }
+        )}
     })
   }
 
@@ -84,10 +91,6 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
     this.jiraProjectDialogRef = this.dialog.open(JiraProjectProjectComponent);
     this.jiraProjectDialogRef.componentInstance.jiraSettingId = setting.jiraSettingId;
     this.jiraProjectDialogRef.componentInstance.jiraSetting = setting;
-    /*this.jiraProjectDialogRef.componentInstance.onSubmit.subscribe((response) => {
-      this.jiraProjectDialogRef.close();
-      this.onSubmit(response);
-    });*/
   }
 
   private loadJiraTable(){

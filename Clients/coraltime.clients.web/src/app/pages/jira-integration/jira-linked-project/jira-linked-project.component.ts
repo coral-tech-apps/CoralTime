@@ -49,7 +49,8 @@ export class JiraLinkedProjectComponent implements OnInit{
   constructor(private http: HttpClient,
     public authService: AuthService,
     private projectService: ProjectsService,
-    private jiraProjectService: JiraProjectService){
+    private jiraProjectService: JiraProjectService,
+    private notificationService: NotificationService,){
 
 }
 
@@ -150,16 +151,29 @@ export class JiraLinkedProjectComponent implements OnInit{
   }
 
   onSelectionChange(event: any, jiraProject: NotAssignedJiraProject):void{
-    this.jiraProjectService.linkProjects(event.value.id, jiraProject.id).subscribe(result => {
+    this.jiraProjectService.linkProjects(event.value.id, jiraProject.id).subscribe(() => {
       this.updateAssignedProjects(null, true);
       this.updateNotAssignedProjects(null, true);
+      this.notificationService.success("Project linked successfully");
+    },
+    () => {
+      this.updateAssignedProjects(null, true);
+      this.updateNotAssignedProjects(null, true);
+      this.notificationService.danger("Error occured while linking projects");
     });
   }
 
   unLink(assignedJiraProject: AssignedJiraProject): void{
-    this.jiraProjectService.removeProjectJiraLink(assignedJiraProject.id).subscribe(result => {
+    this.jiraProjectService.removeProjectJiraLink(assignedJiraProject.id).subscribe(() => {
       this.updateAssignedProjects(null, true);
       this.updateNotAssignedProjects(null, true);
-    })
+      this.notificationService.success("Project link removed successfully");
+    },
+    () => {
+      this.updateAssignedProjects(null, true);
+      this.updateNotAssignedProjects(null, true);
+      this.notificationService.danger("Error occured while unlinking projects");
+    }
+  )
   }
 }
