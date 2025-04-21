@@ -1,24 +1,23 @@
 <!--Added to allow select be focused-->
-<input class="ct-input-hidden-control" (focus)="toggleSelect()">
+<input class="ct-input-hidden-control" (focus)="toggleSelect()" />
 <div class="ct-select-component" [class.ct-select-opened]="isOpen" [class.ct-select-animate]="isAnimate">
-    <div class="ct-select-options" role="listbox" [canClickOverlay]="canClickOverlay" [isOpen]="isOpen" [class.ct-show-to-top]="isListShowToTop"
-         (clickOutside)="closeSelect()">
-        <div class="ct-select" [class.ct-disabled]="disabled"
-             (click)="toggleSelect()">
-            <div class="ct-select-selected-options-text" [class.ct-select-default-text]="!selectedObject">
-                {{getSelectedOptionsText()}}
-            </div>
-            <i [ngClass]="isOpen ? 'fa fa-angle-up' : 'fa fa-angle-down'"></i>
-        </div>
-        <mat-list class="ct-select-options-list" #matList>
-            <div class="ct-select-options-wrapper" #slimScroll="slimScroll" slimScroll
-                 [ctSlimScrollArrows]="slimScroll" [style.maxHeight.px]="maxHeight">
-                <mat-list-item *ngFor="let option of options; trackBy: trackByFn" class="ct-select-option" role="option"
-                               [ngClass]="{ 'ct-select-option-selected': isOptionSelected(option), 'ct-select-option-disabled': option?.disabled }"
-                               (click)="selectOption(option)">
-                    <label class="ct-label-item">{{getDisplayedName(option)}}</label>
-                </mat-list-item>
-            </div>
-        </mat-list>
+  <div class="ct-select" [class.ct-disabled]="disabled" (click)="toggleSelect()">
+    <div class="ct-select-selected-options-text" [class.ct-select-default-text]="!selectedObject">
+      {{ getSelectedOptionsText() }}
     </div>
+    <i [ngClass]="isOpen ? 'fa fa-angle-up' : 'fa fa-angle-down'"></i>
+  </div>
 </div>
+<ng-template #overlayTemplate>
+  <div class="ct-select-options" role="listbox"  style="width: 100%;" [class.ct-show-to-top]="isListShowToTop">
+    <mat-list class="ct-select-options-list" #matList>
+      <div class="ct-select-options-wrapper" #slimScroll="slimScroll" slimScroll [ctSlimScrollArrows]="slimScroll" [style.maxHeight.px]="maxHeight">
+        <mat-list-item *ngFor="let option of options; trackBy: trackByFn" class="ct-select-option mat-list-item-content" role="option"
+                       [ngClass]="{ 'ct-select-option-selected': isOptionSelected(option), 'ct-select-option-disabled': option?.disabled }"
+                       (click)="selectOption(option)">
+          <label class="ct-label-item">{{ getDisplayedName(option) }}</label>
+        </mat-list-item>
+      </div>
+    </mat-list>
+  </div>
+</ng-template>
