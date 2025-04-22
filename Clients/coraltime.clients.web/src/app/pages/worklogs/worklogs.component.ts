@@ -4,7 +4,6 @@ import { finalize } from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import dayjs from 'dayjs';
-import DayJs = dayjs.Dayjs;;
 import {
 	ReportDropdowns,
   ReportQuery,

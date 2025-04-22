@@ -1,4 +1,3 @@
-import { first, filter } from 'rxjs/operators';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, QueryList } from '@angular/core';
@@ -7,7 +6,6 @@ import { JiraSetting } from '../models/jira-setting';
 import { ConstantService } from '../core/constant.service';
 import { User } from '../models/user';
 import { JiraMemberSetting } from '../models/jira-member-setting';
-import { Project } from '../models/project';
 
 @Injectable()
 export class JiraSettingService {

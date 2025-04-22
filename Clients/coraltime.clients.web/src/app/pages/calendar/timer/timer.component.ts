@@ -1,5 +1,5 @@
 
-import {timer as observableTimer,  Observable, Subscription } from 'rxjs';
+import {timer as observableTimer, Subscription } from 'rxjs';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CalendarDay, DateUtils, Time, TimeEntry, TimerResponse } from '../../../models/calendar';

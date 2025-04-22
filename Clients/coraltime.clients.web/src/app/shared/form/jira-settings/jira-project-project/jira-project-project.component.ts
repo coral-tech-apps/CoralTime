@@ -1,10 +1,7 @@
 import { debounceTime, Subject, switchMap } from 'rxjs';
-import { JiraSetting } from 'src/app/models/jira-setting';
 import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { User } from 'src/app/models/user';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { NotificationService } from 'src/app/core/notification.service';
 import { JiraProjectService } from 'src/app/services/jira-project.service';

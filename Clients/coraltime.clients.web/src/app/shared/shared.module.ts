@@ -1,4 +1,3 @@
-//import { DataTableModule } from './datatable/datatable';
 import { TableModule } from 'primeng/table';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -20,7 +19,6 @@ import { ChartComponent } from './chart/chart.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 import { RangeDatepickerComponent } from '../pages/reports/range-datepicker/range-datepicker.component';
-import { RangeDatepickerService } from '../pages/reports/range-datepicker/range-datepicker.service';
 
 
 @NgModule({

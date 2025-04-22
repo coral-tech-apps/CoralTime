@@ -1,10 +1,7 @@
-import { catchError, map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, QueryList } from '@angular/core';
-import { JiraSetting } from '../models/jira-setting';
+import { Injectable } from '@angular/core';
 import { ConstantService } from '../core/constant.service';
-import { User } from '../models/user';
-import { JiraMemberSetting } from '../models/jira-member-setting';
 import { ODataServiceFactory, PagedResult } from './odata';
 import { NotAssignedJiraProject } from '../models/not-assigned-jira-project';
 import { AssignedJiraProject } from '../models/assigned-jira-project';

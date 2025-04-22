@@ -1,7 +1,7 @@
 import { NotificationService } from 'src/app/core/notification.service';
 import { JiraSettingService } from 'src/app/services/jira-settings.service';
-import { forkJoin as observableForkJoin, of as observableOf, Observable, Subject } from 'rxjs';
-import { map, finalize, debounceTime, switchMap } from 'rxjs/operators';
+import { forkJoin as observableForkJoin, of as observableOf, Observable} from 'rxjs';
+import { map, finalize} from 'rxjs/operators';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { JiraSetting } from 'src/app/models/jira-setting';

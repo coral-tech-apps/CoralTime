@@ -1,14 +1,10 @@
 
 import { Component, Input, OnInit, ViewChild} from '@angular/core';
 import { NotificationService } from '../../../core/notification.service';
-import { AclService } from '../../../core/auth/acl.service';
 import { AuthService } from '../../../core/auth/auth.service';
-import { User } from '../../../models/user';
 import { debounceTime, Subject, switchMap } from 'rxjs';
 import { JiraSetting } from 'src/app/models/jira-setting';
-import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
 import { PagedResult } from 'src/app/services/odata';
 import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
 import { Table } from 'primeng/table';

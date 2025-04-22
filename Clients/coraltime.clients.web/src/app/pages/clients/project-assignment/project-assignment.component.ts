@@ -9,7 +9,6 @@ import { NotificationService } from '../../../core/notification.service';
 import { PagedResult } from '../../../services/odata';
 import { ProjectsService } from '../../../services/projects.service';
 import { Table } from 'primeng/table';
-import { TableModule } from 'primeng/table';
 
 @Component({
     selector: 'ct-client-project-assignment',
