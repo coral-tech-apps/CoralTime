@@ -54,8 +54,9 @@ namespace CoralTime.BL.Services
 
             currentMember.EnableJira = isEnable;
 
-            Uow.MemberRepository.Update(currentMember, currentUserId);
+            DeleteAllLinkeJiraMemberSettings(isEnable, currentMember.Id);
 
+            Uow.MemberRepository.Update(currentMember, currentUserId);
             Uow.Save();
             return isEnable;
         }
@@ -828,6 +829,24 @@ namespace CoralTime.BL.Services
             });
 
             return projects;
+        }
+
+        private void DeleteAllLinkeJiraMemberSettings(bool isEnable, int currentMemberId)
+        {
+            if (!isEnable)
+            {
+                var jiraMemberSettings = Uow.jiraMemberSettingsRepository
+                    .GetQuery()
+                    .Where(jm => jm.MemberId == currentMemberId)
+                    .ToList();
+                if (jiraMemberSettings.Count > 0)
+                {
+                    foreach (var item in jiraMemberSettings)
+                    {
+                        Uow.jiraMemberSettingsRepository.Delete(item);
+                    }
+                }
+            }
         }
 
         #endregion

@@ -230,6 +230,7 @@ namespace CoralTime.BL.Services
 
         public void AssignIntegrationToUser(int memberId, int jiraSettingId)
         {
+
             var jiraSetting = Uow.JiraSettingsRepository.GetById(jiraSettingId);
             var member = Uow.MemberRepository.GetById(memberId);
             var currentUserId = Uow.MemberCurrent.UserId;
@@ -294,7 +295,7 @@ namespace CoralTime.BL.Services
             var query = Uow.MemberRepository.GetQuery();
             query = assigned
                 ? query.Where(m => assignedJiraUsersId.Contains(m.Id))
-                : query.Where(m => !assignedJiraUsersId.Contains(m.Id));
+                : query.Where(m => !assignedJiraUsersId.Contains(m.Id) && m.EnableJira);
 
             var result = Mapper.Map<List<MemberView>>(query);
 
