@@ -73,7 +73,7 @@
 
             <div class="ct-page-header">
               <h3 class="ct-header">Worklogs</h3>
-              <button mat-raised-button class="ct-blue-button" (click)="addTimeEntries()">Add time entries</button>
+              <button mat-raised-button class="ct-blue-button" (click)="addTimeEntries()" [disabled]="!isAvaliableCheckProject || isEmptyProjects">Add time entries</button>
               </div>
               <div class="ct-reports-data">
 

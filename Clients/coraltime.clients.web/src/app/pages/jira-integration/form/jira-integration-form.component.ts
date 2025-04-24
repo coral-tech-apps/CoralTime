@@ -127,7 +127,7 @@ export class JiraIntegrationFormComponent implements OnInit {
   private validateForm(form: NgForm): Observable<boolean> {
     this.showErrors = [false, false, false, false];
     const isSettingNameValid = observableOf(form.controls['settingName'].valid);
-    const isClientIsValid = observableOf(!!this.model?.client?.id);
+    const isClientIsValid = observableOf(!!this.model?.client?.id || !!this.model?.clientId);
     const isDomainValid = observableOf(form.controls['domain'].valid);
 
     return observableForkJoin([isSettingNameValid, isClientIsValid, isDomainValid])
