@@ -106,7 +106,7 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
           this.datePicker.dayCalendarRef.dayClicked = this.dayClicked.bind(this);
         }
       }
-    }, 0);
+    }, 80);
 
     if(this.isBorder){
       const observer = new MutationObserver(() => {
