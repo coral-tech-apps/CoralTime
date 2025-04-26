@@ -2,7 +2,8 @@ import {
 	Component, Input, Output, EventEmitter, forwardRef, HostBinding, ViewChild, AfterContentInit,
   ElementRef,
   OnInit,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  Renderer2
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
@@ -41,6 +42,7 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
 	@Input() firstDayOfWeek: number = 1;
 	@Input() multiselect: boolean = false;
 	@Input() required: boolean = false;
+  @Input() isBorder: boolean = true;
 
   @ViewChild('datepickerContainer', {static: true}) datepickerContainer!: ElementRef;
 	@ViewChild('dayPicker', { static: true }) datePicker: DatePickerComponent;
@@ -105,6 +107,21 @@ export class DatepickerComponent implements ControlValueAccessor, OnInit, AfterC
         }
       }
     }, 0);
+
+    if(this.isBorder){
+      const observer = new MutationObserver(() => {
+        const dayPicker = document.querySelector('.dp-popup');
+        if (dayPicker) {
+          dayPicker.classList.add('border-datepicker-overlay');
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
 
 	/**

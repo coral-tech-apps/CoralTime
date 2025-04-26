@@ -1,6 +1,9 @@
 .cdk-overlay-pane {
-  .dp-popup {
+  .dp-popup.border-datepicker-overlay{
     box-shadow: 1px 1px 5px #0000001a !important;
+  }
+
+  .dp-popup {
     min-width: 260px;
     font-family: inherit;
     width: 100%;
