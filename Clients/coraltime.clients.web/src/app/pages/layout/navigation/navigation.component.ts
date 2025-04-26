@@ -1,6 +1,6 @@
 
 import {finalize} from 'rxjs/operators';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from '../../../models/user';
 import { AclService } from '../../../core/auth/acl.service';
@@ -11,6 +11,7 @@ import { ImpersonationService } from '../../../services/impersonation.service';
 import { ProjectsService } from '../../../services/projects.service';
 import { UsersService } from '../../../services/users.service';
 import { LoadingMaskService } from '../../../shared/loading-indicator/loading-mask.service';
+import { MenuComponent } from 'src/app/shared/menu/menu.component';
 
 interface MenuItem {
 	label?: string;
@@ -79,6 +80,9 @@ export class NavigationComponent implements OnInit, OnDestroy {
 	showManageMenu: boolean = false;
 	userInfo: User;
 	windowWidth: number;
+  navMenuOpen: boolean = false;
+
+  @ViewChild('navMenu') navMenu: MenuComponent;
 
 	private subscriptionImpersonation: Subscription;
 	private subscriptionUserInfo: Subscription;
@@ -138,6 +142,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
 	onResize(): void {
 		this.windowWidth = window.innerWidth;
+
+    if(!this.isMobileView() && this.navMenu?.isOpen){
+      this.navMenu.closeMenu();
+    }
 	}
 
 	updateManageMenuVisibility(): void {

@@ -3,14 +3,43 @@
         <div class="ct-nav-col">
             <div class="ct-nav-logo" [routerLink]="['/']"></div>
             <div class="ct-nav-menu">
-                <ul *ngIf="!isMobileView()">
-                    <li *ngFor="let item of items" [routerLink]="item.routerLink" routerLinkActive="active">
-                        <a [routerLink]="item.routerLink">
-                            <i class="ct-icon {{item.icon}}" aria-hidden="true"></i>
-                            <span>{{item.label}}</span>
-                        </a>
-                    </li>
+              <i *ngIf="isMobileView()"
+                 class="ct-icon ct-settings-icon ct-profile-block"
+                 aria-hidden="true"
+                 [ngClass]="{ active: navMenu.isOpen }"
+                 (click)="navMenu.toggleMenu()">
+              </i>
+
+              <ct-menu
+                #navMenu
+                class="ct-nav-drop-menu"
+                (window:resize)="onResize">
+                <ul #navLinkActive="routerLinkActive"
+                    routerLinkActive
+                    [routerLinkActiveOptions]="{exact:true}">
+                  <ng-template ngFor let-item [ngForOf]="items">
+                    <ct-menu-item *ctIsGranted="item.permission"
+                                  routerLinkActive="active"
+                                  (click)="navMenu.closeMenu()">
+                      <a [routerLink]="item.routerLink">
+                        <i class="ct-icon {{item.icon}}" aria-hidden="true"></i>
+                        <span>{{item.label}}</span>
+                      </a>
+                    </ct-menu-item>
+                  </ng-template>
                 </ul>
+              </ct-menu>
+
+              <ul *ngIf="!isMobileView()">
+                <li *ngFor="let item of items"
+                    [routerLink]="item.routerLink"
+                    routerLinkActive="active">
+                  <a [routerLink]="item.routerLink">
+                    <i class="ct-icon {{item.icon}}" aria-hidden="true"></i>
+                    <span>{{item.label}}</span>
+                  </a>
+                </li>
+              </ul>
             </div>
         </div>
         <div class="ct-nav-col">
