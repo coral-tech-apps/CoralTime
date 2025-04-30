@@ -15,9 +15,7 @@ namespace CoralTime.Services.API.Services
         private struct IISConfigurationData
         {
             public nint pNativeApplication;
-            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.BStr)]
             public string pwzFullApplicationPath;
-            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.BStr)]
             public string pwzVirtualApplicationPath;
             public bool fWindowsAuthEnabled;
             public bool fBasicAuthEnabled;

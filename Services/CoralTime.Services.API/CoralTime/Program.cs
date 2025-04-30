@@ -288,7 +288,7 @@ app.UseSwaggerUI(c =>
 
 Constants.EnvName = env.EnvironmentName;
 
-CombineFileWkhtmltopdf(env);
+//CombineFileWkhtmltopdf(env);
 
 AppDbContext.InitializeFirstTimeDataBaseAsync(app.Services, builder.Configuration).Wait();
 
