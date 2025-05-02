@@ -140,7 +140,7 @@
 
   .ct-primary-button {
     float: right;
-    background-color: #5eb2cf;
+    background-color: #5eb2cf !important;
     margin-top: 25px;
 
     .material-icons {
@@ -154,6 +154,10 @@
     margin: 10px auto 0 auto;
     position: absolute;
     padding-right: 20px;
+  }
+
+  .ct-login-form-sso .ct-primary-button{
+    margin-top: 0;
   }
 }
 
