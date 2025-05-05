@@ -71,14 +71,14 @@ builder.Host.UseNLog();
 bool.TryParse(builder.Configuration["UseMySql"], out var useMySql);
 if (useMySql)
 {
-    builder.Services.AddDbContextPool<AppDbContext>(options =>
+    builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnectionMySQL"),
         new MySqlServerVersion(new Version(8, 0, 21)),
         b => b.MigrationsAssembly("CoralTime.MySqlMigrations")));
 }
 else
 {
-    builder.Services.AddDbContextPool<AppDbContext>(options =>
+    builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 }
 
@@ -141,6 +141,7 @@ else
     })
     .AddKeyManagement()
     .AddInMemoryIdentityResources(Config.GetIdentityResources())
+    .AddInMemoryApiScopes(Config.ApiScopes)
     .AddInMemoryApiResources(Config.GetApiResources())
     .AddInMemoryClients(Config.GetClients(builder.Configuration))
     .AddAspNetIdentity<ApplicationUser>()
