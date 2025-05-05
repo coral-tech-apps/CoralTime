@@ -15,21 +15,21 @@ using CoralTime.DAL.Models.Member;
 
 namespace CoralTime.DAL
 {
-    public partial class AppDbContext
+    public class DbContextInitializer
     {
-        private static IConfiguration Configuration { get; set; }
+        private IConfiguration Configuration { get; set; }
 
-        private static IServiceProvider ServiceProvider { get; set; }
+        private IServiceProvider ServiceProvider { get; set; }
 
-        private static AppDbContext DbContext { get; set; }
+        private AppDbContext DbContext { get; set; }
 
-        private static UserManager<ApplicationUser> UserManager { get; set; }
+        private UserManager<ApplicationUser> UserManager { get; set; }
 
-        private static RoleManager<IdentityRole> RoleManager { get; set; }
+        private RoleManager<IdentityRole> RoleManager { get; set; }
 
-        private static int ProjectRoleManagerId { get; set; }
+        private int ProjectRoleManagerId { get; set; }
 
-        public static async Task InitializeFirstTimeDataBaseAsync(IServiceProvider serviceProvider, IConfiguration configuration)
+        public async Task InitializeFirstTimeDataBaseAsync(IServiceProvider serviceProvider, IConfiguration configuration)
         {
             using (var scope = serviceProvider.CreateScope())
             {
@@ -63,7 +63,7 @@ namespace CoralTime.DAL
             }
         }
 
-        public static async Task InitializeRoleAsync(IServiceProvider serviceProvider, IConfiguration configuration, string roleName)
+        public async Task InitializeRoleAsync(IServiceProvider serviceProvider, IConfiguration configuration, string roleName)
         {
             using (var scope = serviceProvider.CreateScope())
             {
@@ -95,7 +95,7 @@ namespace CoralTime.DAL
             }
         }
 
-        public static async Task InitializeDataBase(IServiceProvider serviceProvider, IConfiguration configuration)
+        public async Task InitializeDataBase(IServiceProvider serviceProvider, IConfiguration configuration)
         {
             Configuration = configuration;
             ServiceProvider = serviceProvider;
@@ -160,7 +160,7 @@ namespace CoralTime.DAL
             }
         }
 
-        private static async Task InitializeRoles()
+        private async Task InitializeRoles()
         {
             foreach (var aspNetRole in Constants.ApplicationRoles)
             {
@@ -177,7 +177,7 @@ namespace CoralTime.DAL
             }
         }
 
-        private static async Task InitializeProjectRoles()
+        private async Task InitializeProjectRoles()
         {
             var projectRoleList = new List<ProjectRole>();
 
@@ -193,7 +193,7 @@ namespace CoralTime.DAL
             await InsertListOfEntitiesToDbAsync(DbContext.ProjectRoles, projectRoleList);
         }
 
-        private static async Task InitializeSettings()
+        private async Task InitializeSettings()
         {
             var settings = Configuration.GetSection("Settings").GetChildren();
 
@@ -227,14 +227,14 @@ namespace CoralTime.DAL
             await InsertListOfEntitiesToDbAsync(DbContext.Settings, settingsList);
         }
 
-        private static async Task InitializeTaskTypes()
+        private async Task InitializeTaskTypes()
         {
             var tasksList = await CreateListOfEntitiesFromConfigByNameAsync(DbContext.TaskTypes, "Tasks");
 
             await InsertListOfEntitiesToDbAsync(DbContext.TaskTypes, tasksList);
         }
 
-        private static async Task InitializeUsers(string typeUser, string roleUser)
+        private async Task InitializeUsers(string typeUser, string roleUser)
         {
             var users = Configuration.GetSection($"Users:{typeUser}").GetChildren();
 
@@ -315,21 +315,21 @@ namespace CoralTime.DAL
             }
         }
 
-        private static async Task InitializeClients()
+        private async Task InitializeClients()
         {
             var clientsList = await CreateListOfEntitiesFromConfigByNameAsync(DbContext.Clients, "Clients");
              
             await InsertListOfEntitiesToDbAsync(DbContext.Clients, clientsList);
         }
 
-        private static async Task InitializeProjects()
+        private async Task InitializeProjects()
         {
             var projectList = await CreateListOfEntitiesFromConfigByNameAsync(DbContext.Projects, "Projects");
             
             await InsertListOfEntitiesToDbAsync(DbContext.Projects, projectList);
         }
 
-        private static async Task InitializeXRefProjectsClients()
+        private async Task InitializeXRefProjectsClients()
         {
             var projectsList = await GetProjectList();
             var clientsList = await GetClientList();
@@ -352,7 +352,7 @@ namespace CoralTime.DAL
             await UpdateListOfEntitiesToDbAsync(DbContext.Projects, projectsWithClientsList);
         }
 
-        private static async Task InitializeXRefMemberProjectRoles()
+        private async Task InitializeXRefMemberProjectRoles()
         {
             var allMembersList = await GetAllMembersList();
 
@@ -385,7 +385,7 @@ namespace CoralTime.DAL
             await InsertListOfEntitiesToDbAsync(DbContext.MemberProjectRoles, memberProjectRoleList);
         }
 
-        private static async Task InitializeXRefTimeEntries()
+        private async Task InitializeXRefTimeEntries()
         {
             var allMembersList = await GetAllMembersList();
             var projectsList = await GetProjectList();
@@ -425,7 +425,7 @@ namespace CoralTime.DAL
 
         #region Initialize single entities by Name from config.
 
-        private static async Task<List<TEntity>> CreateListOfEntitiesFromConfigByNameAsync<TEntity>(DbSet<TEntity> dbSet, string section) where TEntity : class, IInitializeByName, new()
+        private async Task<List<TEntity>> CreateListOfEntitiesFromConfigByNameAsync<TEntity>(DbSet<TEntity> dbSet, string section) where TEntity : class, IInitializeByName, new()
         {
             var listOfEntities = new List<TEntity>();
 
@@ -490,7 +490,7 @@ namespace CoralTime.DAL
             }
         }
 
-        private static async Task InsertListOfEntitiesToDbAsync<TEntity>(DbSet<TEntity> dbSet, List<TEntity> listOfEntities) where TEntity : class
+        private async Task InsertListOfEntitiesToDbAsync<TEntity>(DbSet<TEntity> dbSet, List<TEntity> listOfEntities) where TEntity : class
         {
             try
             {
@@ -506,7 +506,7 @@ namespace CoralTime.DAL
             }
         }
 
-        private static async Task UpdateListOfEntitiesToDbAsync<TEntity>(DbSet<TEntity> dbSet, List<TEntity> listOfEntities) where TEntity : class
+        private async Task UpdateListOfEntitiesToDbAsync<TEntity>(DbSet<TEntity> dbSet, List<TEntity> listOfEntities) where TEntity : class
         {
             try
             {
@@ -526,7 +526,7 @@ namespace CoralTime.DAL
 
         #region Get initialized list of entities methods
 
-        private static async Task<List<Member>> GetAllMembersList()
+        private async Task<List<Member>> GetAllMembersList()
         {
             var allMembersList = new List<Member>();
 
@@ -536,7 +536,7 @@ namespace CoralTime.DAL
             return allMembersList;
         }
 
-        private static async Task<List<Member>> GetUsersList(string userType)
+        private async Task<List<Member>> GetUsersList(string userType)
         {
             var membersList = new List<Member>();
             var members = Configuration.GetSection($"Users:{userType}").GetChildren();
@@ -552,7 +552,7 @@ namespace CoralTime.DAL
             return membersList;
         }
 
-        private static async Task<List<Project>> GetProjectList()
+        private async Task<List<Project>> GetProjectList()
         {
             var projectsList = new List<Project>();
             var projects = Configuration.GetSection("Projects").GetChildren();
@@ -568,7 +568,7 @@ namespace CoralTime.DAL
             return projectsList;
         }
 
-        private static async Task<List<Client>> GetClientList()
+        private async Task<List<Client>> GetClientList()
         {
             var clientsList = new List<Client>();
             var clients = Configuration.GetSection("Clients").GetChildren();
@@ -584,7 +584,7 @@ namespace CoralTime.DAL
             return clientsList;
         }
 
-        private static async Task<List<ProjectRole>> GetProjectRolesList()
+        private async Task<List<ProjectRole>> GetProjectRolesList()
         {
             var projectRolesList = new List<ProjectRole>();
             foreach (var projectRole in Constants.ProjectRoles)
@@ -604,7 +604,7 @@ namespace CoralTime.DAL
             return projectRolesList;
         }
 
-        private static async Task<List<TaskType>> GetTaskTypesList()
+        private async Task<List<TaskType>> GetTaskTypesList()
         {
             var tasksList = new List<TaskType>();
             var tasks = Configuration.GetSection("Tasks").GetChildren();
@@ -620,7 +620,7 @@ namespace CoralTime.DAL
             return tasksList;
         }
 
-        private static async Task<List<MemberProjectRole>> GetMemberProjectRoleList()
+        private async Task<List<MemberProjectRole>> GetMemberProjectRoleList()
         {
             var memberProjectRolesList = new List<MemberProjectRole>();
             var memberProjectRoles = Configuration.GetSection("XRefMemberProjectRoles").GetChildren();

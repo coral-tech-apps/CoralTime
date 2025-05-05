@@ -306,10 +306,8 @@ Constants.EnvName = env.EnvironmentName;
 
 //CombineFileWkhtmltopdf(env);
 
-using (var scope = app.Services.CreateScope())
-{
-    AppDbContext.InitializeFirstTimeDataBaseAsync(scope.ServiceProvider, builder.Configuration).Wait();
-}
+var dbContextInitializer = new DbContextInitializer();
+dbContextInitializer.InitializeFirstTimeDataBaseAsync(app.Services, builder.Configuration).Wait();
 
 app.Run();
 
