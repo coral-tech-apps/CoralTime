@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -48,6 +48,8 @@ using CoralTime.DAL.Repositories;
 using Microsoft.OData.ModelBuilder;
 using CoralTime.Services.API;
 using CoralTime.ViewModels.JiraSettings;
+using Duende.IdentityServer.Configuration;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
@@ -120,21 +122,35 @@ if (isDemo)
 }
 else
 {
-    var cert = X509CertificateLoader.LoadPkcs12FromFile("coraltime.pfx", "", X509KeyStorageFlags.MachineKeySet);
-    builder.Services.AddIdentityServer()
-        .AddInMemoryIdentityResources(Config.GetIdentityResources())
-        .AddInMemoryApiResources(Config.GetApiResources())
-        .AddInMemoryClients(Config.GetClients(builder.Configuration))
-        .AddAspNetIdentity<ApplicationUser>()
-        .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
-        .AddSigningCredential(cert)
-        .AddProfileService<IdentityWithAdditionalClaimsProfileService>()
-        .AddOperationalStore<AppDbContext>(options =>
+    builder.Services.AddDataProtection()
+      .PersistKeysToDbContext<AppDbContext>()
+      .SetApplicationName("coraltime");
+
+    builder.Services.AddIdentityServer(options =>
+    {
+        options.KeyManagement.Enabled = true;
+        options.KeyManagement.SigningAlgorithms = new[]
         {
-            options.EnableTokenCleanup = true;
-        });
-    var key = new X509SecurityKey(cert);
-    tokenValidationParameters.IssuerSigningKey = key;
+            new SigningAlgorithmOptions
+            {
+                Name = "RS256"
+            }
+        };
+        options.KeyManagement.PropagationTime = TimeSpan.FromMinutes(1);
+        options.KeyManagement.RotationInterval = TimeSpan.FromDays(30);
+    })
+    .AddKeyManagement()
+    .AddInMemoryIdentityResources(Config.GetIdentityResources())
+    .AddInMemoryApiResources(Config.GetApiResources())
+    .AddInMemoryClients(Config.GetClients(builder.Configuration))
+    .AddAspNetIdentity<ApplicationUser>()
+    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+    .AddProfileService<IdentityWithAdditionalClaimsProfileService>()
+    .AddOperationalStore<AppDbContext>(options =>
+    {
+        options.EnableTokenCleanup = true;
+    });
+
     tokenValidationParameters.ValidateIssuerSigningKey = true;
 }
 
@@ -290,7 +306,10 @@ Constants.EnvName = env.EnvironmentName;
 
 //CombineFileWkhtmltopdf(env);
 
-AppDbContext.InitializeFirstTimeDataBaseAsync(app.Services, builder.Configuration).Wait();
+using (var scope = app.Services.CreateScope())
+{
+    AppDbContext.InitializeFirstTimeDataBaseAsync(scope.ServiceProvider, builder.Configuration).Wait();
+}
 
 app.Run();
 

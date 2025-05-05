@@ -8,6 +8,7 @@ using Duende.IdentityServer.EntityFramework.Entities;
 using Duende.IdentityServer.EntityFramework.Extensions;
 using Duende.IdentityServer.EntityFramework.Interfaces;
 using Duende.IdentityServer.EntityFramework.Options;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CoralTime.DAL
 {
-    public partial class AppDbContext : IdentityDbContext<ApplicationUser>, IPersistedGrantDbContext
+    public partial class AppDbContext : IdentityDbContext<ApplicationUser>, IPersistedGrantDbContext, IDataProtectionKeyContext
     {
         private readonly OperationalStoreOptions storeOptions;
 
@@ -74,6 +75,7 @@ namespace CoralTime.DAL
         public DbSet<JiraProject> JiraProjects { get; set; }
 
         public DbSet<LinkedJiraProject> LinkedJiraProjects { get; set; }
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
         public Task<int> SaveChangesAsync()
         {
