@@ -1,4 +1,3 @@
-
 import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,14 +23,25 @@ export class SignInOidcComponent implements OnInit {
 
 	ngOnInit() {
 		this.route.fragment.subscribe((fragment) => {
-			this.id_token = fragment.slice(fragment.indexOf('=') + 1, fragment.indexOf('&'));
-			this.loginSSO(this.id_token);
-		})
+			if (fragment) {
+				const idTokenMatch = fragment.match(/id_token=([^&]+)/);
+				if (idTokenMatch && idTokenMatch[1]) {
+					this.id_token = idTokenMatch[1];
+					this.loginSSO(this.id_token);
+				} else {
+					console.error('Invalid fragment format or missing id_token');
+					this.router.navigate(['/error']);
+				}
+			} else {
+				console.error('No fragment found in the URL');
+				this.router.navigate(['/error']);
+			}
+		});
 	}
 
 	loginSSO(id_token: string): void {
 		this.loadingService.addLoading();
-		this.authService.loginSSO(this.id_token).pipe(
+		this.authService.loginSSO(id_token).pipe(
 			finalize(() => this.loadingService.removeLoading()))
 			.subscribe(() => {
 					this.router.navigate(['/' + this.auth.url]);
