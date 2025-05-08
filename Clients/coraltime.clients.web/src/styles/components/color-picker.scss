@@ -1,3 +1,5 @@
+@use '../colors.scss' as *;
+
 .ct-color-picker {
   position: relative;
   font-size: 0;
@@ -21,7 +23,7 @@
   .ui-colorpicker-preview {
     height: 35px;
     width: 35px;
-    border-color: $gray;
+    border-color: $gray-border;
 
     &:focus {
       border-color: $main-blue;

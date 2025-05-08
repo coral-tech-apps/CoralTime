@@ -1,3 +1,6 @@
+@use '../colors.scss' as *;
+@use '../shared.scss' as *;
+
 .ct-input {
   background: #ffffff;
   border: 1px solid $form-border;

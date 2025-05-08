@@ -1,3 +1,7 @@
+@use './colors.scss' as *;
+@use './shared.scss' as *;
+@use './variables.scss' as *;
+
 .cdk-overlay-dark-backdrop {
   position: fixed;
   background: rgb(0, 0, 0);

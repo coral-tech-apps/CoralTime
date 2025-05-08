@@ -1,13 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@use 'styles/variables';
+@use 'styles/fonts';
+@use 'styles/colors';
+@use 'styles/icons';
+@use 'styles/shared';
+@use 'styles/material-rewrite';
 
-@import 'styles/variables';
-@import 'styles/fonts';
-@import 'styles/colors';
-@import 'styles/icons';
-@import 'styles/shared';
-@import 'styles/material-rewrite';
-
-@import 'styles/components/components';
-@import 'styles/pages/pages';
-@import 'styles/print';
-@import "styles/github-markdown";
+@use 'styles/components/components';
+@use 'styles/pages/pages';
+@use 'styles/print';
+@use 'styles/github-markdown';

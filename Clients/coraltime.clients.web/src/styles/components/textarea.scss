@@ -1,3 +1,6 @@
+@use '../colors.scss' as *;
+@use '../fonts.scss' as *;
+
 $textAreaHeight: 116px;
 
 .ct-textarea-component {
