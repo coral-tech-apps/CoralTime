@@ -1,12 +1,15 @@
-@import 'errors';
-@import 'login';
-@import '../view/navigation';
-@import 'projects/projects';
-@import 'users/users';
-@import 'calendar/calendar';
-@import 'calendar/entry-time-form';
-@import 'reports/reports';
-@import 'profile/profile';
+@use '../colors.scss' as *;
+@use '../variables.scss' as *;
+
+@use 'errors';
+@use 'login';
+@use '../view/navigation';
+@use 'projects/projects';
+@use 'users/users';
+@use 'calendar/calendar';
+@use 'calendar/entry-time-form';
+@use 'reports/reports';
+@use 'profile/profile';
 
 html, body {
   height: 100%;

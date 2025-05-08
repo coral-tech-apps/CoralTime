@@ -1,3 +1,6 @@
+@use './colors.scss' as *;
+@use './fonts.scss' as *;
+
 $fieldHeight: 30px;
 $selectHeight: 35px;
 $selectItemBgHover: $gray-page-background;

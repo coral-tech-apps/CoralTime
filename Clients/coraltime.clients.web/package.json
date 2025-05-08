@@ -34,7 +34,6 @@
     "@primeng/themes": "^19.0.10",
     "@types/file-saver": "2.0.1",
     "adal-ts": "0.6.0",
-    "bootstrap-sass": "3.4.1",
     "chart.js": "^4.4.8",
     "core-js": "^3.3.3",
     "dayjs": "^1.11.13",

@@ -1,3 +1,6 @@
+@use '../fonts.scss' as *;
+@use '../colors.scss' as *;
+
 .cdk-overlay-pane {
   .dp-popup.border-datepicker-overlay{
     box-shadow: 1px 1px 5px #0000001a !important;

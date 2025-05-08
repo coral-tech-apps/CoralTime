@@ -1,5 +1,7 @@
-@import 'profile-page';
-@import 'profile-settings';
+@use '../../colors.scss' as *;
+
+@use 'profile-page';
+@use 'profile-settings';
 
 .ct-profile {
   h2 {

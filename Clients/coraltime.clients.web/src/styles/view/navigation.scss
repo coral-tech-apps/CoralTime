@@ -1,3 +1,7 @@
+@use '../variables.scss' as *;
+@use '../colors.scss' as *;
+@use '../shared.scss' as *;
+
 ct-navigation {
   position: fixed;
   width: 100%;

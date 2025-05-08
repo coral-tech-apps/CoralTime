@@ -1,3 +1,6 @@
+@use '../shared.scss' as *;
+@use '../colors.scss' as *;
+
 .ct-input-component {
   .ct-select-options {
     height: $selectHeight;

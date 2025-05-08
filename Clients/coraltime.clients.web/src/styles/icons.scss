@@ -1,3 +1,6 @@
+@use './colors.scss' as *;
+@use './variables.scss' as *;
+
 .ct-icon {
   position: relative;
   top: -1px;
