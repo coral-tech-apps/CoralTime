@@ -18,7 +18,7 @@ Use one of the demo accounts:
 ## Technology Stack
 
 - **Backend**: .NET 9.0
-- **Frontend**: Angular 5
+- **Frontend**: Angular 19
 
 ## Getting Started
 
