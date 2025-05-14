@@ -84,6 +84,7 @@
 			<Version>9.*-*</Version>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+		<PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\CoralTime.BL\CoralTime.BL.csproj" />
