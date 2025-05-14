@@ -62,10 +62,11 @@ builder.Configuration
 
 builder.Logging.ClearProviders();
 builder.Logging.SetMinimumLevel(LogLevel.Trace);
-builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
 builder.Host.UseNLog();
+
+#if DEBUG
+builder.Logging.AddDebug();
+#endif
 
 
 bool.TryParse(builder.Configuration["UseMySql"], out var useMySql);
