@@ -1,17 +1,16 @@
 trigger:
 - dev
 
-resources:
-- repo: self
-
 variables:
   dockerRegistryServiceConnection: 'd874c748-27de-4638-beda-b116976d87dc'
   imageRepository: 'coraltime'
   containerRegistry: 'coralteam.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-
   vmImageName: 'ubuntu-latest'
+
+  gitEmail: 'devops@coral.team'
+  gitUsername: 'Azure DevOps'
 
 stages:
 - stage: Build
@@ -31,3 +30,63 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+- stage: Dev
+  displayName: Deploy to Dev
+  dependsOn: Build
+  jobs:
+  - deployment: DeployToDev
+    displayName: Update Dev Manifest in GitOps repo
+    environment: dev
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              git config --global user.email "$(gitEmail)"
+              git config --global user.name "$(gitUsername)"
+
+              git clone $(gitopsRepoUrl)
+              cd coral.gitops/coral-team/coral-time/overlays/dev
+
+              sed -i "s|image: .*/$(imageRepository):.*|image: $(containerRegistry)/$(imageRepository):$(tag)|" deployment.yaml
+
+              echo "Updated image:"
+              grep 'image:' deployment.yaml
+
+              git add deployment.yaml
+              git commit -m "Update CoralTime Dev image to $(tag)"
+              git push origin master
+            displayName: Commit Dev image tag
+
+- stage: QA
+  displayName: Deploy to QA
+  dependsOn: Dev
+  jobs:
+  - deployment: DeployToQA
+    displayName: Update QA Manifest in GitOps repo
+    environment: qa
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              git config --global user.email "$(gitEmail)"
+              git config --global user.name "$(gitUsername)"
+
+              git clone $(gitopsRepoUrl)
+              cd coral.gitops/coral-team/coral-time/overlays/qa
+
+              sed -i "s|image: .*/$(imageRepository):.*|image: $(containerRegistry)/$(imageRepository):$(tag)|" deployment.yaml
+
+              echo "Updated image:"
+              grep 'image:' deployment.yaml
+
+              git add deployment.yaml
+              git commit -m "Update CoralTime QA image to $(tag)"
+              git push origin master
+            displayName: Commit QA image tag
