@@ -297,6 +297,8 @@ app.UseEndpoints(endpoints =>
     // endpoints.MapODataRoute("ODataRouteComponent", "odata", GetEdmModel());
 });
 
+app.MapFallbackToFile("index.html");
+
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {

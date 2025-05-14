@@ -23,20 +23,12 @@ export class SignInOidcComponent implements OnInit {
 
 	ngOnInit() {
 		this.route.fragment.subscribe((fragment) => {
-			if (fragment) {
-				const idTokenMatch = fragment.match(/id_token=([^&]+)/);
-				if (idTokenMatch && idTokenMatch[1]) {
-					this.id_token = idTokenMatch[1];
-					this.loginSSO(this.id_token);
-				} else {
-					console.error('Invalid fragment format or missing id_token');
-					this.router.navigate(['/error']);
-				}
-			} else {
-				console.error('No fragment found in the URL');
-				this.router.navigate(['/error']);
-			}
-		});
+      const params = new URLSearchParams(fragment || '');
+      const id_token = params.get('id_token');
+
+			this.id_token = id_token;
+			this.loginSSO(this.id_token);
+		})
 	}
 
 	loginSSO(id_token: string): void {

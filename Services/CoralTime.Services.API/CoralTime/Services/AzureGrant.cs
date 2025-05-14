@@ -61,7 +61,7 @@ namespace CoralTime.Services.API.Services
 
                 var userName = token.Claims.FirstOrDefault(m => m.Type == Constants.Authorization.CoralTimeAzure.UserNameClaim)?.Value;
 
-                var user = await _userManager.FindByNameAsync(userName);
+                var user = await _userManager.FindByEmailAsync(userName);
 
                 if (user != null && ((user?.IsActive) ?? false))
                 {
@@ -119,13 +119,18 @@ namespace CoralTime.Services.API.Services
             var certificateKeys = _memoryCache.TryGetValue(Constants.CertificateKeys, out CertificateKeys certificates);
             var certificateKeysTime = _memoryCache.TryGetValue(Constants.CertificateKeysTime, out DateTime certificatesTime);
 
-            if (!certificateKeys || !certificateKeysTime || DateTime.Now.Subtract(certificatesTime).TotalHours >= 24)
+           if (!certificateKeys || !certificateKeysTime || DateTime.Now.Subtract(certificatesTime).TotalHours >= 24)
             {
                 var url = _config["Authentication:AzureAd:CertificatesUrl"];
                 var client = new HttpClient();
                 var json = await client.GetStringAsync(url);
 
-                certificates = JsonSerializer.Deserialize<CertificateKeys>(json);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                certificates = JsonSerializer.Deserialize<CertificateKeys>(json, options);
                 
                 _memoryCache.Set(Constants.CertificateKeysTime, DateTime.Now);
                 _memoryCache.Set(Constants.CertificateKeys, certificates);
