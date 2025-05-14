@@ -42,10 +42,14 @@ export class AuthService {
 		if (this.isRefreshTokenExpired()) {
 			this.logout();
 		}
-		if (this.roles == null) {
-			this.logout();
-		}
 	}
+
+  private checkRoles(): void{
+    if(this.roles == null){
+      console.warn('Roles not found, logout');
+      this.logout();
+    }
+  }
 
 	get authUser(): AuthUser {
 		return JSON.parse(localStorage.getItem('APPLICATION_USER'));
@@ -102,6 +106,7 @@ export class AuthService {
 			map(response => {
 				this.authUser = new AuthUser(response, false);
 				this.appInsightsService.setAuthenticatedUser(this.authUser.id.toString(), this.authUser.nickname);
+        this.checkRoles();
 				return true;
 			}));
 	}
@@ -124,6 +129,7 @@ export class AuthService {
 				this.authUser = new AuthUser(response, true);
                 this.setupAppInsights();
                 this.appInsightsService.setAuthenticatedUser(this.authUser.id.toString(), this.authUser.nickname);
+                this.checkRoles();
 				return true;
 			}),catchError(() => this.router.navigate(['/error'])),);
 	}

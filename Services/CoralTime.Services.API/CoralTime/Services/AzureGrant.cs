@@ -13,7 +13,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -61,7 +60,7 @@ namespace CoralTime.Services.API.Services
 
                 var userName = token.Claims.FirstOrDefault(m => m.Type == Constants.Authorization.CoralTimeAzure.UserNameClaim)?.Value;
 
-                var user = await _userManager.FindByNameAsync(userName);
+                var user = await _userManager.FindByEmailAsync(userName);
 
                 if (user != null && ((user?.IsActive) ?? false))
                 {
@@ -78,54 +77,69 @@ namespace CoralTime.Services.API.Services
             }
         }
 
-        private async Task<JwtSecurityToken> ValidateTokenAsync(string jwtToken)
+
+    private async Task<JwtSecurityToken> ValidateTokenAsync(string jwtToken)
         {
-            JwtSecurityToken token;
             try
             {
                 var certificates = await GetCertificateKeysAsync();
                 var tokenToCheck = new JwtSecurityToken(jwtToken);
                 var x5t = tokenToCheck.Header.X5t;
-                var x509data = Encoding.ASCII.GetBytes(certificates.Keys.FirstOrDefault(x => x.X5t == x5t).X5c.FirstOrDefault());
-                var certificate = new X509SecurityKey(new X509Certificate2(x509data));
 
-                var azureIssuer = _config["Authentication:AzureAd:Issuer"];
+                string Normalize(string s) => s?.Replace('-', '+').Replace('_', '/');
+                var normalizedX5t = Normalize(x5t);
+
+                var matchingKey = certificates.Keys.FirstOrDefault(k => Normalize(k.X5t) == normalizedX5t);
+                if (matchingKey?.X5c?.FirstOrDefault() is not string x5cBase64 || string.IsNullOrWhiteSpace(x5cBase64))
+                {
+                    _logger.LogError("Matching certificate not found for x5t: {x5t}", x5t);
+                    return null;
+                }
+
+                var rawCertData = Convert.FromBase64String(x5cBase64);
+                var cert = X509CertificateLoader.LoadCertificate(rawCertData);
+                var key = new X509SecurityKey(cert);
+
                 var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = azureIssuer,
+                    ValidIssuer = _config["Authentication:AzureAd:Issuer"],
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = certificate,
+                    IssuerSigningKey = key,
                     ValidateAudience = true,
                     ValidAudience = _config["Authentication:AzureAd:Audience"]
-            };
+                };
 
-                var jwtHandler = new JwtSecurityTokenHandler();
-                jwtHandler.ValidateToken(jwtToken, tokenValidationParameters, out var securityToken);
-                token = securityToken as JwtSecurityToken;
+                var handler = new JwtSecurityTokenHandler();
+                handler.ValidateToken(jwtToken, tokenValidationParameters, out var validatedToken);
+                return validatedToken as JwtSecurityToken;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Azure Token validation: {ex.Message}");
+                _logger.LogError(ex, "Azure Token validation failed");
                 return null;
             }
-
-            return token;
         }
 
-        private async Task<CertificateKeys> GetCertificateKeysAsync()
+
+    private async Task<CertificateKeys> GetCertificateKeysAsync()
         {
             var certificateKeys = _memoryCache.TryGetValue(Constants.CertificateKeys, out CertificateKeys certificates);
             var certificateKeysTime = _memoryCache.TryGetValue(Constants.CertificateKeysTime, out DateTime certificatesTime);
 
-            if (!certificateKeys || !certificateKeysTime || DateTime.Now.Subtract(certificatesTime).TotalHours >= 24)
+           if (!certificateKeys || !certificateKeysTime || DateTime.Now.Subtract(certificatesTime).TotalHours >= 24)
             {
                 var url = _config["Authentication:AzureAd:CertificatesUrl"];
                 var client = new HttpClient();
                 var json = await client.GetStringAsync(url);
 
-                certificates = JsonSerializer.Deserialize<CertificateKeys>(json);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                certificates = JsonSerializer.Deserialize<CertificateKeys>(json, options);
                 
                 _memoryCache.Set(Constants.CertificateKeysTime, DateTime.Now);
                 _memoryCache.Set(Constants.CertificateKeys, certificates);

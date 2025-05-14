@@ -4,6 +4,7 @@ using CoralTime.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoralTime.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250502133245_AddDataProtectionKeys")]
+    partial class AddDataProtectionKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,7 +141,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Clients", (string)null);
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraMemberSettings", b =>
@@ -186,7 +189,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("JiraMemberSettings", (string)null);
+                    b.ToTable("JiraMemberSettings");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraProject", b =>
@@ -233,7 +236,7 @@ namespace CoralTime.DAL.Migrations
                         .IsUnique()
                         .HasFilter("[JiraProjectId] IS NOT NULL");
 
-                    b.ToTable("JiraProjects", (string)null);
+                    b.ToTable("JiraProjects");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Jira.JiraSetting", b =>
@@ -277,7 +280,7 @@ namespace CoralTime.DAL.Migrations
                         .IsUnique()
                         .HasFilter("[SettingName] IS NOT NULL");
 
-                    b.ToTable("JiraSettings", (string)null);
+                    b.ToTable("JiraSettings");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Jira.LinkedJiraProject", b =>
@@ -316,7 +319,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("LinkedJiraProjects", (string)null);
+                    b.ToTable("LinkedJiraProjects");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.LogChanges.MemberAction", b =>
@@ -352,7 +355,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("MemberActions", (string)null);
+                    b.ToTable("MemberActions");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Member.Member", b =>
@@ -421,7 +424,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Members", (string)null);
+                    b.ToTable("Members");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Member.MemberImage", b =>
@@ -466,7 +469,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasIndex("MemberId")
                         .IsUnique();
 
-                    b.ToTable("MemberImages", (string)null);
+                    b.ToTable("MemberImages");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Member.MemberProjectRole", b =>
@@ -511,7 +514,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasIndex("MemberId", "ProjectId")
                         .IsUnique();
 
-                    b.ToTable("MemberProjectRoles", (string)null);
+                    b.ToTable("MemberProjectRoles");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Project", b =>
@@ -584,7 +587,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.ProjectRole", b =>
@@ -602,7 +605,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectRoles", (string)null);
+                    b.ToTable("ProjectRoles");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.ReportsSettings.ReportsSettings", b =>
@@ -668,7 +671,7 @@ namespace CoralTime.DAL.Migrations
                         .IsUnique()
                         .HasFilter("[QueryName] IS NOT NULL");
 
-                    b.ToTable("ReportsSettings", (string)null);
+                    b.ToTable("ReportsSettings");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Setting", b =>
@@ -681,7 +684,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.TaskType", b =>
@@ -730,7 +733,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("TaskTypes", (string)null);
+                    b.ToTable("TaskTypes");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.TimeEntry", b =>
@@ -802,7 +805,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("MemberId", "Date");
 
-                    b.ToTable("TimeEntries", (string)null);
+                    b.ToTable("TimeEntries");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.UserForgotPassRequest", b =>
@@ -833,7 +836,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserForgotPassRequests", (string)null);
+                    b.ToTable("UserForgotPassRequests");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Vsts.VstsProject", b =>
@@ -879,7 +882,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("VstsProjects", (string)null);
+                    b.ToTable("VstsProjects");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Vsts.VstsProjectUser", b =>
@@ -919,7 +922,7 @@ namespace CoralTime.DAL.Migrations
                     b.HasIndex("VstsUserId", "VstsProjectId")
                         .IsUnique();
 
-                    b.ToTable("VstsProjectUsers", (string)null);
+                    b.ToTable("VstsProjectUsers");
                 });
 
             modelBuilder.Entity("CoralTime.DAL.Models.Vsts.VstsUser", b =>
@@ -959,7 +962,7 @@ namespace CoralTime.DAL.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("VstsUsers", (string)null);
+                    b.ToTable("VstsUsers");
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>

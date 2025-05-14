@@ -2,7 +2,6 @@ using CoralTime.Common.Constants;
 using Duende.IdentityModel;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
-using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +13,7 @@ namespace CoralTime.Services.API
         public static IEnumerable<ApiScope> ApiScopes =>
             new List<ApiScope>
             {
-                new ApiScope("WebAPI"),
-                new ApiScope("Access to Web API"),
+                new ApiScope(Constants.Authorization.WebApiScope),
                 new ApiScope("offline_access")
             };
 
@@ -36,7 +34,7 @@ namespace CoralTime.Services.API
             return new List<ApiResource>
             {
                 new ApiResource(Constants.Authorization.WebApiScope ) {
-                    Scopes = {"WebAPI"},
+                    Scopes = {Constants.Authorization.WebApiScope},
                     UserClaims = { JwtClaimTypes.Email, JwtClaimTypes.NickName, JwtClaimTypes.Name, JwtClaimTypes.Role, JwtClaimTypes.Id}
                 }
             };

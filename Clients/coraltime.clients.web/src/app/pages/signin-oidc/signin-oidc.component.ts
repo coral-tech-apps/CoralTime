@@ -1,4 +1,3 @@
-
 import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,14 +23,17 @@ export class SignInOidcComponent implements OnInit {
 
 	ngOnInit() {
 		this.route.fragment.subscribe((fragment) => {
-			this.id_token = fragment.slice(fragment.indexOf('=') + 1, fragment.indexOf('&'));
+      const params = new URLSearchParams(fragment || '');
+      const id_token = params.get('id_token');
+
+			this.id_token = id_token;
 			this.loginSSO(this.id_token);
 		})
 	}
 
 	loginSSO(id_token: string): void {
 		this.loadingService.addLoading();
-		this.authService.loginSSO(this.id_token).pipe(
+		this.authService.loginSSO(id_token).pipe(
 			finalize(() => this.loadingService.removeLoading()))
 			.subscribe(() => {
 					this.router.navigate(['/' + this.auth.url]);
