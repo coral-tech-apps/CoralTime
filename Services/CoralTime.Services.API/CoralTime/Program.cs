@@ -98,10 +98,12 @@ builder.Services.AddCors(options =>
 });
 
 var isDemo = bool.Parse(builder.Configuration["DemoSiteMode"]);
+var authority = builder.Configuration["Authority"];
+var additionalIssuers = builder.Configuration.GetSection("ValidIssuers").Get<string[]>() ?? Array.Empty<string>();
 var tokenValidationParameters = new TokenValidationParameters
 {
     ValidateIssuer = true,
-    ValidIssuer = builder.Configuration["Authority"],
+    ValidIssuers = new[] { authority }.Concat(additionalIssuers),
     ValidateAudience = true,
     ValidAudience = "WebAPI",
     ValidateLifetime = true,
