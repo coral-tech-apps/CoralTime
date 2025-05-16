@@ -38,6 +38,7 @@ export class WorklogsComponent implements OnInit {
   isAvaliableCheckProject: boolean = false;
   isEmptyProjects: boolean = true;
 	reportDropdowns: ReportDropdowns;
+  user: User;
 
   tasks: Task[] =[]
   isTasksLoading: boolean;
@@ -82,6 +83,9 @@ export class WorklogsComponent implements OnInit {
               private notificationService: NotificationService,
               private worklogService: WorkglogService,
               private http: HttpClient) {
+              this.route.data.forEach((data: { user: User }) => {
+                this.user = this.impersonationService.impersonationUser || data.user;
+                });
 	}
 
 	ngOnInit() {
@@ -320,4 +324,12 @@ export class WorklogsComponent implements OnInit {
 		let selectedRange = new DatePeriod(period.dateFrom, period.dateTo);
 		this.dateString = this.rangeDatepickerService.setDateStringPeriod(selectedRange);
 	}
+
+  private formatDate(utcDate: string): string {
+    if (!utcDate) {
+     return '';
+    }
+    let date = dayjs(utcDate);
+    return this.user.dateFormat ? date.format(this.user.dateFormat) : date.toDate().toLocaleDateString();
+  }
 }

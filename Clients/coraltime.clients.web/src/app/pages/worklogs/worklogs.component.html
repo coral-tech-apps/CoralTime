@@ -100,7 +100,7 @@
                   <td>
                     <input type="checkbox" [(ngModel)] = "item.selected" (change)="checkAllSelected()"/>
                   </td>
-                  <td class="ct-info-col">{{item.date}}</td>
+                  <td class="ct-info-col">{{formatDate(item.date)}}</td>
                   <td>{{item.description}}</td>
                   <td>{{item.timeActualString}}</td>
                   <td>{{item.projectName}}</td>

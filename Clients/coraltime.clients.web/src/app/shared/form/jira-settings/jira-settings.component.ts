@@ -71,7 +71,7 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
               this.notificationService.success("Connection has been checked");
             },
             error: (err) => {
-              this.notificationService.danger(`Error while checkink connection ${item.settingName}`);
+              this.notificationService.danger(`Error while checking connection ${item.settingName}`);
             }
           }
         )}
