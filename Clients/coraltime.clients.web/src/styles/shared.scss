@@ -281,6 +281,10 @@ h5 {
 }
 
 p-table div div{
+  --p-datatable-header-cell-background: white;
+  --p-datatable-row-background: white;
+  --p-datatable-header-cell-hover-background: #f1f5f9;
+  --p-datatable-header-cell-color: black !important;
   --p-datatable-header-cell-selected-background: white !important;
   --p-datatable-header-cell-selected-color: black !important;
   overflow: visible !important;

@@ -475,10 +475,15 @@
 
   }
 
+  .p-datatable-thead{
+    --p-datatable-header-cell-selected-color: black;
+  }
+
   .ct-popup-table-wrapper .ct-grid-blue .p-datatable div table{
     --p-datatable-header-cell-selected-background: $main-blue !important;
     --p-datatable-header-cell-selected-color: $black;
     --p-datatable-header-cell-background: $main-blue;
+    --p-datatable-header-cell-color: black;
     --p-datatable-row-background: $main-blue;
     background: $main-blue;
   }
