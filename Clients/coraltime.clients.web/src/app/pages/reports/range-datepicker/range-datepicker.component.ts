@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, HostListener, ElementRef } from '@angular/core';
 import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
 import { DateStatic } from '../../../models/reports';
@@ -38,6 +38,10 @@ export class RangeDatepickerComponent {
 	private dateTo: DayJs;
 	private daySelectedNumber: number = 0;
 	private oldDateResponse: DateResponse;
+
+  constructor(private el: ElementRef){
+
+  }
 
   ngOnInit(): void{
   }
@@ -106,4 +110,22 @@ export class RangeDatepickerComponent {
 
 		return listDate;
 	}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const rangePickerElement = this.el.nativeElement as HTMLElement;
+    const popupElement = document.querySelector('.dp-popup');
+
+    const target = event.target as HTMLElement;
+
+    const clickedInsideRangePicker = rangePickerElement.contains(target);
+    const clickedInsidePopup = popupElement?.contains(target);
+
+    const clickedOnPrimeNgButton = target.closest('.p-button') !== null;
+    const clickedOnPrimeNgDay = target.closest('.dp-calendar-day') !== null;
+
+    if (!clickedInsideRangePicker && !clickedInsidePopup && !clickedOnPrimeNgButton && !clickedOnPrimeNgDay) {
+      this.closed.emit();
+    }
+  }
 }

@@ -2,10 +2,12 @@ import {
 	Component, Input, Output, EventEmitter, forwardRef, ViewChild, HostListener,
   OnChanges,
   SimpleChanges,
+  NgZone,
+  OnDestroy,
 } from '@angular/core';
 import { trigger, state, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { SelectItem } from 'primeng/api';
+import { FilterService, OverlayService, SelectItem } from 'primeng/api';
 import { MultiSelect, MultiSelectFilterEvent, MultiSelectSelectAllChangeEvent, MultiSelectStyle } from 'primeng/multiselect';
 import { ObjectUtils } from 'primeng/utils';
 import { DomHandler } from 'primeng/dom';
@@ -241,4 +243,14 @@ export class MultiSelectComponent extends MultiSelect implements OnChanges {
 			this.submit(event);
 		}
 	}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const clickedInside = this.el.nativeElement.contains(target);
+
+    if (!clickedInside) {
+      this.close(event);
+    }
+  }
 }

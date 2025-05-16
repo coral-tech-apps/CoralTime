@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef, Renderer2, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef, Renderer2, TemplateRef, ViewContainerRef, HostListener } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Overlay, OverlayRef, OverlayConfig, PositionStrategy } from '@angular/cdk/overlay';
@@ -54,8 +54,8 @@ export class SelectComponent implements ControlValueAccessor {
 
   private oldSelectedObject: any;
   private scrollTopNumber: number = 0;
-  private _controlValueAccessorChangeFn: (value: any) => void = () => {};
-  private onTouched: () => any = () => {};
+  private _controlValueAccessorChangeFn: (value: any) => void = () => { };
+  private onTouched: () => any = () => { };
 
   constructor(
     private el: ElementRef,
@@ -127,7 +127,7 @@ export class SelectComponent implements ControlValueAccessor {
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
-registerOnTouched(fn: any) {
+  registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
 
@@ -220,11 +220,21 @@ registerOnTouched(fn: any) {
     }
   }
 
-private _emitChangeEvent() {
+  private _emitChangeEvent() {
     let event = new SelectChange();
     event.source = this;
     event.value = this.selectedObject;
     this._controlValueAccessorChangeFn(this.selectedObject);
     this.change.emit(event);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const clickedInside = this.el.nativeElement.contains(target);
+
+    if (!clickedInside) {
+      this.closeSelect();  // Закрываем всегда при клике вне компонента
+    }
   }
 }
