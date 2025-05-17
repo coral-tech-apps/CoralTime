@@ -153,9 +153,14 @@
   top: -3px;
 }
 
-.fa-angle-up, .fa-angle-down, .fa-angle-left, .fa-angle-right {
+.fa-angle-up, .fa-angle-down, .fa-angle-left, .fa-angle-right, .fa-pencil-square-o {
   font-size: 22px;
   color: $main-grey;
+}
+
+.fa-pencil-square-o{
+  margin-right: -12px;
+  cursor: default;
 }
 
 .fa-angle-left, .fa-angle-right {

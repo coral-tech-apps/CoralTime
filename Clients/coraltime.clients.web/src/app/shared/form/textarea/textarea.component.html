@@ -2,14 +2,18 @@
      [class.ct-can-resize]="canResize"
      [class.ct-focused]="isFocusClassShown">
     <div class="ct-textarea-container" slimScroll #slimScroll='slimScroll' [ctSlimScrollArrows]="slimScroll">
-                <textarea [name]="name" #autoSizer="cdkTextareaAutosize" cdkTextareaAutosize
-                          [maxlength]="maxlength"
-                          [placeholder]="placeholder"
-                          [disabled]="disabled"
-                          (blur)="isFocusClassShown = false"
-                          (focus)="isFocusClassShown = true"
-                          class="ct-textarea"
-                          [(ngModel)]="modelValue"
-                          (ngModelChange)="updateModel(modelValue)"></textarea>
+      <div [ngStyle]="{'display': 'flex'}">
+        <textarea [name]="name" #autoSizer="cdkTextareaAutosize" cdkTextareaAutosize
+                  [maxlength]="maxlength"
+                  [placeholder]="placeholder"
+                  [disabled]="disabled"
+                  (blur)="isFocusClassShown = false"
+                  (focus)="isFocusClassShown = true"
+                  class="ct-textarea"
+                  [(ngModel)]="modelValue"
+                  (ngModelChange)="updateModel(modelValue)">
+        </textarea>
+        <i class="fa fa-pencil-square-o " aria-hidden="true"></i>
+      </div>
     </div>
 </div>

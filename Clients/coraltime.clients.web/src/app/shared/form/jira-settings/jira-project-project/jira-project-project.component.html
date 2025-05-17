@@ -1,16 +1,16 @@
 <div class="ct-dialog ct-data-dialog">
   <div class="ct-dialog-title">
-      <span>Team members of</span><span>{{jiraSetting.settingName}}</span>
+      <span>Jira Projects by</span><span>{{jiraSetting.settingName}}</span>
       <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
   </div>
 
   <button mat-raised-button class="ct-blue-button" (click)="loadAllProjects()">
-    Update jira projects
+    Update Jira projects
   </button>
 
   <div class="ct-search-container">
       <div class="ct-grid-search-filter">
-          <input class="ct-input-element" #gb placeholder="Search to add or remove teammates"
+          <input class="ct-input-element" #gb placeholder="Search Jira Projects"
           [(ngModel)]="filterStr"
           (input)="onGlobalFilter($event.target.value)">
           <i class="ct-search-icon"></i>
