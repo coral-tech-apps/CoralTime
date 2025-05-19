@@ -18,6 +18,8 @@ namespace CoralTime.ViewModels.Jira
 
         public string ProjectName { get; set; }
 
+        public string Key { get; set; }
+
         public int TaskId { get; set; }
     }
 }

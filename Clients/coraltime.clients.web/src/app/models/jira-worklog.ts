@@ -4,8 +4,9 @@ export class JiraWorklog{
 	description: string;
   projectName: string;
   projectId: number;
-  timeActualString: string
+  timeActualString: string;
 	timeActual: number;
+  key: string;
   taskId: number;
 
 
@@ -16,6 +17,7 @@ export class JiraWorklog{
 			this.timeActualString = this.formatSecondsToTime(data.timeActual);
       this.timeActual = data.timeActual;
       this.projectName = data.projectName;
+      this.key = data.key;
       this.projectId = data.projectId;
 		}
 	}

@@ -81,13 +81,15 @@ namespace CoralTime.BL.Services
                     {
                         var issueId = issue["id"].ToString();
                         var projectKey = issue["fields"]["project"]["key"].ToString();
+                        var issueKey = issue["key"].ToString();
 
                         if (projectKeyToInternalId.TryGetValue(projectKey, out var projectId))
                         {
                             issues.Add(new IssuesWithProject
                             {
                                 IssueId = issueId,
-                                ProjectId = projectId
+                                ProjectId = projectId,
+                                Key = issueKey,
                             });
                         }
 
@@ -140,6 +142,7 @@ namespace CoralTime.BL.Services
                                 TimeActual = (int)x["timeSpentSeconds"],
                                 Date = (string)x["started"],
                                 ProjectId = item.ProjectId,
+                                Key = item.Key,
                                 ProjectName = Uow.ProjectRepository.GetById(item.ProjectId).Name
                             })
                             .Where(wl =>
@@ -248,7 +251,7 @@ namespace CoralTime.BL.Services
                 var timeEntry = new TimeEntry
                 {
                     ProjectId = item.ProjectId,
-                    Description = item.Description,
+                    Description = item.Key + " | " + item.Description,
                     Date = date,
                     TimeActual = item.TimeActual,
                     TaskTypesId = item.TaskId,

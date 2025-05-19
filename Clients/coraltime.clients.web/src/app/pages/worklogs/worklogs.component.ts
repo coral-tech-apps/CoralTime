@@ -44,7 +44,7 @@ export class WorklogsComponent implements OnInit {
   isTasksLoading: boolean;
 
   isAllSelected: boolean = false;
-  worklogs: JiraWorklog[] = []
+  worklogs: JiraWorklog[] = [];
   isWorklogsLoaded: boolean = true;
 
   jiraSettings: JiraMemberSetting[] = []
@@ -133,12 +133,12 @@ export class WorklogsComponent implements OnInit {
       return;
     }
 
-    selectedWorklog.forEach(worklog => {
-      if(worklog.taskId == 0){
+    for(const worklog of selectedWorklog){
+      if(worklog.taskId === undefined || worklog.taskId === 0){
         this.notificationService.danger(`No task selected for ${worklog.projectName}`);
         return;
       }
-    })
+    }
 
     this.worklogService.sendWorklogs(selectedWorklog).subscribe(
     () => {
