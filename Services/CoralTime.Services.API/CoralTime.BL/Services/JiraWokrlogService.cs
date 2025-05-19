@@ -14,10 +14,7 @@ using CoralTime.Common.Exceptions;
 using CoralTime.ViewModels.Jira;
 using Duende.IdentityServer.Extensions;
 using CoralTime.DAL.Models;
-using Azure;
 using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using NLog.Filters;
 
 namespace CoralTime.BL.Services
 {
@@ -126,9 +123,7 @@ namespace CoralTime.BL.Services
             {
                 try
                 {
-                    var project = Uow.ProjectRepository.GetById(item.ProjectId);
-
-                    var urlQuery = $"/rest/api/3/issue/{item.IssueId}/worklog?startedAfter={startedAfter}&startedBefore={startedBefore}";
+                    var urlQuery = $"/rest/api/3/issue/{item.IssueId}/worklog";
 
                     var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
 
@@ -138,18 +133,26 @@ namespace CoralTime.BL.Services
 
                         var jsonResponse = JsonConvert.DeserializeObject<JObject>(content);
 
-                        var timeEntry = jsonResponse["worklogs"]
+                        var worklogs = jsonResponse["worklogs"]
                             .Select(x => new JiraWorklogView
                             {
                                 Description = (string)x["comment"]?["content"]?[0]?["content"]?[0]?["text"],
                                 TimeActual = (int)x["timeSpentSeconds"],
-                                Date = (string)x["created"],
+                                Date = (string)x["started"],
                                 ProjectId = item.ProjectId,
-                                ProjectName = project.Name
+                                ProjectName = Uow.ProjectRepository.GetById(item.ProjectId).Name
+                            })
+                            .Where(wl =>
+                           {
+                                var dto = DateTimeOffset.Parse(
+                                    wl.Date
+                                );
+                                long ms = dto.ToUnixTimeMilliseconds();
+                                return ms >= startedAfter && ms <= startedBefore;
+                            })
+                            .ToList();
 
-                            }).FirstOrDefault();
-
-                        result.Add(timeEntry);
+                        result.AddRange(worklogs);
                     }
                 }
                 catch(Exception ex)
@@ -157,7 +160,7 @@ namespace CoralTime.BL.Services
                     throw;
                 }
             }
-
+            
             return result;
         }
 
@@ -225,7 +228,7 @@ namespace CoralTime.BL.Services
             var issues = await GetIssuesAsync(email, apiToken, domain, urlStringIssues, projectKeyToId);
 
             long startedAfter = new DateTimeOffset(filter.DateFrom).ToUnixTimeMilliseconds();
-            long startedBefore = new DateTimeOffset(filter.DateTo).ToUnixTimeMilliseconds();
+            long startedBefore = new DateTimeOffset(filter.DateTo.AddDays(1)).ToUnixTimeMilliseconds();
 
             return await GetWorklogsAsync(email, apiToken, domain, startedAfter, startedBefore, issues);
         }
