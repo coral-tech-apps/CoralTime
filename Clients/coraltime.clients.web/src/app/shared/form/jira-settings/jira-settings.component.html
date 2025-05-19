@@ -3,10 +3,6 @@
     <mat-checkbox [(ngModel)]="showJiraTable" (ngModelChange)="onToggle()">
         Jira Enable
     </mat-checkbox>
-
-    <div *ngIf="showJiraTable" (click)="checkConncetion()" class="ct-add-link">
-      <a  style="padding-top: 3px;" >Check connections</a>
-    </div>
   </div>
 <div class="ct-data-table-wrapper">
   <p-table
@@ -36,6 +32,9 @@
       <th>
         Projects
       </th>
+      <th>
+        Action
+      </th>
     </tr>
   </ng-template>
 
@@ -58,10 +57,13 @@
           ></i>
       </td>
       <td class="ct-small-padding">
-          <a class="ct-grid-settings-icon" (click) = "openConnectionDialog(row)"></a>
+          <a class="ct-grid-settings-icon" (click)="openConnectionDialog(row)"></a>
       </td>
       <td class="ct-small-padding">
         <a class="ct-grid-settings-icon" (click)="onJiraProjectDialog(row)"></a>
+      </td>
+      <td>
+          <a class="ct-grid-link ct-grid-ellipse" style="left: 0px !important" (click)="checkConncetion(row.jiraSettingId, row.settingName)" >Verify</a>
       </td>
     </tr>
   </ng-template>

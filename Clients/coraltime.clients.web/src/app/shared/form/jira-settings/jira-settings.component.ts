@@ -61,21 +61,18 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
     });
   }
 
-  checkConncetion(): void{
-    this.tableData.forEach(item => {
-      if(!item.isEnableConntection){
-        this.jiraSettingService.getJiraUserIdStatus(item.jiraSettingId).subscribe(
-          {
-            next: (response) => {
-              this.loadJiraTable();
-              this.notificationService.success("Connection has been checked");
-            },
-            error: (err) => {
-              this.notificationService.danger(`Error while checking connection ${item.settingName}`);
-            }
-          }
-        )}
-    })
+  checkConncetion(jiraSettingId: number, settingName: string): void{
+    this.jiraSettingService.getJiraUserIdStatus(jiraSettingId).subscribe(
+      {
+        next: (response) => {
+          this.loadJiraTable();
+          this.notificationService.success("Connection has been checked");
+        },
+        error: (err) => {
+          this.notificationService.danger(`Error while checking connection ${settingName}`);
+        }
+      }
+    )
   }
 
   private onSubmit(response: any): void {

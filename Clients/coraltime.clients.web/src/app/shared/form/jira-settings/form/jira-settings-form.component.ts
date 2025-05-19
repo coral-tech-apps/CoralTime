@@ -63,8 +63,8 @@ export class JiraSettingFormComponent implements OnInit {
     let setting = this.setting;
     this.isNewSetting = !setting;
     this.setting = setting ? setting : new JiraMemberSetting();
-    this.submitButtonText = this.setting.id ? 'Save' : 'Create';
-    this.dialogHeader = this.setting.id ? 'Edit' : 'Create New Jira Setting';
+    this.submitButtonText = 'Save';
+    this.dialogHeader = 'Edit';
     this.model = FormJiraSetting.formJiraSetting(this.setting);
   }
 
@@ -91,11 +91,12 @@ export class JiraSettingFormComponent implements OnInit {
   private validateForm(form: NgForm): Observable<boolean> {
     this.showErrors = [false, false, false, false];
     const isEmailValid = observableOf(form.controls['email'].valid);
-    const isTokenValid = observableOf(form.controls['token'].valid);
+    let isTokenValid: Observable<boolean> = this.setting.apiTokenStatus ? observableOf(true) : observableOf(form.controls['token'].valid);
 
     return observableForkJoin([isEmailValid, isTokenValid])
       .pipe(map((results: boolean[]) => {
         results.forEach((isValid, index) => this.showErrors[index] = !isValid);
+        console.log(results);
         return results.every(valid => valid);
       }));
   }

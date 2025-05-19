@@ -13,13 +13,13 @@
         <div class="ct-required-field-container">
           <input class="ct-input ct-full-width" name="email" #email="ngModel"
                  [(ngModel)]="model.userEmail"
-                 (ngModelChange)="showErrors[1] = false"
+                 (ngModelChange)="showErrors[0] = false"
                  required email/>
         </div>
-        <div *ngIf="showErrors[1] && email.errors?.required" class="ct-error-text">
+        <div *ngIf="showErrors[0] && email.errors?.required" class="ct-error-text">
           Email is required!
         </div>
-        <div *ngIf="showErrors[1] && email.errors?.email" class="ct-error-text">
+        <div *ngIf="showErrors[0] && email.errors?.email" class="ct-error-text">
           Email is invalid!
         </div>
       </div>
@@ -30,10 +30,11 @@
         <div class="ct-required-field-container">
           <input class="ct-input ct-full-width" name="token" #token="ngModel"
                  [(ngModel)]="model.apiToken"
-                 (ngModelChange)="showErrors[3] = false"
+                 [attr.placeholder]="model.apiTokenStatus ? '************' : ''"
+                 (ngModelChange)="showErrors[1] = false"
                  required/>
         </div>
-        <div *ngIf="showErrors[3] && !model.apiToken" class="ct-error-text">
+        <div *ngIf="showErrors[1] && !model.apiToken" class="ct-error-text">
           Token is required!
         </div>
       </div>

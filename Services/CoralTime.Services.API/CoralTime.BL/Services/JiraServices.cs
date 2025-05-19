@@ -84,14 +84,23 @@ namespace CoralTime.BL.Services
             var jiraSetting = Uow.JiraSettingsRepository.GetById(jiraSettingId) 
                 ?? throw new CoralTimeEntityNotFoundException($"Jira setting with id {jiraSettingId} not found");
             var jiraMemberSetting = Uow.jiraMemberSettingsRepository.GetJiraMemberSetting(jiraSettingId, currentMemberId) 
-                ?? throw new CoralTimeEntityNotFoundException($"Jira member setting with jira settind id {jiraSettingId} and member id {currentMemberId} not fou");
+                ?? throw new CoralTimeEntityNotFoundException($"Jira member setting with jira settind id {jiraSettingId} and member id {currentMemberId} not foud");
 
             string domain = jiraSetting.Domain;
             string email = jiraMemberSetting.UserEmail;
             string apiToken = jiraMemberSetting.ApiToken;
 
-            var jiraUserId = await GetJiraAccountIdAsync(domain, email, apiToken)
-                ?? throw new CoralTimeEntityNotFoundException("Jira user Id not found");
+            var jiraUserId = await GetJiraAccountIdAsync(domain, email, apiToken);
+
+            if (jiraUserId == null)
+            {
+                jiraMemberSetting.JiraUserId = null;
+
+                Uow.jiraMemberSettingsRepository.Update(jiraMemberSetting, currentUserId);
+                Uow.Save();
+
+                throw new CoralTimeEntityNotFoundException("Jira user Id not found");
+            }
 
             jiraMemberSetting.JiraUserId = jiraUserId;
 
@@ -204,13 +213,21 @@ namespace CoralTime.BL.Services
 
         public void FillMemberJiraSetting(int jiraMemberSettingId, JiraMemberSettingView jiraMemberSettingView)
         {
+
             var currentUserId = Uow.MemberCurrent.UserId;
 
             var currentJiraMemberSetting = Uow.jiraMemberSettingsRepository.GetById(jiraMemberSettingId);
 
+            currentJiraMemberSetting.JiraUserId = null;
+
             if (currentJiraMemberSetting == null)
             {
                 throw new CoralTimeEntityNotFoundException($"Jira member setting with id {jiraMemberSettingId} not found");
+            }
+
+            if(jiraMemberSettingView.ApiToken == null)
+            {
+                jiraMemberSettingView.ApiToken = currentJiraMemberSetting.ApiToken;
             }
 
             Mapper.Map(jiraMemberSettingView, currentJiraMemberSetting);
