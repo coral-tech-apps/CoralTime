@@ -95,7 +95,6 @@ namespace CoralTime.BL.Services
             if (jiraUserId == null)
             {
                 jiraMemberSetting.JiraUserId = null;
-
                 Uow.jiraMemberSettingsRepository.Update(jiraMemberSetting, currentUserId);
                 Uow.Save();
 

@@ -1,6 +1,6 @@
 <div class="ct-page-container ct-clients-page ct-max-width">
   <div class="ct-page-header">
-    <mat-checkbox [(ngModel)]="showJiraTable" (ngModelChange)="onToggle()">
+    <mat-checkbox [checked]="showJiraTable" (change)="onToggle($event)">
         Jira Enable
     </mat-checkbox>
   </div>

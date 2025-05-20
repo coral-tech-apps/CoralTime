@@ -161,6 +161,13 @@ div.ui-shadow {
 
 .mdc-checkbox__native-control {
   background: #fff;
+
+}
+
+.mdc-checkbox{
+  --mdc-checkbox-selected-focus-icon-color: #fff !important;
+  --mdc-checkbox-selected-focus-state-layer-color: #099cce !important;
+  --mdc-checkbox-selected-pressed-state-layer-color: #099cce !important;
 }
 
 .mdc-label,

@@ -7,6 +7,8 @@ import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { NotificationService } from "src/app/core/notification.service";
 import { JiraMemberSetting } from "src/app/models/jira-member-setting";
 import { JiraProjectProjectComponent } from "./jira-project-project/jira-project-project.component";
+import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.component";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 @Component({
   selector: 'ct-jira-settings',
@@ -42,12 +44,28 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
     });
   }
 
-  onToggle(){
-    this.jiraSettingService.changeJiraStatus(this.showJiraTable).subscribe(result => {
-      this.showJiraTable = result;
-    })
+  onToggle(event: MatCheckboxChange) {
+    const nextValue = event.checked;
 
-    if(this.showJiraTable){
+    if (!nextValue) {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Disable Jira?',
+          message: 'Are you sure you want to disable Jira? All settings will be deleted?'
+        }
+      });
+      dialogRef.afterClosed().subscribe(confirmed => {
+        if (confirmed) {
+          this.showJiraTable = false;
+          this.changeJiraSettingStatus();
+        } else {
+          this.showJiraTable = true;
+          event.source.checked = true;
+        }
+      });
+    } else {
+      this.showJiraTable = true;
+      this.changeJiraSettingStatus();
       this.loadJiraTable();
     }
   }
@@ -94,6 +112,12 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
     this.jiraSettingService.getJiraMemberSetting(this.authService.authUser.id).subscribe(result => {
       this.tableData = [],
       this.tableData = result;
+    })
+  }
+
+  private changeJiraSettingStatus(): void{
+    this.jiraSettingService.changeJiraStatus(this.showJiraTable).subscribe(result => {
+      this.showJiraTable = result;
     })
   }
 }
