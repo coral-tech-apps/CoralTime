@@ -100,6 +100,11 @@ namespace CoralTime.DAL
             builder.Entity<TimeEntry>()
                 .HasIndex(t => new { t.MemberId, t.Date });
 
+            builder.Entity<TimeEntry>()
+                .HasIndex(t => t.JiraWorklogId)
+                .IsUnique()
+                .HasFilter("JiraWorklogId IS NOT NULL");
+
             builder.Entity<Member>()
                 .HasOne(p => p.User);
 

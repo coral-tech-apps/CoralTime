@@ -143,15 +143,25 @@ namespace CoralTime.BL.Services
                                 Date = (string)x["started"],
                                 ProjectId = item.ProjectId,
                                 Key = item.Key,
-                                ProjectName = Uow.ProjectRepository.GetById(item.ProjectId).Name
+                                ProjectName = Uow.ProjectRepository.GetById(item.ProjectId).Name,
+                                WorklogId = (string)x["id"],
                             })
                             .Where(wl =>
                            {
-                                var dto = DateTimeOffset.Parse(
-                                    wl.Date
-                                );
-                                long ms = dto.ToUnixTimeMilliseconds();
-                                return ms >= startedAfter && ms <= startedBefore;
+                               var dto = DateTimeOffset.Parse(
+                                   wl.Date
+                               );
+                               long ms = dto.ToUnixTimeMilliseconds();
+                               bool inTimeRange = ms >= startedAfter && ms <= startedBefore;
+                               if (!inTimeRange)
+                                   return false;
+
+                               var existing = Uow.TimeEntryRepository.GetByJiraWorklogId(wl.WorklogId);
+
+                               if (existing == null)
+                                   return true;
+
+                               return existing.Date != dto || existing.TimeActual != wl.TimeActual;
                             })
                             .ToList();
 
@@ -243,33 +253,53 @@ namespace CoralTime.BL.Services
 
             foreach(var item in worklogs)
             {
-                if(DateTime.TryParse(item.Date, out DateTime date))
+                if(!DateTime.TryParse(item.Date, out DateTime date))
                 {
-                    
+                    continue;
                 }
 
-                var timeEntry = new TimeEntry
-                {
-                    ProjectId = item.ProjectId,
-                    Description = item.Key + " | " + item.Description,
-                    Date = date,
-                    TimeActual = item.TimeActual,
-                    TaskTypesId = item.TaskId,
-                    MemberId = currentMemberId
-                };
+                var currentTimeEntry = Uow.TimeEntryRepository.GetByJiraWorklogId(item.WorklogId);
 
-                try
+                if(currentTimeEntry != null)
                 {
-                    Uow.TimeEntryRepository.Insert(timeEntry, currentUserId);
+                    currentTimeEntry.Description = item.Key + ": " + item.Description;
+                    currentTimeEntry.Date = date;
+                    currentTimeEntry.TimeActual = item.TimeActual;
+                    currentTimeEntry.TaskTypesId = item.TaskId;
+                    try
+                    {
+                        Uow.TimeEntryRepository.Update(currentTimeEntry);
+                        Uow.Save();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new CoralTimeDangerException("An error occured while updating worklog time entry");
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    throw new CoralTimeDangerException("An error occured while creating worklog time entry");
-                }
+                    var timeEntry = new TimeEntry
+                    {
+                        ProjectId = item.ProjectId,
+                        Description = item.Key + ": " + item.Description,
+                        Date = date,
+                        TimeActual = item.TimeActual,
+                        TaskTypesId = item.TaskId,
+                        MemberId = currentMemberId,
+                        JiraWorklogId = item.WorklogId,
+                    };
 
+                    try
+                    {
+                        Uow.TimeEntryRepository.Insert(timeEntry, currentUserId);
+                        Uow.Save();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new CoralTimeDangerException("An error occured while creating worklog time entry");
+                    }
+                }
             }
-
-            Uow.Save();
         }
     }
 }

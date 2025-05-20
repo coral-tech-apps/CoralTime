@@ -143,6 +143,7 @@ export class WorklogsComponent implements OnInit {
     this.worklogService.sendWorklogs(selectedWorklog).subscribe(
     () => {
       this.notificationService.success("Time entries successfully loaded");
+      this.applyFilters();
     },
     () => {
       this.notificationService.danger("Error while loading time entries");

@@ -51,5 +51,7 @@ namespace CoralTime.DAL.Models
         public bool IsFromToShow { get; set; }
 
         public string WorkItemId { get; set; }
+
+        public string JiraWorklogId { get; set; }
     }
 }

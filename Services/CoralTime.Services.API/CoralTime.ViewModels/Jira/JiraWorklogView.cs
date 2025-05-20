@@ -8,6 +8,8 @@ namespace CoralTime.ViewModels.Jira
 {
     public class JiraWorklogView
     {
+        public string WorklogId { get; set; }
+
         public string Description { get; set; }
 
         public int TimeActual { get; set; }

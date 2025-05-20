@@ -1,6 +1,7 @@
 ﻿using CoralTime.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CoralTime.DAL.Repositories
@@ -18,5 +19,12 @@ namespace CoralTime.DAL.Repositories
 
         // Don't touch!
         public override TimeEntry LinkedCacheGetById(int id) =>GetQuery().FirstOrDefault(x => x.Id == id);
+
+        public TimeEntry GetByJiraWorklogId(string id)
+        {
+            return GetQuery()
+                .Where(te => string.Equals(te.JiraWorklogId, id))
+                .FirstOrDefault();
+        }
     }
 }

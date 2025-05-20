@@ -8,6 +8,7 @@ export class JiraWorklog{
 	timeActual: number;
   key: string;
   taskId: number;
+  worklogId: string;
 
 
 	constructor(data = null) {
@@ -19,6 +20,7 @@ export class JiraWorklog{
       this.projectName = data.projectName;
       this.key = data.key;
       this.projectId = data.projectId;
+      this.worklogId = data.worklogId;
 		}
 	}
 
