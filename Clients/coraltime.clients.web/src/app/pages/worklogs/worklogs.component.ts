@@ -208,7 +208,7 @@ export class WorklogsComponent implements OnInit {
   // Jira Setting Select
 
   getJiraSettings(){
-    this.jiraSettingService.getJiraMemberSetting().subscribe(result => {
+    this.jiraSettingService.getJiraMemberSettings().subscribe(result => {
       this.jiraSettings = result;
     })
   }

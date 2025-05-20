@@ -62,11 +62,18 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             return Ok(_service.GetNotAssignedUsers(id));
         }
 
+        //GET: api/v1/odata/Jira/GetMemberSetting
+        [HttpGet(Constants.Routes.GetMemberSetting)]
+        public IActionResult GetMemberSetting(int id)
+        {
+            return Ok(_service.GetJiraMemberSetting(id));
+        }
+
         // GET: api/v1/odata/Jira/GetMemberSettings
         [HttpGet(Constants.Routes.GetMemberSettings)]
-        public IActionResult GetJiraMemberSetting(int id)
+        public IActionResult GetJiraMemberSettings(int id)
         {
-            return Ok(_service.GetMemberSetting(id));
+            return Ok(_service.GetMemberSettings(id));
         }
 
         // POST: api/v1/odata/Jira

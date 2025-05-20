@@ -24,7 +24,7 @@ namespace CoralTime.BL.Services
         {
         }
 
-        private async Task<List<JiraProject>> GetJiraProjectAsync(string email, string apiToken, string domain)
+        private async Task<List<JiraProject>> GetJiraProjectAsync(string email, string apiToken, string domain, int jiraSettingId)
         {
             using (var client = new HttpClient())
             {
@@ -48,7 +48,8 @@ namespace CoralTime.BL.Services
                         {
                             JiraProjectId = (string)x["id"],
                             Key = (string)x["key"],
-                            Name = (string)x["name"]
+                            Name = (string)x["name"],
+                            JiraSettingId = jiraSettingId
                         }).ToList();
 
                         return jiraProjects;
@@ -81,7 +82,7 @@ namespace CoralTime.BL.Services
             string email = jiraMemberSetting.UserEmail;
             string apiToken = jiraMemberSetting.ApiToken;
 
-            var getNewJiraProjects = await GetJiraProjectAsync(email, apiToken, domain);
+            var getNewJiraProjects = await GetJiraProjectAsync(email, apiToken, domain, jiraSettingId);
 
             if (getNewJiraProjects == null)
             {

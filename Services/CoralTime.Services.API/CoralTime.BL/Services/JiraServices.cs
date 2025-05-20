@@ -115,6 +115,27 @@ namespace CoralTime.BL.Services
 
         }
 
+        public JiraMemberSettingView GetJiraMemberSetting(int jiraSettingId)
+        {
+            var memberId = Uow.MemberCurrent.Id;
+            var jiraMemberSetting = Uow.jiraMemberSettingsRepository.GetJiraMemberSetting(jiraSettingId, memberId);
+
+            if(jiraMemberSetting == null)
+            {
+                return null;
+            }
+
+            var jiraMemberSettingView = new JiraMemberSettingView
+            {
+                Id = jiraMemberSetting.Id,
+                UserEmail = jiraMemberSetting.UserEmail,
+                ApiTokenStatus = !(string.IsNullOrEmpty(jiraMemberSetting.ApiToken)),
+                IsEnableConntection = jiraMemberSetting.JiraUserId != null ? true : false
+            };
+
+            return jiraMemberSettingView;
+        }
+
         public List<JiraSettingsView> GetSettings()
         {
             var jiraSettings = Uow.JiraSettingsRepository.GetSettings();
@@ -131,7 +152,7 @@ namespace CoralTime.BL.Services
             return result;
         }
 
-        public List<JiraMemberSettingView> GetMemberSetting(int memberId)
+        public List<JiraMemberSettingView> GetMemberSettings(int memberId)
         {
             if(memberId == 0)
             {

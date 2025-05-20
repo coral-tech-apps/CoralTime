@@ -1,4 +1,5 @@
-
+import { JiraSettingService } from 'src/app/services/jira-settings.service';
+import { JiraMemberSetting } from './../../../models/jira-member-setting';
 import { Component, Input, OnInit, ViewChild} from '@angular/core';
 import { NotificationService } from '../../../core/notification.service';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -27,6 +28,8 @@ export class JiraLinkedProjectComponent implements OnInit{
 
   filterStr: string = '';
   projects: Project[];
+  jiraMemberSetting: JiraMemberSetting;
+  isAvaliableLoadProjects: boolean;
 
   assignedJiraProjects: PagedResult<AssignedJiraProject>;
   updatingAssignedJiraProject: boolean = false;
@@ -46,14 +49,45 @@ export class JiraLinkedProjectComponent implements OnInit{
     public authService: AuthService,
     private projectService: ProjectsService,
     private jiraProjectService: JiraProjectService,
-    private notificationService: NotificationService,){
+    private notificationService: NotificationService,
+    private jiraSettingService: JiraSettingService){
 
 }
 
   ngOnInit(): void {
-   this.loadProjects();
-   this.loadUnAssignedProjects();
-   this.loadAssignedProjects();
+    this.getJiraMemberSetting();
+    this.loadProjects();
+    this.loadUnAssignedProjects();
+    this.loadAssignedProjects();
+  }
+
+  loadNewProjects(): void{
+    this.isNotAssingedProjects = false;
+
+    if (!this.jiraMemberSetting.apiTokenStatus) {
+      this.notificationService.danger("Error: API token is missing. Please fill it in Preferences.");
+      return;
+    }
+    if (!this.jiraMemberSetting.userEmail) {
+      this.notificationService.danger("Error: Email is missing. Please fill it in Preferences.");
+      return;
+    }
+    if (!this.jiraMemberSetting.isEnableConntection) {
+      this.notificationService.danger("Error: Jira connection is not verified. Please check it in Preferences.");
+      return;
+    }
+
+    this.jiraProjectService.loadJiraProjects(this.jiraSetting.id).subscribe( () => {
+      this.notAssignedProjectsSubject.next({
+        event,
+        filterStr: this.filterStr
+      });
+        this.notificationService.success("Projects load succesfully");
+      },
+      () => {
+        this.notificationService.danger("Error while loading projects");
+      }
+    );
   }
 
   loadProjects(): void{
@@ -172,4 +206,16 @@ export class JiraLinkedProjectComponent implements OnInit{
     }
   )
   }
+
+  getJiraMemberSetting(): void{
+    this.jiraSettingService.getJiraMemberSetting(this.jiraSetting.id).subscribe((result: JiraMemberSetting) => {
+      if(result == undefined){
+        this.isAvaliableLoadProjects = false;
+      }else{
+        this.isAvaliableLoadProjects = true;
+      }
+      this.jiraMemberSetting = result;
+    });
+  }
+
 }

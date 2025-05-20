@@ -195,6 +195,7 @@ namespace CoralTime.Common.Constants
             public const string GetJiraUserIdStatus = "GetJiraUserIdStatus";
             public const string GetAssignedUsers = "GetAssignedUsers/{id}";
             public const string GetNotAssignedUsers = "GetNotAssignedUsers/{id}";
+            public const string GetMemberSetting = "GetMemberSetting";
             public const string GetMemberSettings = "GetMemberSettings";
             public const string AssignToIntegration = "AssignToIntegration";
             public const string FillJiraMemberSetting = "FillJiraMemberSetting";

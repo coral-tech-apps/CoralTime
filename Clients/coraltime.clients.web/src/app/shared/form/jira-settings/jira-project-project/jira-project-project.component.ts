@@ -1,9 +1,7 @@
 import { debounceTime, Subject, switchMap } from 'rxjs';
-import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/core/auth/auth.service';
-import { NotificationService } from 'src/app/core/notification.service';
 import { JiraProjectService } from 'src/app/services/jira-project.service';
 import { JiraMemberSetting } from 'src/app/models/jira-member-setting';
 import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
@@ -43,9 +41,7 @@ export class JiraProjectProjectComponent implements OnInit{
 
   constructor(private http: HttpClient,
     public authService: AuthService,
-    private jiraProjectService: JiraProjectService,
-    private jiraSettingService: JiraSettingService,
-    private notificationService: NotificationService,){
+    private jiraProjectService: JiraProjectService,){
 
 }
 
@@ -123,23 +119,6 @@ export class JiraProjectProjectComponent implements OnInit{
       event,
       filterStr: this.filterStr
     });
-  }
-
-  //All projects
-
-  loadAllProjects(): void{
-    this.isNotAssingedProjects = false;
-    this.jiraProjectService.loadJiraProjects(this.jiraSetting.jiraSettingId).subscribe( () => {
-      this.notAssignedProjectsSubject.next({
-        event,
-        filterStr: this.filterStr
-      });
-        this.notificationService.success("Projects load succesfully");
-      },
-      () => {
-        this.notificationService.danger("Error while loading projects");
-      }
-    );
   }
 
   // Filtering

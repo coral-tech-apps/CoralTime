@@ -4,10 +4,6 @@
       <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
   </div>
 
-  <button mat-raised-button class="ct-blue-button" (click)="loadAllProjects()">
-    Update Jira projects
-  </button>
-
   <div class="ct-search-container">
       <div class="ct-grid-search-filter">
           <input class="ct-input-element" #gb placeholder="Search Jira Projects"
@@ -52,34 +48,6 @@
               </ng-template>
           </p-table>
 
-          <p-table #notAssignTable class="ct-grid-container ct-grid-row-border"
-                   [value]="notAssignedJiraProjects?.data"
-                   scrollable="true" [sortField]="'key'"
-                   [lazy]="true"
-                   [loading]="!isNotAssingedProjects"
-                   (onLazyLoad)="updateNotAssignedProjects($event)"
-                   (onMoreContent)="updateNotAssignedProjects()">
-
-              <ng-template pTemplate="header">
-                  <tr>
-                    <th pSortableColumn="name" [style]="{'width':'330px'}">
-                      Name
-                      <p-sortIcon field="name"></p-sortIcon>
-                    </th>
-                    <th pSortableColumn="key" [style]="{'width':'470px'}" class="ct-info-col">
-                        Key
-                        <p-sortIcon field="key"></p-sortIcon>
-                    </th>
-                  </tr>
-              </ng-template>
-
-              <ng-template pTemplate="body" let-jiraProject>
-                  <tr>
-                    <td class="ct-info-col">{{jiraProject.name}}</td>
-                    <td>{{jiraProject.key}}</td>
-                  </tr>
-              </ng-template>
-          </p-table>
       </div>
   </div>
 </div>

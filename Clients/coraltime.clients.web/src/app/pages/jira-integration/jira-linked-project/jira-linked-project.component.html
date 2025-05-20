@@ -1,12 +1,20 @@
 <div class="ct-dialog ct-data-dialog">
   <div class="ct-dialog-title">
-      <span>Team members of</span><span>{{jiraSetting.settingName}}</span>
+      <span>Projects by</span><span>{{jiraSetting.settingName}}</span>
+      <div *ngIf="!isAvaliableLoadProjects" class="ct-hint-text">
+        Select Jira setting before choosing project.
+      </div>
       <button class="ct-dialog-close" mat-dialog-close ctClickClose></button>
   </div>
 
+  <button [class.disabled]="!isAvaliableLoadProjects" mat-raised-button class="ct-blue-button"  (click)="loadNewProjects()">
+    Update Jira projects
+  </button>
+
+
   <div class="ct-search-container">
       <div class="ct-grid-search-filter">
-          <input class="ct-input-element" #gb placeholder="Search to link or delete link projects"
+          <input  [class.disabled]="!isAvaliableLoadProjects" class="ct-input-element" #gb placeholder="Search to link or delete link projects"
                 [(ngModel)]="filterStr"
                 (input)="onGlobalFilter($event.target.value)">
           <i class="ct-search-icon"></i>

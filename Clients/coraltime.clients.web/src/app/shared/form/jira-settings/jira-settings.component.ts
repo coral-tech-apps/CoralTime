@@ -109,7 +109,7 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
   }
 
   private loadJiraTable(){
-    this.jiraSettingService.getJiraMemberSetting(this.authService.authUser.id).subscribe(result => {
+    this.jiraSettingService.getJiraMemberSettings(this.authService.authUser.id).subscribe(result => {
       this.tableData = [],
       this.tableData = result;
     })
