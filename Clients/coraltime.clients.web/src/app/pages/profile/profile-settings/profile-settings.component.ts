@@ -19,6 +19,7 @@ import { UserPicService } from '../../../services/user-pic.service';
 import { UsersService } from '../../../services/users.service';
 import { LoadingMaskService } from '../../../shared/loading-indicator/loading-mask.service';
 import { ProfilePhotoComponent } from './profile-photo/profile-photo.component';
+import { LoginService } from '../../login/login.service';
 
 const STANDART_TIME_ARRAY = [
 	'0:00', '1:00', '2:00', '3:00', '4:00', '5:00',
@@ -64,6 +65,7 @@ export class ProfileSettingsComponent implements OnInit {
 	timeFormatModel: TimeFormat = this.timeFormats[1];
 	weekStartDays: string[] = ['Sunday', 'Monday'];
 	weekStartDayModel: string;
+  enableAzure: boolean = false;
 
 	private dialogRef: MatDialogRef<ProfilePhotoComponent>;
 
@@ -77,7 +79,8 @@ export class ProfileSettingsComponent implements OnInit {
 	            private route: ActivatedRoute,
 	            private tasksService: TasksService,
 	            private userPicService: UserPicService,
-	            private usersService: UsersService) {
+	            private usersService: UsersService,
+              private loginService: LoginService) {
 	}
 
 	ngOnInit() {
@@ -88,6 +91,10 @@ export class ProfileSettingsComponent implements OnInit {
 		this.avatarUrl = this.userModel.urlIcon && this.userModel.urlIcon.replace('Icons', 'Avatars');
 		this.timeFormatModel = this.userModel.timeFormat ? new TimeFormat(this.userModel.timeFormat) : this.timeFormats[1];
 		this.weekStartDayModel = this.weekStartDays[this.userModel.weekStart];
+
+    this.loginService.getAuthenticationSettings().subscribe(settings => {
+      this.enableAzure = settings.enableAzure;
+    })
 
 		this.getAvatar();
 		this.getDateFormats();

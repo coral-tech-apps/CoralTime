@@ -18,7 +18,9 @@ export interface AzureSettings {
 	redirectUrl: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class LoginService {
 	private authenticationSettings: LoginSettings;
 

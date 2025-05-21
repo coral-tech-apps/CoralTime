@@ -45,7 +45,7 @@
                             <div class="ct-error-text" *ngIf="!contactEmail.pristine && !userModel.email">Email can't be empty</div>
                         </div>
 
-                        <div>
+                        <div [class.hide]="enableAzure">
                             <a class="ct-link-text ct-reset-password-button" (click)="resetPassword()">Reset password</a>
                             <div *ngIf="resetPasswordMessage" class="ct-reset-password-message">{{resetPasswordMessage}}</div>
                         </div>
