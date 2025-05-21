@@ -1,3 +1,4 @@
+import { JiraEnableService } from './../../../services/jira-enable.service';
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
@@ -27,7 +28,8 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
               public authService: AuthService,
               private jiraSettingService: JiraSettingService,
               private notificationService: NotificationService,
-              private dialog: MatDialog,){
+              private dialog: MatDialog,
+              private jiraEnableService: JiraEnableService){
 
   }
 
@@ -118,6 +120,7 @@ private jiraProjectDialogRef: MatDialogRef<JiraProjectProjectComponent>;
   private changeJiraSettingStatus(): void{
     this.jiraSettingService.changeJiraStatus(this.showJiraTable).subscribe(result => {
       this.showJiraTable = result;
+      this.jiraEnableService.setShowWorklogs(result);
     })
   }
 }

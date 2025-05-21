@@ -12,6 +12,7 @@ import { ProjectsService } from '../../../services/projects.service';
 import { UsersService } from '../../../services/users.service';
 import { LoadingMaskService } from '../../../shared/loading-indicator/loading-mask.service';
 import { MenuComponent } from 'src/app/shared/menu/menu.component';
+import { JiraEnableService } from 'src/app/services/jira-enable.service';
 
 interface MenuItem {
 	label?: string;
@@ -81,6 +82,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
 	userInfo: User;
 	windowWidth: number;
   navMenuOpen: boolean = false;
+  flag: boolean = true;
 
   @ViewChild('navMenu') navMenu: MenuComponent;
 
@@ -93,7 +95,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
 	            private impersonationService: ImpersonationService,
 	            private loadingService: LoadingMaskService,
 	            private projectsService: ProjectsService,
-	            private usersService: UsersService) {
+	            private usersService: UsersService,
+              private jiraEnableService: JiraEnableService) {
 	}
 
 	ngOnInit() {
@@ -109,7 +112,13 @@ export class NavigationComponent implements OnInit, OnDestroy {
 			this.updateManageMenuVisibility();
 		});
 
-		this.items = [
+    this.jiraEnableService.showWorklog$.subscribe(show => {
+      this.buildMenu(show);
+    })
+  }
+
+  buildMenu(showWorklogs: boolean){
+    this.items = [
 			{
 				label: 'Time Tracker',
 				icon: 'ct-timetracker-icon',
@@ -120,13 +129,15 @@ export class NavigationComponent implements OnInit, OnDestroy {
 				icon: 'ct-reports-icon',
 				routerLink: ['/reports']
 			},
-      {
-        label: 'Worklogs',
-        icon: 'ct-reports-icon',
-        routerLink: ['/worklogs'],
-      }
 		];
-	}
+
+    if(showWorklogs){
+      this.items.push({
+        label: 'Worklogs',
+          icon: 'ct-reports-icon',
+          routerLink: ['/worklogs'],
+    })}
+  }
 
 	isMobileView(): boolean {
 		return this.windowWidth < 810;
