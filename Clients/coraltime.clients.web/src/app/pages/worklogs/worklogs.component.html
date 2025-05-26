@@ -34,7 +34,7 @@
                       <ct-select [name]="'defaultProject'"
                                 [displayName]="'settingName'"
                                 [trackBy]="'id'"
-                                [defaultValue]="'choose setting'"
+                                [defaultValue]="'Select Jira Connection'"
                                 [options]="jiraSettings"
                                 [(ngModel)]="selectedJiraSetting"
                                 (ngModelChange)="onClickJiraSetting(selectedJiraSetting)">
@@ -53,7 +53,7 @@
 
                         </ct-multiselect>
                         <div *ngIf="!isAvaliableCheckProject" class="ct-hint-text">
-                          Select Jira setting before choosing project.
+                          Select Jira connection before choosing project.
                         </div>
                         <div *ngIf="isEmptyProjects && isAvaliableCheckProject" class="ct-hint-text">
                           Threre are no assigned project yet.
