@@ -173,7 +173,10 @@ namespace CoralTime.BL.Services
                     throw;
                 }
             }
-            
+
+            result = result
+                .OrderByDescending(r => DateTimeOffset.Parse(r.Date))
+                .ToList();
             return result;
         }
 
