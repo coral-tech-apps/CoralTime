@@ -187,11 +187,15 @@ export class WorklogsComponent implements OnInit {
     const fromDate = this.dateResponse.datePeriod.dateFrom.format('YYYY-MM-DD');
     const toDate = this.dateResponse.datePeriod.dateTo.format('YYYY-MM-DD');
 
+    const projectIds = this.assignedJiraProjectsIds?.length
+      ? this.assignedJiraProjectsIds
+      : this.assignedJiraProjectsItems.map(item => item.value);
+
     const filters = {
       dateFrom: fromDate,
       dateTo: toDate,
       jiraSettingId: this.selectedJiraSetting.jiraSettingId,
-      projectIds: this.assignedJiraProjectsIds
+      projectIds: projectIds
     };
 
     this.getWorklogs(filters);
