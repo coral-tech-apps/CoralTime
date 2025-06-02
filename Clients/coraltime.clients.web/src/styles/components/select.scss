@@ -151,6 +151,33 @@
   }
 }
 
+.hover-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.hover-popup {
+  display: none;
+  position: absolute;
+  top: 120%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  gap: 20px;
+}
+
+.hover-wrapper:hover .hover-popup {
+  display: flex;
+}
+
+.left-side, .right-side {
+  min-width: 120px;
+}
+
 .ct-select {
   position: relative;
   height: $selectHeight;

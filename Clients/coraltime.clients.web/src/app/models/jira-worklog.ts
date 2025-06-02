@@ -9,7 +9,11 @@ export class JiraWorklog{
   key: string;
   taskId: number;
   worklogId: string;
-
+  isEdited: boolean;
+  oldDate: string | undefined;
+  oldTimeActual: number | undefined;
+  oldTimeActualString: string | undefined;
+  oldDescription: string | undefined;
 
 	constructor(data = null) {
 		if (data) {
@@ -21,6 +25,10 @@ export class JiraWorklog{
       this.key = data.key;
       this.projectId = data.projectId;
       this.worklogId = data.worklogId;
+      this.isEdited = data.isEdited;
+      this.oldDate = data.oldDate;
+      this.oldTimeActualString = data.oldTimeActual ? this.formatSecondsToTime(data.oldTimeActual) : undefined;
+      this.oldDescription = data.oldDescription;
 		}
 	}
 

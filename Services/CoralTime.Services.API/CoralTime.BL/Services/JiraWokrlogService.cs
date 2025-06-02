@@ -15,6 +15,7 @@ using CoralTime.ViewModels.Jira;
 using Duende.IdentityServer.Extensions;
 using CoralTime.DAL.Models;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CoralTime.BL.Services
 {
@@ -135,34 +136,71 @@ namespace CoralTime.BL.Services
 
                         var jsonResponse = JsonConvert.DeserializeObject<JObject>(content);
 
+                        var worklogIdList = jsonResponse["worklogs"]
+                            .Select(x => (string)x["id"])
+                            .ToList();
+
+                        var existingEntries = Uow.TimeEntryRepository
+                            .GetByJiraWorklogIds(worklogIdList)
+                            .ToDictionary(e => e.JiraWorklogId, e => e);
+
                         var worklogs = jsonResponse["worklogs"]
-                            .Select(x => new JiraWorklogView
+                            .Select(x =>
                             {
-                                Description = (string)x["comment"]?["content"]?[0]?["content"]?[0]?["text"],
-                                TimeActual = (int)x["timeSpentSeconds"],
-                                Date = (string)x["started"],
-                                ProjectId = item.ProjectId,
-                                Key = item.Key,
-                                ProjectName = Uow.ProjectRepository.GetById(item.ProjectId).Name,
-                                WorklogId = (string)x["id"],
+                                var id = (string)x["id"];
+                                var view = new JiraWorklogView
+                                {
+                                    Description = (string)x["comment"]?["content"]?[0]?["content"]?[0]?["text"],
+                                    TimeActual = (int)x["timeSpentSeconds"],
+                                    Date = (string)x["started"],
+                                    ProjectId = item.ProjectId,
+                                    Key = item.Key,
+                                    ProjectName = Uow.ProjectRepository.GetById(item.ProjectId).Name,
+                                    WorklogId = id,
+                                    IsEdited = false
+                                };
+
+                                var dto = DateTimeOffset.Parse(view.Date);
+
+                                existingEntries.TryGetValue(id, out var existing);
+
+                                if (existing != null)
+                                {
+                                    bool dateChanged = existing.Date != dto;
+                                    bool timeChanged = existing.TimeActual != view.TimeActual;
+
+                                    var currDesc = existing.Description.Replace($"{view.Key}: ", "");
+                                    bool descChange = string.Equals(currDesc, view.Description);
+
+                                    if (dateChanged || timeChanged)
+                                    {
+                                        view.IsEdited = true;
+                                        view.OldDate = existing.Date.ToString();
+                                        view.OldDescription = currDesc;
+                                        view.OldTimeActual = existing.TimeActual;
+                                    }
+                                }
+
+                                return new
+                                {
+                                    View = view,
+                                    StartedDto = dto,
+                                    Existing = existing
+                                };
                             })
-                            .Where(wl =>
-                           {
-                               var dto = DateTimeOffset.Parse(
-                                   wl.Date
-                               );
-                               long ms = dto.ToUnixTimeMilliseconds();
-                               bool inTimeRange = ms >= startedAfter && ms <= startedBefore;
-                               if (!inTimeRange)
-                                   return false;
+                            .Where(x =>
+                            {
+                                long ms = x.StartedDto.ToUnixTimeMilliseconds();
+                                bool inTimeRange = ms >= startedAfter && ms <= startedBefore;
+                                if (!inTimeRange)
+                                    return false;
 
-                               var existing = Uow.TimeEntryRepository.GetByJiraWorklogId(wl.WorklogId);
+                                if (x.Existing == null)
+                                    return true;
 
-                               if (existing == null)
-                                   return true;
-
-                               return existing.Date != dto || existing.TimeActual != wl.TimeActual;
+                                return x.View.IsEdited;
                             })
+                            .Select(x => x.View)
                             .ToList();
 
                         result.AddRange(worklogs);

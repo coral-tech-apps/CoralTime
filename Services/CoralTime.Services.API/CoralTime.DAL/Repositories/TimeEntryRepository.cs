@@ -26,5 +26,12 @@ namespace CoralTime.DAL.Repositories
                 .Where(te => string.Equals(te.JiraWorklogId, id))
                 .FirstOrDefault();
         }
+
+        public IEnumerable<TimeEntry> GetByJiraWorklogIds(IEnumerable<string> ids)
+        {
+            return GetQuery()
+                .Where(te => ids.Contains(te.JiraWorklogId))
+                .ToList();
+        }
     }
 }

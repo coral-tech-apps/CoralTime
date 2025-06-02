@@ -87,6 +87,7 @@
                     <input [class.disabled]="!isWorklogsLoaded" type="checkbox" [(ngModel)] = "isAllSelected" (change)="toggleSelectAll()" (click)="$event.stopPropagation()"/>
                   </th>
                   <th class="ct-info-col">Date</th>
+                  <th class="ct-info-col">Edited</th>
                   <th class="ct-info-col">Key</th>
                   <th class="ct-info-col">Description</th>
                   <th class="ct-info-col">Log time</th>
@@ -101,6 +102,31 @@
                     <input type="checkbox" [(ngModel)] = "item.selected" (change)="checkAllSelected()" (click)="$event.stopPropagation()"/>
                   </td>
                   <td class="ct-info-col">{{formatDate(item.date)}}</td>
+                  <!--TODO: update ui for edited worklogs-->
+                  <td class="ct-info-col">
+                    <ng-container *ngIf="item.isEdited; else newWorklogText">
+                      <div class="hover-wrapper">
+                        <span class="simple-text">Edited</span>
+                        <div class="hover-popup">
+                           <div class="left-side">
+                            <h3>Updated worklog</h3>
+                            <p><strong>Description:</strong> {{ item.description }} </p>
+                            <p><strong>Time:</strong> {{ item.timeActualString }} </p>
+                            <p><strong>Date:</strong> {{ formatDate(item.date) }} </p>
+                          </div>
+                          <div class="right-side">
+                            <h3>Current worklog</h3>
+                            <p><strong>Description:</strong> {{ item.oldDescription }}</p>
+                            <p><strong>Time:</strong> {{ item.oldTimeActualString }}</p>
+                            <p><strong>Date:</strong> {{ formatDate(item.oldDate) }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <ng-template #newWorklogText>
+                      New worklog
+                    </ng-template>
+                  </td>
                   <td>{{item.key}}</td>
                   <td>{{item.description}}</td>
                   <td>{{item.timeActualString}}</td>
