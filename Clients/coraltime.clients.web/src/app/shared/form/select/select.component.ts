@@ -234,7 +234,7 @@ export class SelectComponent implements ControlValueAccessor {
     const clickedInside = this.el.nativeElement.contains(target);
 
     if (!clickedInside) {
-      this.closeSelect();  // Закрываем всегда при клике вне компонента
+      this.closeSelect();
     }
   }
 }
