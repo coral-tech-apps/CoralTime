@@ -36,6 +36,9 @@ const ROWS_TOTAL_NUMBER = 50;
 
 export class WorklogsComponent implements OnInit {
   isAvaliableCheckProject: boolean = false;
+  hasSelectedWorklogsWithoutTask: boolean = false;
+  hasNoJiraFiltersSelected: boolean = true;
+  hasJiraFiltersButNoWorklogsSelected: boolean = false;
   isEmptyProjects: boolean = true;
 	reportDropdowns: ReportDropdowns;
   user: User;
@@ -69,7 +72,6 @@ export class WorklogsComponent implements OnInit {
 	@ViewChild('slimScroll') slimScroll: any;
 
   private assignedProjectsEvent: any;
-  private subject = new Subject<any>();
 
 	constructor(
               private jiraSettingService: JiraSettingService,
@@ -160,6 +162,7 @@ export class WorklogsComponent implements OnInit {
 
   addTaskToWorklog(task: Task, worklogIndex: number): void{
     this.worklogs[worklogIndex].taskId = task.id;
+    this.updatePopupFlags();
   }
 
   // checkbox
@@ -171,12 +174,14 @@ export class WorklogsComponent implements OnInit {
             item.selected = this.isAllSelected;
           }
         });
+      this.updatePopupFlags();
     }
 
     checkAllSelected(){
       this.isAllSelected = this.worklogs
         .filter(item => item.timeActual <= 86400)
         .every(item => item.selected);
+       this.updatePopupFlags();
     }
 
   // Apply filters
@@ -207,7 +212,8 @@ export class WorklogsComponent implements OnInit {
       .subscribe((res: JiraWorklog[]) => {
         this.worklogs = res.map(item => new JiraWorklog(item));
         this.isWorklogsLoaded = true;
-      })
+        this.updatePopupFlags();
+      });
   }
 
   // Jira Setting Select
@@ -221,6 +227,7 @@ export class WorklogsComponent implements OnInit {
   onClickJiraSetting(jiraSetting: JiraMemberSetting){
     this.selectedJiraSetting = jiraSetting;
     this.checkSelectProject();
+    this.updatePopupFlags();
   }
 
   // Assigned Jira Projects
@@ -320,6 +327,10 @@ export class WorklogsComponent implements OnInit {
 		this.dateResponse.dateStaticId = null;
 	}
 
+  isDisable(): boolean {
+    return this.hasSelectedWorklogsWithoutTask || this.hasNoJiraFiltersSelected || this.hasJiraFiltersButNoWorklogsSelected;
+  }
+
 	private changeToggleParameter(): void {
 		this.canToggleDatepicker = false;
 		setTimeout(() => this.canToggleDatepicker = true, 300);
@@ -336,5 +347,18 @@ export class WorklogsComponent implements OnInit {
     }
     let date = dayjs(utcDate);
     return this.user.dateFormat ? date.format(this.user.dateFormat) : date.toDate().toLocaleDateString();
+  }
+
+  private updatePopupFlags(): void {
+  this.hasSelectedWorklogsWithoutTask = this.worklogs.some(w => w.selected && (!w.taskId || w.taskId === 0));
+
+  this.hasNoJiraFiltersSelected = !this.selectedJiraSetting ||
+    (this.assignedJiraProjectsIds.length === 0 && this.assignedJiraProjectsItems.length === 0);
+
+  this.hasJiraFiltersButNoWorklogsSelected =
+    !!this.selectedJiraSetting &&
+    (this.assignedJiraProjectsIds.length > 0 || this.assignedJiraProjectsItems.length > 0) &&
+    this.worklogs.length > 0 &&
+    this.worklogs.every(w => !w.selected);
   }
 }

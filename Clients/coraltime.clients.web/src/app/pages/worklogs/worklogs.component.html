@@ -72,8 +72,25 @@
 
             <div class="ct-page-header">
               <h3 class="ct-header">Worklogs</h3>
-              <button mat-raised-button class="ct-blue-button" (click)="addTimeEntries()" [disabled]="!isAvaliableCheckProject || isEmptyProjects">Add time entries</button>
+
+              <div class="hover-wrapper small-hover">
+                <button mat-raised-button class="ct-blue-button"
+                        (click)="addTimeEntries()"
+                        [disabled]="isDisable()">
+                  Add time entries
+                </button>
+
+                <div class="hover-popup small-popup" *ngIf="hasSelectedWorklogsWithoutTask">
+                  Choose task for every worklog.
+                </div>
+                <div class="hover-popup small-popup" *ngIf="hasNoJiraFiltersSelected">
+                  Choose Jira setting.
+                </div>
+                <div class="hover-popup small-popup" *ngIf="hasJiraFiltersButNoWorklogsSelected">
+                  Choose worklog.
+                </div>
               </div>
+            </div>
               <div class="ct-reports-data">
 
             <p-table class="ct-grid-container" class="ct-reports-grid"
