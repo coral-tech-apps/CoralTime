@@ -77,13 +77,33 @@
         <div class="ct-actual-time">
             <i class="ct-icon ct-timeactual-icon" title="Tracked time"></i>
             <div *ngIf="!isFromToRequired" class="ct-actual-time-inputs">
-              <input name="timeActualHours" autocomplete="off" inputmode="numeric" maxlength="2" [ctTime]="23" [ctFocus]="timeActualMinutes"
-                     [(ngModel)]="timeActual.hours"
-                     (timeChanged)="timeActualOnChange()">h
-              <input name="timeActualMinutes" autocomplete="off" inputmode="numeric" maxlength="2" [ctTime]="minutesMax" [step]="minutesIncrement" #timeActualMinutes
-                     [(ngModel)]="timeActual.minutes"
-                     (timeChanged)="timeActualOnChange()">m
-            </div> 
+                <input
+                  inputmode="numeric"
+                  name="timeActualHours"
+                  autocomplete="off"
+                  maxlength="2"
+                  [min]="0"
+                  [max]="23"
+                  [step]="minutesIncrement"
+                  [(ngModel)]="timeActual.hours"
+                  (blur)="timeActualOnChange()"
+                  (keydown.ArrowUp)="shiftTime($event, timeActual, timeActualOnChange)"
+                  (keydown.ArrowDown)="shiftTime($event, timeActual, timeActualOnChange)"
+                >h
+                <input
+                  inputmode="numeric"
+                  name="timeActualMinutes"
+                  autocomplete="off"
+                  maxlength="2"
+                  [min]="0"
+                  [max]="59"
+                  [step]="minutesIncrement"
+                  [(ngModel)]="timeActual.minutes"
+                  (blur)="timeActualOnChange()"
+                  (keydown.ArrowUp)="shiftTime($event, timeActual, timeActualOnChange)"
+                  (keydown.ArrowDown)="shiftTime($event, timeActual, timeActualOnChange)"
+                >m
+            </div>
             <span *ngIf="isFromToRequired">{{timeActual.hours}}:{{timeActual.minutes}}</span>
         </div>
         <button type="button" *ngIf="isEstimatedTimeEnabled && !isEstimatedTimeShown"
@@ -92,12 +112,31 @@
         </button>
         <div *ngIf="isEstimatedTimeEnabled && isEstimatedTimeShown" class="ct-estimated-time">
             <i class="ct-icon ct-timeestimated-icon" title="Planned time"></i>
-            <input name="timeEstimatedHours" autocomplete="off" inputmode="numeric" maxlength="2" [ctTime]="23"
-                   [(ngModel)]="timeEstimated.hours"
-                   (ngModelChange)="timeEstimatedOnChange()">h
-            <input name="timeEstimatedMinutes" autocomplete="off" inputmode="numeric" maxlength="2" [ctTime]="minutesMax" [step]="minutesIncrement"
-                   [(ngModel)]="timeEstimated.minutes"
-                   (ngModelChange)="timeEstimatedOnChange()">m
+            <input
+                  inputmode="numeric"
+                  name="timeEstimatedHours"
+                  autocomplete="off"
+                  maxlength="2"
+                  [min]="0"
+                  [max]="23"
+                  [step]="minutesIncrement"
+                  [(ngModel)]="timeEstimated.hours"
+                  (keydown.ArrowUp)="shiftTime($event, timeEstimated, timeEstimatedOnChange)"
+                  (keydown.ArrowDown)="shiftTime($event, timeEstimated, timeEstimatedOnChange)"
+            >h
+            <input
+                  inputmode="numeric"
+                  name="timeEstimatedMinutes"
+                  autocomplete="off"
+                  maxlength="2"
+                  [min]="0"
+                  [max]="59"
+                  [step]="minutesIncrement"
+                  [(ngModel)]="timeEstimated.minutes"
+                  (blur)="timeEstimatedOnChange()"
+                  (keydown.ArrowUp)="shiftTime($event, timeEstimated, timeEstimatedOnChange)"
+                  (keydown.ArrowDown)="shiftTime($event, timeEstimated, timeEstimatedOnChange)"
+            >m
         </div>
     </div>
     <div class="ct-form-actions">

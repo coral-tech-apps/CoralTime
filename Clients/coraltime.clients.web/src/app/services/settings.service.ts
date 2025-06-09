@@ -29,7 +29,7 @@ export class SettingsService {
 	}
 
 	getTimeEntryMinutesIncrement(): number {
-		return 5;
+		return 30;
 	}
 
 	getIsTimerEnabled(): boolean {

@@ -86,14 +86,14 @@ export class EntryTimeFormComponent implements OnInit {
 
 		this.isFromToRequired = this.settingsService.getIsFromToRequired();
 		this.minutesIncrement = this.settingsService.getTimeEntryMinutesIncrement();
-		this.minutesMax = 59 - (59 % this.minutesIncrement);
+		this.minutesMax = 59;
 
 		if (this.userInfo.timeFormat == 12) {
 			this.hoursMin = 1;
 			this.hoursMax = 12;
 		}
 		else {
-			this.hoursMin = 0; 
+			this.hoursMin = 0;
 			this.hoursMax = 23;
 		}
 
@@ -197,6 +197,40 @@ export class EntryTimeFormComponent implements OnInit {
 		this.currentTimeEntry.timeValues.timeEstimated = this.convertTimeFormatToSeconds(this.timeEstimated);
 		this.isTimeEstimatedValid = this.currentTimeEntry.timeValues.timeEstimated > 0;
 	}
+
+  private shiftTime(
+    event: KeyboardEvent,
+    timeObj: Time,
+    onChange: () => void
+  ): void {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const input = event.target as HTMLInputElement;
+    const step = parseInt(input.step, 10) || 1;
+    const delta = event.key === 'ArrowUp' ? +step
+                : event.key === 'ArrowDown' ? -step
+                : 0;
+
+    const h = parseInt(timeObj.hours, 10)   || 0;
+    const m = parseInt(timeObj.minutes, 10) || 0;
+    let total = h * 60 + m + delta;
+
+    const maxTotal = this.hoursMax * 60 + this.minutesMax;
+    total = Math.max(0, Math.min(maxTotal, total));
+
+    const newH = Math.floor(total / 60);
+    const newM = total % 60;
+
+    timeObj.hours   = this.padTwo(newH);
+    timeObj.minutes = this.padTwo(newM);
+
+    onChange.call(this);
+  }
+
+  private padTwo(value: number): string {
+    return value < 10 ? '0' + value : String(value);
+  }
 
 	// SUBMIT TIMEENTRY
 
@@ -394,7 +428,7 @@ export class EntryTimeFormComponent implements OnInit {
 		let h = +time.hours;
 		let m = +time.minutes;
 		let s = (+time.seconds || 0);
-		if (this.hoursMax == 12) {  
+		if (this.hoursMax == 12) {
 			if (time.period == 'AM') {
 				if (h == 12) {
 					h = 0;
