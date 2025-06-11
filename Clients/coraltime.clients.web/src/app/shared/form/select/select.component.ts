@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter, forwardRef, ChangeDetectorRef, 
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Overlay, OverlayRef, OverlayConfig, PositionStrategy } from '@angular/cdk/overlay';
-import { TemplatePortal } from '@angular/cdk/portal';
 
 export const LIST_ITEM_HEIGHT = 42;
 
@@ -62,7 +61,6 @@ export class SelectComponent implements ControlValueAccessor {
     private ref: ChangeDetectorRef,
     private renderer: Renderer2,
     private overlay: Overlay,
-    private vcr: ViewContainerRef
   ) {
   }
 
@@ -167,8 +165,6 @@ export class SelectComponent implements ControlValueAccessor {
     setTimeout(() => {
       this.isAnimate = true;
       this.ref.markForCheck();
-      const portal = new TemplatePortal(this.overlayTemplate, this.vcr);
-      this.overlayRef.attach(portal);
       const pane = this.overlayRef.overlayElement;
       const width = this.el.nativeElement.getBoundingClientRect().width;
       this.renderer.addClass(pane, 'ct-select-component');
