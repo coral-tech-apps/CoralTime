@@ -121,6 +121,7 @@
                   [max]="23"
                   [step]="minutesIncrement"
                   [(ngModel)]="timeEstimated.hours"
+                  (blur)="timeEstimatedOnChange()"
                   (keydown.ArrowUp)="shiftTime($event, timeEstimated, timeEstimatedOnChange)"
                   (keydown.ArrowDown)="shiftTime($event, timeEstimated, timeEstimatedOnChange)"
             >h

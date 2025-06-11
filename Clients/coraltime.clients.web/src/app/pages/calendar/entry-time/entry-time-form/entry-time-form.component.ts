@@ -184,6 +184,7 @@ export class EntryTimeFormComponent implements OnInit {
 	// TRACKING TIME
 
 	timeActualOnChange(): void {
+    this.normalizeTime(this.timeActual);
 		this.closeFromToForm();
 		this.isActualTimeChanged = true;
 		this.currentTimeEntry.timeValues.timeActual = this.convertTimeFormatToSeconds(this.timeActual);
@@ -193,6 +194,7 @@ export class EntryTimeFormComponent implements OnInit {
 	}
 
 	timeEstimatedOnChange(): void {
+    this.normalizeTime(this.timeEstimated);
 		this.isEstimatedTimeChanged = true;
 		this.currentTimeEntry.timeValues.timeEstimated = this.convertTimeFormatToSeconds(this.timeEstimated);
 		this.isTimeEstimatedValid = this.currentTimeEntry.timeValues.timeEstimated > 0;
@@ -230,6 +232,16 @@ export class EntryTimeFormComponent implements OnInit {
 
   private padTwo(value: number): string {
     return value < 10 ? '0' + value : String(value);
+  }
+
+  private normalizeTime(obj: { hours: string, minutes: string }): void {
+    if (!obj.minutes || obj.minutes === '0') {
+      obj.minutes = '00';
+    }
+
+    if (!obj.hours || obj.hours === '0') {
+      obj.hours = '00';
+    }
   }
 
 	// SUBMIT TIMEENTRY
