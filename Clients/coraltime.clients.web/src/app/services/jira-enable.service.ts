@@ -21,6 +21,10 @@ export class JiraEnableService {
         this.showWorklogSubject.next(false);
       }
     })
+
+    if (this.authService) {
+      this.loadInitialState();
+    }
   }
 
   private loadInitialState(){
