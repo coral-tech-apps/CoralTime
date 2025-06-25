@@ -385,7 +385,6 @@ $titleDayHeight: 145px;
 }
 
 .ct-calendar-time-entry-type {
-  margin-top: 10px;
   line-height: 22px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -397,8 +396,6 @@ $titleDayHeight: 145px;
 
 .ct-calendar-time-entry-description {
   box-sizing: border-box;
-  margin-top: 12px;
-  max-height: calc(100% - 65px);
   word-wrap: break-word;
   overflow: hidden;
   white-space: pre-line;
