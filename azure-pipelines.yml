@@ -2,15 +2,11 @@ trigger:
 - dev
 
 variables:
-  dockerRegistryServiceConnection: 'd874c748-27de-4638-beda-b116976d87dc'
-  imageRepository: 'coraltime'
-  containerRegistry: 'coralteam.azurecr.io'
-  dockerfilePath: '**/Dockerfile'
-  tag: '$(Build.BuildId)'
-  vmImageName: 'ubuntu-latest'
-
-  gitEmail: 'devops@coral.team'
-  gitUsername: 'Azure DevOps'
+- group: CoralTime
+- name: dockerfilePath
+  value: '**/Dockerfile'
+- name: tag
+  value: '$(Build.BuildId)'
 
 stages:
 - stage: Build
