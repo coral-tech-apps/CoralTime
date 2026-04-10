@@ -337,3 +337,5 @@ backend/CoralTime/commands.json
 /frontend/frontend.sln
 
 dist/
+
+Services/CoralTime.Services.API/CoralTime/appsettings.Development.json

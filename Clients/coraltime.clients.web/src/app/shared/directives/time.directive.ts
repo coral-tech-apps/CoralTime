@@ -1,4 +1,5 @@
-import { Directive, ElementRef, HostListener, Output, EventEmitter, Input } from '@angular/core';
+import { Directive, ElementRef, HostListener, Output, EventEmitter, Input, Optional, Self } from '@angular/core';
+import { NgControl } from '@angular/forms';
 
 @Directive({
     selector: '[ctTime]',
@@ -6,48 +7,24 @@ import { Directive, ElementRef, HostListener, Output, EventEmitter, Input } from
 })
 
 export class TimeDirective {
-	@Input() ctTime: number;
 	@Input() min: number = 0;
+	@Input() max: number = 59;
 	@Input() step: number = 1;
-	@Input() enableFormat: boolean = true;
-	@Output() ngModelChange: EventEmitter<any> = new EventEmitter();
+	/**
+	 * Format pattern for output. Use '#' for each digit.
+	 * '##' — pad to 2 digits (e.g. 5 → '05')
+	 * '###' — pad to 3 digits (e.g. 5 → '005')
+	 * '#' or '' — no padding
+	 */
+	@Input() format: string = '##';
 	@Output() timeChanged: EventEmitter<any> = new EventEmitter();
 
 	private oldValue: string = '';
 
-	constructor(private el: ElementRef) {
-	}
-
-	@HostListener('keydown', ['$event'])
-	onKeyDown(event: KeyboardEvent) {
-		let current: string;
-		let time: number;
-
-		switch (event.key) {
-			case 'ArrowDown' :
-				current = this.el.nativeElement.value.trim();
-				time = (current.length == 0) ? this.ctTime : +current - this.step;
-				if (time < this.min) {
-					time = this.ctTime;
-				}
-				this.processChange(time);   
-				break;
-			case 'ArrowUp' :
-				current = this.el.nativeElement.value.trim();        
-				time = (current.length == 0) ? this.min : +current + this.step;
-				if (time > this.ctTime) {
-					time = this.min;
-				}
-				this.processChange(time);
-				break;
-			case 'Backspace' :
-			case 'Delete' :
-				this.el.nativeElement.value = '';
-				break;
-			default:
-				break;
-		}
-	}
+	constructor(
+		private el: ElementRef,
+		@Optional() @Self() private ngControl: NgControl
+	) {}
 
 	@HostListener('keypress', ['$event'])
 	onKeyPress(event: KeyboardEvent) {
@@ -85,6 +62,10 @@ export class TimeDirective {
 		this.processChange(time);
 	}
 
+	private get maxInputLength(): number {
+		return this.format ? Math.max(this.format.length, 1) : this.max.toString().length;
+	}
+
 	private handleBeforeInput(data: string): boolean {
 		switch (data) {
 			case '0' :
@@ -97,7 +78,7 @@ export class TimeDirective {
 			case '7' :
 			case '8' :
 			case '9' :
-				if (this.el.nativeElement.value.trim().length == 2) {
+				if (this.el.nativeElement.value.trim().length >= this.maxInputLength) {
 					this.el.nativeElement.value = data;
 					this.handleInput(data);
 					return false;
@@ -110,40 +91,43 @@ export class TimeDirective {
 
 	private handleInput(data: string): void {
 		var current = data.trim();
-		if (current.length == 1) {
+		if (current.length < this.maxInputLength) {
 			let nextPossible = +(current + '0');
-			if (nextPossible > this.ctTime) {
+			if (nextPossible > this.max) {
 				this.processChange(+current);
 			}
 		}
-		else if (current.length == 2) {
+		else if (current.length >= this.maxInputLength) {
 			this.processChange(+current);
 		}
 	}
 
 	private formatTime(time: number): string {
-		if (this.enableFormat) {
-			return (time >= 0 && time < 10) ? '0' + time : time + '';
-		} else {
-			return time + '';
+		const padLength = this.format ? this.format.length : 0;
+		if (padLength > 1) {
+			return time.toString().padStart(padLength, '0');
 		}
+		return time.toString();
 	}
 
 	private limitTime(time: number): number {
 		if (time < this.min) {
 			return this.min;
 		}
-		else if (time > this.ctTime) {
-			return this.ctTime;
+		else if (time > this.max) {
+			return this.max;
 		}
 		else {
-			return time - (time % this.step);
+			return time;
 		}
 	}
 
 	private processChange(time: number): void {
 		let current: string = this.formatTime(this.limitTime(time));
-		this.ngModelChange.emit(current);
+		this.el.nativeElement.value = current;
+		if (this.ngControl?.control) {
+			this.ngControl.control.setValue(current, { emitEvent: false });
+		}
 		this.timeChanged.emit(current);
 	}
 }

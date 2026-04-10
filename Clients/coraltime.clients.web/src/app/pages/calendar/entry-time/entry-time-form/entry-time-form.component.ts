@@ -57,7 +57,6 @@ export class EntryTimeFormComponent implements OnInit {
 	timeEstimated: Time;
 	timeFrom: Time = new Time('00', '00');
 	timeTo: Time = new Time('00', '00');
-	timeMask = [/\d/, /\d/];
 	userInfo: User;
 
 	private isTasksLoaded: boolean = false;
@@ -167,7 +166,7 @@ export class EntryTimeFormComponent implements OnInit {
 	validateFromToForm(): void {
 		this.isFromToFormChanged = true;
 		this.setTimeActual();
-		this.timeActual = this.convertSecondsToTimeFormat(this.currentTimeEntry.timeValues.timeActual);
+		this.timeActual = this.convertFromToTimeToActualTime(this.timeFrom, this.timeTo);
 		this.isTimeActualValid = this.currentTimeEntry.timeValues.timeActual > 0;
 	}
 
@@ -184,7 +183,6 @@ export class EntryTimeFormComponent implements OnInit {
 	// TRACKING TIME
 
 	timeActualOnChange(): void {
-    this.normalizeTime(this.timeActual);
 		this.closeFromToForm();
 		this.isActualTimeChanged = true;
 		this.currentTimeEntry.timeValues.timeActual = this.convertTimeFormatToSeconds(this.timeActual);
@@ -194,7 +192,6 @@ export class EntryTimeFormComponent implements OnInit {
 	}
 
 	timeEstimatedOnChange(): void {
-    this.normalizeTime(this.timeEstimated);
 		this.isEstimatedTimeChanged = true;
 		this.currentTimeEntry.timeValues.timeEstimated = this.convertTimeFormatToSeconds(this.timeEstimated);
 		this.isTimeEstimatedValid = this.currentTimeEntry.timeValues.timeEstimated > 0;
@@ -203,18 +200,22 @@ export class EntryTimeFormComponent implements OnInit {
   private shiftTime(
     event: KeyboardEvent,
     timeObj: Time,
+		changingField: 'hours' | 'minutes',
     onChange: () => void
   ): void {
     event.preventDefault();
     event.stopImmediatePropagation();
 
     const input = event.target as HTMLInputElement;
-    const step = parseInt(input.step, 10) || 1;
+    // const step = parseInt(input.step, 10) || 1;
+    const step = 30; // to test
     const delta = event.key === 'ArrowUp' ? +step
                 : event.key === 'ArrowDown' ? -step
                 : 0;
 
-    const h = parseInt(timeObj.hours, 10)   || 0;
+		// let total = (this.convertTimeFormatToSeconds(timeObj) + delta * 60) / 60;
+    // console.log('total - ' + total);
+		const h = parseInt(timeObj.hours, 10)   || 0;
     const m = parseInt(timeObj.minutes, 10) || 0;
     let total = h * 60 + m + delta;
 
@@ -232,16 +233,6 @@ export class EntryTimeFormComponent implements OnInit {
 
   private padTwo(value: number): string {
     return value < 10 ? '0' + value : String(value);
-  }
-
-  private normalizeTime(obj: { hours: string, minutes: string }): void {
-    if (!obj.minutes || obj.minutes === '0') {
-      obj.minutes = '00';
-    }
-
-    if (!obj.hours || obj.hours === '0') {
-      obj.hours = '00';
-    }
   }
 
 	// SUBMIT TIMEENTRY
@@ -434,6 +425,10 @@ export class EntryTimeFormComponent implements OnInit {
 		this.currentTimeEntry.timeValues.timeFrom = this.convertTimeFormatToSeconds(this.timeFrom);
 		this.currentTimeEntry.timeValues.timeTo = this.convertTimeFormatToSeconds(this.timeTo);
 		this.currentTimeEntry.timeValues.timeActual = Math.max(0, this.convertTimeFormatToSeconds(this.timeTo) - this.convertTimeFormatToSeconds(this.timeFrom));
+	}
+
+	private convertFromToTimeToActualTime(from: Time, to: Time): Time {
+		return this.convertSecondsToTimeFormat(Math.max(0, this.convertTimeFormatToSeconds(to) - this.convertTimeFormatToSeconds(from)));
 	}
 
 	private convertTimeFormatToSeconds(time: Time): number {
