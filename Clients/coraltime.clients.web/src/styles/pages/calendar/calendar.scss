@@ -166,8 +166,7 @@ $titleDayHeight: 145px;
   margin: 81px -5px 0;
 
   > * {
-    display: flex;
-    flex: 0 0 auto;
+    display: block;
   }
 
   &:after {
