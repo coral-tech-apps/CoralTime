@@ -19,6 +19,7 @@ import { NgForIn } from './ngForIn.directive';
 import { ClickCloseDirective } from './click-close.directive';
 import { SlimscrollArrowsDirective } from './slimscroll-arrows.directive';
 import { FocusInputDirective } from './focus-input.directive';
+import { TooltipDirective } from './tooltip.directive';
 
 @NgModule({
 	declarations: [
@@ -42,7 +43,8 @@ import { FocusInputDirective } from './focus-input.directive';
 		NgForIn,
 		ClickCloseDirective,
 		SlimscrollArrowsDirective,
-		FocusInputDirective
+		FocusInputDirective,
+		TooltipDirective
 	],
 	exports: [
 		IsGrantedDirective,
@@ -64,7 +66,8 @@ import { FocusInputDirective } from './focus-input.directive';
 		NgForIn,
 		ClickCloseDirective,
 		SlimscrollArrowsDirective,
-		FocusInputDirective
+		FocusInputDirective,
+		TooltipDirective
 	]
 })
 
