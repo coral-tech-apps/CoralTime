@@ -1,5 +1,5 @@
 
-import {finalize} from 'rxjs/operators';
+import {finalize, switchMap} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -52,17 +52,20 @@ export class LoginComponent implements OnInit {
 	loginSSO(): void {
 		this.errorMessage = null;
 		this.loadingService.addLoading();
-		
-		this.msalService.loginPopup().pipe(
-			finalize(() => this.loadingService.removeLoading()))
-			.subscribe(result => {
-				this.authService.loginSSO(result.idToken).subscribe({
-					next: () => this.router.navigateByUrl('/' + this.auth.url),
-					error: () => {
-						this.errorMessage = 'SSO authentication failed';
+
+		this.msalService.instance.handleRedirectPromise()
+		.then(_ => {
+			this.msalService.loginPopup().pipe(
+				finalize(() => this.loadingService.removeLoading()),
+				switchMap(result => this.authService.loginSSO(result.idToken)))
+				.subscribe(result => {
+					if(result) {
+						this.router.navigateByUrl('/' + this.auth.url);
+					} else {
+						this.errorMessage = 'Authentication failed';
 					}
-				})
-			});
+				});
+		});
 	}
 
 	private handleError(error: any): void {
