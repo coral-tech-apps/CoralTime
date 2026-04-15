@@ -50,7 +50,19 @@ export class LoginComponent implements OnInit {
 	}
 
 	loginSSO(): void {
-		this.msalService.loginPopup();
+		this.errorMessage = null;
+		this.loadingService.addLoading();
+		
+		this.msalService.loginPopup().pipe(
+			finalize(() => this.loadingService.removeLoading()))
+			.subscribe(result => {
+				this.authService.loginSSO(result.idToken).subscribe({
+					next: () => this.router.navigateByUrl('/' + this.auth.url),
+					error: () => {
+						this.errorMessage = 'SSO authentication failed';
+					}
+				})
+			});
 	}
 
 	private handleError(error: any): void {
@@ -86,9 +98,10 @@ export class LoginComponent implements OnInit {
 	}
 
 	private setupAppInsights(instrumentationKey: string ): void {
-        localStorage.setItem('instrumentationKey', instrumentationKey);
+    localStorage.setItem('instrumentationKey', instrumentationKey);
+		
 		if (instrumentationKey!= null && instrumentationKey !='') {
-            this.appInsightsService.addInstrumentationKey(instrumentationKey);
-        }
+        this.appInsightsService.addInstrumentationKey(instrumentationKey);
+    }
 	}
 }
