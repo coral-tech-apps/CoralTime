@@ -55,6 +55,7 @@ export function initializeMsal(http: HttpClient, msalService: MsalService): () =
         }
 
         await msalService.instance.initialize();
+        await msalService.instance.handleRedirectPromise();
     };
 };
 

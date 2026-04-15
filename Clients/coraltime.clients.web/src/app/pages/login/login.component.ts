@@ -52,20 +52,25 @@ export class LoginComponent implements OnInit {
 	loginSSO(): void {
 		this.errorMessage = null;
 		this.loadingService.addLoading();
-
-		this.msalService.instance.handleRedirectPromise()
-		.then(_ => {
-			this.msalService.loginPopup().pipe(
-				finalize(() => this.loadingService.removeLoading()),
-				switchMap(result => this.authService.loginSSO(result.idToken)))
-				.subscribe(result => {
-					if(result) {
+		this.msalService.loginPopup({
+			scopes: ['openid', 'profile'],
+			redirectUri: window.location.origin + '/',
+		}).pipe(
+			finalize(() => this.loadingService.removeLoading()),
+			switchMap(result => this.authService.loginSSO(result.idToken)))
+			.subscribe({
+				next: (result) => {
+					if (result) {
 						this.router.navigateByUrl('/' + this.auth.url);
 					} else {
 						this.errorMessage = 'Authentication failed';
 					}
-				});
-		});
+				},
+				error: () => {
+					this.loadingService.removeLoading();
+					this.errorMessage = 'Azure login was cancelled or failed';
+				}
+			});
 	}
 
 	private handleError(error: any): void {
