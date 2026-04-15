@@ -20,5 +20,7 @@ namespace CoralTime.ViewModels.Settings
         public string ClientId { get; set; }
 
         public string RedirectUrl { get; set; }
+
+        public string Domain { get; set; }
     }
 }

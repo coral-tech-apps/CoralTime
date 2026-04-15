@@ -2,13 +2,13 @@
 import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalConfig, Authentication } from 'adal-ts';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthGuard } from '../../core/auth/auth-guard.service';
-import { AzureSettings, LoginSettings } from './login.service';
+import { LoginSettings } from './login.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 import { AppInsightsService } from 'src/app/services/app-insights.service';
-
+import { MsalService } from '@azure/msal-angular';
+	
 @Component({
     templateUrl: 'login.component.html',
     standalone: false
@@ -20,13 +20,12 @@ export class LoginComponent implements OnInit {
 	password: string;
 	username: string;
 
-	private config: AdalConfig;
-
 	constructor(private authService: AuthService,
 	            private auth: AuthGuard,
 	            private loadingService: LoadingMaskService,
 	            private route: ActivatedRoute,
 	            private router: Router,
+							private msalService: MsalService,
                 private appInsightsService: AppInsightsService) {
 	}
 
@@ -35,7 +34,6 @@ export class LoginComponent implements OnInit {
 			this.setupAppInsights(data.loginSettings.instrumentationKey);
 			if (data.loginSettings.enableAzure) {
 				this.enableAzure = true;
-				this.createConfig(data.loginSettings.azureSettings);
 			}
 		});
 	}
@@ -52,8 +50,7 @@ export class LoginComponent implements OnInit {
 	}
 
 	loginSSO(): void {
-		let context = Authentication.getContext(this.config);
-		context.login();
+		this.msalService.loginPopup();
 	}
 
 	private handleError(error: any): void {
@@ -86,20 +83,6 @@ export class LoginComponent implements OnInit {
 				'errorMessage': this.errorMessage,
 				'error_description': error.error.error_description
             })*/
-	}
-
-	private createConfig(azureSettings: AzureSettings): void {
-		this.config = {
-			tenant: azureSettings.tenant,
-			clientId: azureSettings.clientId,
-			postLogoutRedirectUrl: window.location.origin + '/',
-			redirectUri: azureSettings.redirectUrl,
-			resource: null,
-			responseType: null,
-			extraQueryParameter: null
-		};
-
-		return;
 	}
 
 	private setupAppInsights(instrumentationKey: string ): void {

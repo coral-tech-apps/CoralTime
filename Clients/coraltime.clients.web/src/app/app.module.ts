@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -55,7 +55,7 @@ export function httpFactory(http: HttpClient) {
                 deps: [HttpClient]
             }
         })],
-        providers: [
+    providers: [
         provideAnimationsAsync(),
         providePrimeNG({
             theme: {
@@ -77,8 +77,8 @@ export function httpFactory(http: HttpClient) {
         MemberActionsService,
         AppInsightsService,
         { provide: ErrorHandler, useClass: CustomErrorHandler },
-        provideHttpClient(withInterceptorsFromDi())
-    ] })
+        provideHttpClient(withInterceptorsFromDi()),
+    ]})
 
 export class AppModule {
 }
