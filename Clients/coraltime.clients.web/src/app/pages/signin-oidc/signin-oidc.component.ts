@@ -1,9 +1,10 @@
 import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthGuard } from '../../core/auth/auth-guard.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
+import { msalRedirectResult } from '../../core/core.module';
 
 @Component({
     selector: 'ct-signin-oidc',
@@ -12,32 +13,28 @@ import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.
 })
 
 export class SignInOidcComponent implements OnInit {
-	id_token: string;
 
 	constructor(private auth: AuthGuard,
 	            private authService: AuthService,
 	            private loadingService: LoadingMaskService,
-	            private route: ActivatedRoute,
 	            private router: Router) {
 	}
 
 	ngOnInit() {
-		this.route.fragment.subscribe((fragment) => {
-      const params = new URLSearchParams(fragment || '');
-      const id_token = params.get('id_token');
-
-			this.id_token = id_token;
-			this.loginSSO(this.id_token);
-		})
+		if (msalRedirectResult?.idToken) {
+			this.loginSSO(msalRedirectResult.idToken);
+		} else {
+			this.router.navigate(['/login']);
+		}
 	}
 
-	loginSSO(id_token: string): void {
+	private loginSSO(idToken: string): void {
 		this.loadingService.addLoading();
-		this.authService.loginSSO(id_token).pipe(
+		this.authService.loginSSO(idToken).pipe(
 			finalize(() => this.loadingService.removeLoading()))
-			.subscribe(() => {
-					this.router.navigate(['/' + this.auth.url]);
-				}
-			);
+			.subscribe({
+				next: () => this.router.navigate(['/' + this.auth.url]),
+				error: () => this.router.navigate(['/login']),
+			});
 	}
 }

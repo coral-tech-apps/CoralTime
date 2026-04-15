@@ -1,5 +1,5 @@
 import { NgModule, ErrorHandler, Injector, APP_INITIALIZER } from '@angular/core';
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import * as ODataConfig from './odata-config.factory';
 import { ODataServiceFactory, ODataConfiguration } from '../services/odata';
@@ -16,32 +16,21 @@ import { RefreshTokenInterceptor } from './refresh-token.interceptor';
 import { LoadingMaskModule } from '../shared/loading-indicator/loading-mask.module';
 import { AppInsightsInterceptor } from './app-insights.interceptor';
 import { AppInsightsService } from '../services/app-insights.service';
-import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation } from '@azure/msal-browser';
-import { MSAL_GUARD_CONFIG, MSAL_INSTANCE, MsalBroadcastService, MsalGuard, MsalGuardConfiguration, MsalInterceptor, MsalService } from '@azure/msal-angular';
+import { PublicClientApplication, BrowserCacheLocation, AuthenticationResult } from '@azure/msal-browser';
 import { LoginSettings } from '../pages/login/login.service';
-import { firstValueFrom } from 'rxjs';
 
-export function MSALInstanceFactory(): IPublicClientApplication {
-    return new PublicClientApplication({
-        auth: {
-            clientId: 'placeholder',
-        },
-        cache: {
-            cacheLocation: BrowserCacheLocation.LocalStorage
-        },
-    });
-}
+export let msalInstance: PublicClientApplication | null = null;
+export let msalRedirectResult: AuthenticationResult | null = null;
 
-export function initializeMsal(http: HttpClient, msalService: MsalService): () => Promise<void> {
+export function initializeMsal(): () => Promise<void> {
     return async () => {
-        const settings = await firstValueFrom(
-            http.get<LoginSettings>('/api/v1/AuthenticationSettings')
-        );
+        const response = await fetch('/api/v1/AuthenticationSettings');
+        const settings: LoginSettings = await response.json();
 
         if (settings.enableAzure && settings.azureSettings) {
             const azure = settings.azureSettings;
 
-            msalService.instance = new PublicClientApplication({
+            msalInstance = new PublicClientApplication({
                 auth: {
                     clientId: azure.clientId,
                     authority: `https://login.microsoftonline.com/${azure.tenant}`,
@@ -51,32 +40,21 @@ export function initializeMsal(http: HttpClient, msalService: MsalService): () =
                 cache: {
                     cacheLocation: BrowserCacheLocation.LocalStorage
                 },
-                system: {
-                    navigatePopups: false
-                }
             });
+
+            await msalInstance.initialize();
+            const result = await msalInstance.handleRedirectPromise();
+            if (result?.idToken) {
+                msalRedirectResult = result;
+            }
         }
-
-        await msalService.instance.initialize();
     };
-};
-
-export const loginRequest = {
-    scopes: [],
-};
-
-export function MsalGuardConfigurationFactory(): MsalGuardConfiguration {
-    return {
-        interactionType: InteractionType.Redirect,
-        authRequest: loginRequest
-    };
-};
+}
 
 @NgModule({ exports: [
-        //HttpClientModule,
         LoadingMaskModule
-    ], 
-    imports: [LoadingMaskModule], 
+    ],
+    imports: [LoadingMaskModule],
     providers: [
         {
             provide: ErrorHandler,
@@ -114,20 +92,8 @@ export function MsalGuardConfigurationFactory(): MsalGuardConfiguration {
         UserPicService,
         provideHttpClient(withInterceptorsFromDi()),
         {
-            provide: MSAL_INSTANCE,
-            useFactory: MSALInstanceFactory,
-        },
-        {
-            provide: MSAL_GUARD_CONFIG,
-            useFactory: MsalGuardConfigurationFactory,
-        },
-        MsalService,
-        MsalBroadcastService,
-        MsalGuard,
-        {
             provide: APP_INITIALIZER,
             useFactory: initializeMsal,
-            deps: [HttpClient, MsalService],
             multi: true,
         },
     ] })

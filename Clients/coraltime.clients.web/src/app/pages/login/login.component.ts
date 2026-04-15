@@ -1,5 +1,5 @@
 
-import {finalize, switchMap, tap} from 'rxjs/operators';
+import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -7,8 +7,8 @@ import { AuthGuard } from '../../core/auth/auth-guard.service';
 import { LoginSettings } from './login.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 import { AppInsightsService } from 'src/app/services/app-insights.service';
-import { MsalService } from '@azure/msal-angular';
-	
+import { msalInstance } from '../../core/core.module';
+
 @Component({
     templateUrl: 'login.component.html',
     standalone: false
@@ -25,7 +25,6 @@ export class LoginComponent implements OnInit {
 	            private loadingService: LoadingMaskService,
 	            private route: ActivatedRoute,
 	            private router: Router,
-							private msalService: MsalService,
                 private appInsightsService: AppInsightsService) {
 	}
 
@@ -50,27 +49,13 @@ export class LoginComponent implements OnInit {
 	}
 
 	loginSSO(): void {
-		this.errorMessage = null;
-		this.loadingService.addLoading();
-		this.msalService.loginPopup({
-			scopes: ['openid', 'profile']
-		}).pipe(
-			finalize(() => this.loadingService.removeLoading()),
-			tap(result => this.msalService.instance.setActiveAccount(result.account)),
-			switchMap(result => this.authService.loginSSO(result.idToken)))
-			.subscribe({
-				next: (result) => {
-					if (result) {
-						this.router.navigateByUrl('/' + this.auth.url);
-					} else {
-						this.errorMessage = 'Authentication failed';
-					}
-				},
-				error: () => {
-					this.loadingService.removeLoading();
-					this.errorMessage = 'Azure login was cancelled or failed';
-				}
-			});
+		if (!msalInstance) {
+			this.errorMessage = 'Azure SSO is not configured';
+			return;
+		}
+		msalInstance.loginRedirect({
+			scopes: ['openid', 'profile'],
+		});
 	}
 
 	private handleError(error: any): void {
@@ -84,7 +69,7 @@ export class LoginComponent implements OnInit {
 			this.errorMessage = error.status === 400 ? 'Invalid username or password' : 'Server error';
 		}
 
-    this.appInsightsService.trackException({ //
+    this.appInsightsService.trackException({
       exception: error,
       properties:{
         comonent: 'login.component',
@@ -93,21 +78,11 @@ export class LoginComponent implements OnInit {
         error_description: error?.error?.error_description
       }
     });
-
-/*
-        this.appInsightsService.trackException(
-        	error,
-			'login.component',
-			{
-				'login': this.username,
-				'errorMessage': this.errorMessage,
-				'error_description': error.error.error_description
-            })*/
 	}
 
 	private setupAppInsights(instrumentationKey: string ): void {
     localStorage.setItem('instrumentationKey', instrumentationKey);
-		
+
 		if (instrumentationKey!= null && instrumentationKey !='') {
         this.appInsightsService.addInstrumentationKey(instrumentationKey);
     }
