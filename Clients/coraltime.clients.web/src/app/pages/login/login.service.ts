@@ -16,7 +16,6 @@ export interface AzureSettings {
 	tenant: string;
 	clientId: string;
 	redirectUrl: string;
-	domain: string;
 }
 
 @Injectable({

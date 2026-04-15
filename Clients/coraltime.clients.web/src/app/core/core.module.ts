@@ -40,10 +40,11 @@ export function initializeMsal(http: HttpClient, msalService: MsalService): () =
 
         if (settings.enableAzure && settings.azureSettings) {
             const azure = settings.azureSettings;
+
             msalService.instance = new PublicClientApplication({
                 auth: {
                     clientId: azure.clientId,
-                    authority: `https://${azure.domain}.ciamlogin.com/`,
+                    authority: `https://login.microsoftonline.com/${azure.tenant}`,
                     postLogoutRedirectUri: window.location.origin + '/',
                     redirectUri: azure.redirectUrl,
                 },

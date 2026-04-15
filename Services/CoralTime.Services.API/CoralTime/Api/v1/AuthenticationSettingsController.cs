@@ -46,8 +46,7 @@ namespace CoralTime.Services.API.Api.v1
                     {
                         ClientId = authSection["ClientId"],
                         RedirectUrl = authSection["CallbackPath"],
-                        Tenant = authSection["TenantId"],
-                        Domain = authSection["Domain"]
+                        Tenant = authSection["TenantId"]
                     };
                 }
                 return new JsonResult(settings);
