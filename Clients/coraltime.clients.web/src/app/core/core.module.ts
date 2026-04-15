@@ -51,11 +51,13 @@ export function initializeMsal(http: HttpClient, msalService: MsalService): () =
                 cache: {
                     cacheLocation: BrowserCacheLocation.LocalStorage
                 },
+                system: {
+                    navigatePopups: false
+                }
             });
         }
 
         await msalService.instance.initialize();
-        await msalService.instance.handleRedirectPromise();
     };
 };
 
@@ -65,8 +67,8 @@ export const loginRequest = {
 
 export function MsalGuardConfigurationFactory(): MsalGuardConfiguration {
     return {
-    interactionType: InteractionType.Redirect,
-    authRequest: loginRequest
+        interactionType: InteractionType.Redirect,
+        authRequest: loginRequest
     };
 };
 

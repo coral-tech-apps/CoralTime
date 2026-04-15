@@ -1,5 +1,5 @@
 
-import {finalize, switchMap} from 'rxjs/operators';
+import {finalize, switchMap, tap} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -53,10 +53,10 @@ export class LoginComponent implements OnInit {
 		this.errorMessage = null;
 		this.loadingService.addLoading();
 		this.msalService.loginPopup({
-			scopes: ['openid', 'profile'],
-			redirectUri: window.location.origin + '/signin-oidc',
+			scopes: ['openid', 'profile']
 		}).pipe(
 			finalize(() => this.loadingService.removeLoading()),
+			tap(result => this.msalService.instance.setActiveAccount(result.account)),
 			switchMap(result => this.authService.loginSSO(result.idToken)))
 			.subscribe({
 				next: (result) => {
