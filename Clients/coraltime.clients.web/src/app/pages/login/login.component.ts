@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
 		this.loadingService.addLoading();
 		this.msalService.loginPopup({
 			scopes: ['openid', 'profile'],
-			redirectUri: window.location.origin + '/',
+			redirectUri: window.location.origin + '/signin-oidc',
 		}).pipe(
 			finalize(() => this.loadingService.removeLoading()),
 			switchMap(result => this.authService.loginSSO(result.idToken)))
