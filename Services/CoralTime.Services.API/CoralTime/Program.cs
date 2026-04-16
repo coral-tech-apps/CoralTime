@@ -153,7 +153,8 @@ else
     .AddOperationalStore<AppDbContext>(options =>
     {
         options.EnableTokenCleanup = true;
-    });
+    })
+    .AddExtensionGrantValidator<AzureGrant>();
 
     tokenValidationParameters.ValidateIssuerSigningKey = true;
 }
