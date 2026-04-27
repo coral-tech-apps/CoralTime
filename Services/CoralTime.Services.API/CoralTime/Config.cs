@@ -64,7 +64,8 @@ namespace CoralTime.Services.API
                     SlidingRefreshTokenLifetime = slidingRefreshTokenLifetime,
                     RefreshTokenUsage = TokenUsage.ReUse,
                     
-                    AllowedScopes = {
+                    AllowedScopes = 
+                    {
                         IdentityServerConstants.StandardScopes.OpenId, // For UserInfo endpoint.
                         IdentityServerConstants.StandardScopes.Profile,
                         Constants.Authorization.RolesScope,

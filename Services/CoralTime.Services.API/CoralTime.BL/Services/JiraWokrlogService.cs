@@ -228,7 +228,8 @@ namespace CoralTime.BL.Services
             var jiraAccountId = Uow.jiraMemberSettingsRepository.GetJiraUserId(filter.JiraSettingId, currentMemberId);
 
             var projectList = string.Join(", ", Array.ConvertAll<string, string>(assignedProjects, p => p));
-            var jql = $"/rest/api/3/search?jql=project IN ({projectList}) AND worklogAuthor = {jiraAccountId} AND worklogDate >= \"{filter.DateFrom.ToString("yyyy-MM-dd")}\" AND worklogDate <= \"{filter.DateTo.ToString("yyyy-MM-dd")}\"";
+            var jql = $"/rest/api/3/search/jql?jql=project IN ({projectList}) AND worklogAuthor = {jiraAccountId} AND worklogDate >= \"{filter.DateFrom.ToString("yyyy-MM-dd")}\" AND worklogDate <= \"{filter.DateTo.ToString("yyyy-MM-dd")}\"" +
+                $"&fields=id,key,project";
 
             return jql;
         }

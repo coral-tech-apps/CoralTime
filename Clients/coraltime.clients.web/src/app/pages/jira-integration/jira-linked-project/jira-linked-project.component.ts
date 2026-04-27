@@ -176,7 +176,7 @@ export class JiraLinkedProjectComponent implements OnInit{
   onGlobalFilter(value: string){
     this.assignTable.filterGlobal(value, 'contains');
     if(this.notAssignTable){
-     this.notAssignTable.filterGlobal(value, 'contains');
+      this.notAssignTable.filterGlobal(value, 'contains');
     }
   }
 

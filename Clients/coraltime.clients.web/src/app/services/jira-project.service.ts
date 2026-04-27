@@ -5,6 +5,7 @@ import { ConstantService } from '../core/constant.service';
 import { ODataServiceFactory, PagedResult } from './odata';
 import { NotAssignedJiraProject } from '../models/not-assigned-jira-project';
 import { AssignedJiraProject } from '../models/assigned-jira-project';
+import { TableLazyLoadEvent } from 'primeng/table';
 
 @Injectable()
 export class JiraProjectService {
@@ -24,7 +25,7 @@ export class JiraProjectService {
     )
   }
 
-  getNotAssignedProjects(id: number, event, filterStr = ''): any{
+  getNotAssignedProjects(id: number, event: TableLazyLoadEvent, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<NotAssignedJiraProject>('JiraProject/GetUnAssignJiraProject/'+id);
     let filters: string[] = []
 
@@ -37,7 +38,8 @@ export class JiraProjectService {
       query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
     }
     if(filterStr){
-      filters.push('contains(tolower(name),\'' + filterStr.trim().toLowerCase() + '\')');
+      const val = filterStr.trim().toLowerCase();
+      filters.push('(contains(tolower(name),\'' + val + '\') or contains(tolower(key),\'' + val + '\'))');
     }
 
     query.Filter(filters.join('and'));
@@ -48,7 +50,7 @@ export class JiraProjectService {
 		}));
   }
 
-  getAssignedProjects(id: number, event, filterStr = ''): any{
+  getAssignedProjects(id: number, event: TableLazyLoadEvent, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<AssignedJiraProject>('JiraProject/GetAssignJiraProject/'+id);
     let filters: string[] = []
 
