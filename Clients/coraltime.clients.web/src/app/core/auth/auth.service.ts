@@ -40,7 +40,7 @@ export class AuthService {
 	            private router: Router,
                 private appInsightsService: AppInsightsService) {
 		if (this.isRefreshTokenExpired()) {
-			this.logout();
+			this.logout(true);
 		}
 	}
 
