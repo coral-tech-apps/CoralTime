@@ -20,9 +20,8 @@ import { AssignedJiraProject } from 'src/app/models/assigned-jira-project';
 import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
 import { PagedResult } from 'src/app/services/odata';
 import { HttpClient } from '@angular/common/http';
-import { JiraWorklog } from 'src/app/models/jira-worklog';
+import { JiraWorklog, JiraWorklogType } from 'src/app/models/jira-worklog';
 import { Task } from 'src/app/models/task';
-import { Subject } from 'rxjs';
 import { TasksService } from 'src/app/services/tasks.service';
 import { WorkglogService } from 'src/app/services/worklog.service';
 
@@ -48,6 +47,7 @@ export class WorklogsComponent implements OnInit {
 
   isAllSelected: boolean = false;
   worklogs: JiraWorklog[] = [];
+  worklogTypes = JiraWorklogType;
   isWorklogsLoaded: boolean = true;
 
   jiraSettings: JiraMemberSetting[] = []
@@ -226,6 +226,7 @@ export class WorklogsComponent implements OnInit {
 
   onClickJiraSetting(jiraSetting: JiraMemberSetting){
     this.selectedJiraSetting = jiraSetting;
+    this.assignedJiraProjectsIds = [];
     this.checkSelectProject();
     this.updatePopupFlags();
   }
@@ -340,14 +341,6 @@ export class WorklogsComponent implements OnInit {
 		let selectedRange = new DatePeriod(period.dateFrom, period.dateTo);
 		this.dateString = this.rangeDatepickerService.setDateStringPeriod(selectedRange);
 	}
-
-  private formatDate(utcDate: string): string {
-    if (!utcDate) {
-     return '';
-    }
-    let date = dayjs(utcDate);
-    return this.user.dateFormat ? date.format(this.user.dateFormat) : date.toDate().toLocaleDateString();
-  }
 
   private updatePopupFlags(): void {
   this.hasSelectedWorklogsWithoutTask = this.worklogs.some(w => w.selected && (!w.taskId || w.taskId === 0));

@@ -104,7 +104,7 @@
                     <input [class.disabled]="!isWorklogsLoaded" type="checkbox" [(ngModel)] = "isAllSelected" (change)="toggleSelectAll()" (click)="$event.stopPropagation()"/>
                   </th>
                   <th class="ct-info-col">Date</th>
-                  <th class="ct-info-col">Edited</th>
+                  <th class="ct-info-col">Type</th>
                   <th class="ct-info-col">Key</th>
                   <th class="ct-info-col">Description</th>
                   <th class="ct-info-col">Log time</th>
@@ -118,31 +118,34 @@
                   <td>
                     <input type="checkbox" [(ngModel)] = "item.selected" (change)="checkAllSelected()" (click)="$event.stopPropagation()"/>
                   </td>
-                  <td class="ct-info-col">{{formatDate(item.date)}}</td>
-                  <!--TODO: update ui for edited worklogs-->
+                  <td class="ct-info-col">{{item.date | ctFormatDate: this.user.dateFormat}}</td>
                   <td class="ct-info-col">
-                    <ng-container *ngIf="item.isEdited; else newWorklogText">
+                    @if (item.type === worklogTypes.New) {
+                      New worklog
+                    }
+                    @else if (item.type === worklogTypes.Edited) {
                       <div class="hover-wrapper">
                         <span class="simple-text">Edited</span>
                         <div class="hover-popup">
-                           <div class="left-side">
-                            <h3>Updated worklog</h3>
-                            <p><strong>Description:</strong> {{ item.description }} </p>
-                            <p><strong>Time:</strong> {{ item.timeActualString }} </p>
-                            <p><strong>Date:</strong> {{ formatDate(item.date) }} </p>
-                          </div>
-                          <div class="right-side">
-                            <h3>Current worklog</h3>
+                          <div class="ct-worklog-edited">
+                            <h3>Incoming worklog</h3>
+                            <h3>Coral Time worklog</h3>
+
+                            <p comparisonHighlights [leftValue]="item.description" [rightValue]="item.oldDescription"><strong>Description:</strong> {{ item.description }} </p>
                             <p><strong>Description:</strong> {{ item.oldDescription }}</p>
+
+                            <p comparisonHighlights [leftValue]="item.timeActualString" [rightValue]="item.oldTimeActualString"><strong>Time:</strong> {{ item.timeActualString }} </p>
                             <p><strong>Time:</strong> {{ item.oldTimeActualString }}</p>
-                            <p><strong>Date:</strong> {{ formatDate(item.oldDate) }}</p>
+
+                            <p comparisonHighlights [leftValue]="item.date" [rightValue]="item.oldDate"><strong>Date:</strong> {{ item.date | ctFormatDate: this.user.dateFormat }} </p>
+                            <p><strong>Date:</strong> {{ item.oldDate | ctFormatDate: this.user.dateFormat }}</p>
                           </div>
                         </div>
                       </div>
-                    </ng-container>
-                    <ng-template #newWorklogText>
-                      New worklog
-                    </ng-template>
+                    }
+                    @else {
+                      Deleted worklog
+                    }
                   </td>
                   <td>{{item.key}}</td>
                   <td>{{item.description}}</td>

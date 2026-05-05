@@ -412,9 +412,14 @@ $titleDayHeight: 145px;
   overflow: hidden;
 }
 
-.ct-calendar-time-entry-time {
+.ct-calendar-time-footer {
   margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+.ct-calendar-time-entry-time {
   > div {
     font-size: 14px;
   }
@@ -728,28 +733,6 @@ $titleDayHeight: 145px;
     &:focus {
       outline: none;
       box-shadow: 0 0 1px 1px $main-blue;
-    }
-
-    &::after {
-      content: attr(ct-tooltip-data);
-      position: absolute;
-      bottom: -50%;
-      left: 75%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 4px 8px;
-      border-radius: 4px;
-      white-space: nowrap;
-      font-size: 12px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-      transition-delay: 350ms;
-    }
-
-    &:hover::after {
-      opacity: 1;
     }
   }
 

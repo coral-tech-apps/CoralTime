@@ -7,7 +7,7 @@ import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
-import { TimeEntry, DateUtils, CalendarDay, Time } from '../../../../models/calendar';
+import { TimeEntry, CalendarDay } from '../../../../models/calendar';
 import { User } from '../../../../models/user';
 import { AclService } from '../../../../core/auth/acl.service';
 import { NotificationService } from '../../../../core/notification.service';
@@ -18,7 +18,6 @@ import { MultipleDatepickerComponent } from '../../entry-time/multiple-datepicke
 import { numberToHex } from '../../../../shared/form/color-picker/color-picker.component';
 import { MenuComponent } from '../../../../shared/menu/menu.component';
 import { MAX_TIMER_VALUE } from '../../timer/timer.component';
-import { cU } from '@fullcalendar/core/internal-common';
 
 @Component({
     selector: 'ct-calendar-task',

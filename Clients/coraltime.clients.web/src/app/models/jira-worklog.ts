@@ -9,7 +9,7 @@ export class JiraWorklog{
   key: string;
   taskId: number;
   worklogId: string;
-  isEdited: boolean;
+  type: JiraWorklogType;
   oldDate: string | undefined;
   oldTimeActual: number | undefined;
   oldTimeActualString: string | undefined;
@@ -25,7 +25,7 @@ export class JiraWorklog{
       this.key = data.key;
       this.projectId = data.projectId;
       this.worklogId = data.worklogId;
-      this.isEdited = data.isEdited;
+      this.type = data.type;
       this.oldDate = data.oldDate;
       this.oldTimeActualString = data.oldTimeActual ? this.formatSecondsToTime(data.oldTimeActual) : undefined;
       this.oldDescription = data.oldDescription;
@@ -39,4 +39,10 @@ export class JiraWorklog{
     const paddedMinutes = minutes.toString().padStart(2, '0');
     return `${hours}:${paddedMinutes}`;
   }
+}
+
+export enum JiraWorklogType {
+  New,
+  Edited,
+  Deleted
 }

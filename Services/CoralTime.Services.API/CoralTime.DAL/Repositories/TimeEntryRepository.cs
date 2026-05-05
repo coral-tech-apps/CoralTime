@@ -1,8 +1,11 @@
 ﻿using CoralTime.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CoralTime.DAL.Repositories
 {
@@ -29,9 +32,22 @@ namespace CoralTime.DAL.Repositories
 
         public IEnumerable<TimeEntry> GetByJiraWorklogIds(IEnumerable<string> ids)
         {
-            return GetQuery()
+            return GetQuery(asNoTracking: true)
                 .Where(te => ids.Contains(te.JiraWorklogId))
                 .ToList();
+        }
+
+        public async Task<IEnumerable<TimeEntry>> GetDeletedWorklogs(
+            string userId, List<string> inputWorklogs, 
+            DateTime startDate, DateTime endDate,
+            CancellationToken cancellationToken = default)
+        {
+            return await GetQuery(asNoTracking: true)
+                .Include(x => x.Project)
+                .Where(x => x.CreationDate >= startDate && x.CreationDate <= endDate && 
+                    x.JiraWorklogId != null && !inputWorklogs.Contains(x.JiraWorklogId) &&
+                    x.CreatorId == userId)
+                .ToListAsync(cancellationToken);
         }
     }
 }

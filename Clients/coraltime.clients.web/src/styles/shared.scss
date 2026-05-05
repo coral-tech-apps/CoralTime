@@ -563,3 +563,42 @@ button.ct-blue-button.mat-mdc-raised-button {
 .ct-noscroll {
   overflow: hidden;
 }
+
+.ct-comparison-highlight {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  position: absolute;
+  top: -2px;
+  left: -7px;
+
+  &.different {
+    background-color: $yellow;
+  }
+}
+
+[ct-tooltip-data] {
+  position: relative;
+
+  &::after {
+    content: attr(ct-tooltip-data);
+    position: absolute;
+    bottom: -50%;
+    left: 75%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    transition-delay: 350ms;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}

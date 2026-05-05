@@ -50,12 +50,17 @@
         <pre *ngIf="timeEntry.description" class="ct-calendar-time-entry-description"
              markdown [data]="timeEntry.description"></pre>
     </div>
-    <div class="ct-calendar-time-entry-time" (click)="openEntryTimeForm()">
-        <div class="ct-calendar-hours-tracked" title="Tracked time">
-            <span>{{setTimeString(timeEntry.timeValues.timeActual)}}</span>
+    <div class="ct-calendar-time-footer">
+        <div class="ct-calendar-time-entry-time" (click)="openEntryTimeForm()">
+            <div class="ct-calendar-hours-tracked" title="Tracked time">
+                <span>{{setTimeString(timeEntry.timeValues.timeActual)}}</span>
+            </div>
+            <div *ngIf="timeEntry.timeValues.timeEstimated > 0" class="ct-calendar-hours-planned" title="Planned time">
+                <span>{{setTimeString(timeEntry.timeValues.timeEstimated)}}</span>
+            </div>
         </div>
-        <div *ngIf="timeEntry.timeValues.timeEstimated > 0" class="ct-calendar-hours-planned" title="Planned time">
-            <span>{{setTimeString(timeEntry.timeValues.timeEstimated)}}</span>
+        <div *ngIf="timeEntry.jiraWorklogId" title="Integration Worklog">
+            <i class="ct-icon ct-external-worklog-icon"></i>
         </div>
     </div>
 </div>

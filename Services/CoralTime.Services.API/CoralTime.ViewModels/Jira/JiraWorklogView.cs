@@ -22,15 +22,21 @@ namespace CoralTime.ViewModels.Jira
 
         public string Key { get; set; }
 
-        public bool IsEdited { get; set; } = false;
+        public JiraWorklogType Type { get; set; }
 
         public int TaskId { get; set; }
 
-        //Old data, if isEdited = true
         public string OldDate { get; set; }
 
         public int? OldTimeActual { get; set; }
 
         public string OldDescription { get; set; }
+    }
+
+    public enum JiraWorklogType 
+    {
+        New,
+        Edited,
+        Deleted
     }
 }

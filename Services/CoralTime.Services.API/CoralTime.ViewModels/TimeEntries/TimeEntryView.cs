@@ -45,5 +45,7 @@ namespace CoralTime.ViewModels.TimeEntries
         public bool IsLocked { get; set; } = false;
 
         public string WorkItemId { get; set; }
+
+        public string JiraWorklogId { get; set; }
     }
 }

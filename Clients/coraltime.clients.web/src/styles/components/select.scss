@@ -201,8 +201,11 @@
   display: block;
 }
 
-.left-side, .right-side {
-  min-width: 120px;
+.ct-worklog-edited {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
 }
 
 .ct-select {

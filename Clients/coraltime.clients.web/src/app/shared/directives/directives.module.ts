@@ -20,6 +20,7 @@ import { ClickCloseDirective } from './click-close.directive';
 import { SlimscrollArrowsDirective } from './slimscroll-arrows.directive';
 import { FocusInputDirective } from './focus-input.directive';
 import { TooltipDirective } from './tooltip.directive';
+import { ComparisonHighlightsDirective } from './compare-highlighting.directive';
 
 @NgModule({
 	declarations: [
@@ -44,7 +45,8 @@ import { TooltipDirective } from './tooltip.directive';
 		ClickCloseDirective,
 		SlimscrollArrowsDirective,
 		FocusInputDirective,
-		TooltipDirective
+		TooltipDirective,
+		ComparisonHighlightsDirective
 	],
 	exports: [
 		IsGrantedDirective,
@@ -67,7 +69,8 @@ import { TooltipDirective } from './tooltip.directive';
 		ClickCloseDirective,
 		SlimscrollArrowsDirective,
 		FocusInputDirective,
-		TooltipDirective
+		TooltipDirective,
+		ComparisonHighlightsDirective
 	]
 })
 

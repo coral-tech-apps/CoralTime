@@ -19,6 +19,7 @@ import { ChartComponent } from './chart/chart.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 import { RangeDatepickerComponent } from '../pages/reports/range-datepicker/range-datepicker.component';
+import { CtFormatDatePipe } from './pipes/ct-format-date.pipe';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { RangeDatepickerComponent } from '../pages/reports/range-datepicker/rang
 		MenuModule,
     MultiSelectModule,
 		SharedFormModule,
+		CtFormatDatePipe,
 		MarkdownModule.forRoot({
 			markedOptions: {
 				provide: MARKED_OPTIONS,
@@ -75,6 +77,7 @@ import { RangeDatepickerComponent } from '../pages/reports/range-datepicker/rang
 		TranslateModule,
 		MarkdownModule,
     RangeDatepickerComponent,
+		CtFormatDatePipe
 	]
 })
 

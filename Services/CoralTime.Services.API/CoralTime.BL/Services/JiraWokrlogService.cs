@@ -1,21 +1,22 @@
 ﻿using AutoMapper;
 using CoralTime.BL.Interfaces;
+using CoralTime.Common.Exceptions;
+using CoralTime.DAL.Models;
+using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Repositories;
+using CoralTime.ViewModels.Jira;
+using Duende.IdentityServer.Extensions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using CoralTime.DAL.Models.Jira;
-using CoralTime.Common.Exceptions;
-using CoralTime.ViewModels.Jira;
-using Duende.IdentityServer.Extensions;
-using CoralTime.DAL.Models;
-using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CoralTime.BL.Services
 {
@@ -59,6 +60,7 @@ namespace CoralTime.BL.Services
             }
         }
 
+        // TODO AZ: we can get worklogs here
         private async Task<List<IssuesWithProject>> GetIssuesAsync(
             string email, 
             string apiToken, 
@@ -116,11 +118,21 @@ namespace CoralTime.BL.Services
             string email, 
             string apiToken, 
             string domain, 
-            long startedAfter, 
-            long startedBefore, 
+            DateTime dateFrom,
+            DateTime dateTo,
             List<IssuesWithProject> issues)
         {
-            var result = new List<JiraWorklogView>();
+            long startedAfter = new DateTimeOffset(dateFrom).ToUnixTimeMilliseconds();
+            long startedBefore = new DateTimeOffset(dateTo.AddDays(1)).ToUnixTimeMilliseconds();
+
+            var projectIds = issues
+                .Select(x => x.ProjectId)
+                .Distinct()
+                .ToList();
+            var projectsDic = (await Uow.ProjectRepository.GetByIds(projectIds))
+                .ToDictionary(x => x.Id, x => x.Name);
+
+            var worklogsResponses = new List<(IssuesWithProject issue, string worklogsId, JToken token)>();
 
             foreach (var item in issues)
             {
@@ -130,91 +142,119 @@ namespace CoralTime.BL.Services
 
                     var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
 
-                    if (response.IsSuccessStatusCode)
+                    if(!response.IsSuccessStatusCode)
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-
-                        var jsonResponse = JsonConvert.DeserializeObject<JObject>(content);
-
-                        var worklogIdList = jsonResponse["worklogs"]
-                            .Select(x => (string)x["id"])
-                            .ToList();
-
-                        var existingEntries = Uow.TimeEntryRepository
-                            .GetByJiraWorklogIds(worklogIdList)
-                            .ToDictionary(e => e.JiraWorklogId, e => e);
-
-                        var worklogs = jsonResponse["worklogs"]
-                            .Select(x =>
-                            {
-                                var id = (string)x["id"];
-                                var view = new JiraWorklogView
-                                {
-                                    Description = (string)x["comment"]?["content"]?[0]?["content"]?[0]?["text"],
-                                    TimeActual = (int)x["timeSpentSeconds"],
-                                    Date = (string)x["started"],
-                                    ProjectId = item.ProjectId,
-                                    Key = item.Key,
-                                    ProjectName = Uow.ProjectRepository.GetById(item.ProjectId).Name,
-                                    WorklogId = id,
-                                    IsEdited = false
-                                };
-
-                                var dto = DateTimeOffset.Parse(view.Date);
-
-                                existingEntries.TryGetValue(id, out var existing);
-
-                                if (existing != null)
-                                {
-                                    bool dateChanged = existing.Date != dto;
-                                    bool timeChanged = existing.TimeActual != view.TimeActual;
-
-                                    var currDesc = existing.Description.Replace($"{view.Key}: ", "");
-                                    bool descChange = string.Equals(currDesc, view.Description);
-
-                                    if (dateChanged || timeChanged)
-                                    {
-                                        view.IsEdited = true;
-                                        view.OldDate = existing.Date.ToString();
-                                        view.OldDescription = currDesc;
-                                        view.OldTimeActual = existing.TimeActual;
-                                    }
-                                }
-
-                                return new
-                                {
-                                    View = view,
-                                    StartedDto = dto,
-                                    Existing = existing
-                                };
-                            })
-                            .Where(x =>
-                            {
-                                long ms = x.StartedDto.ToUnixTimeMilliseconds();
-                                bool inTimeRange = ms >= startedAfter && ms <= startedBefore;
-                                if (!inTimeRange)
-                                    return false;
-
-                                if (x.Existing == null)
-                                    return true;
-
-                                return x.View.IsEdited;
-                            })
-                            .Select(x => x.View)
-                            .ToList();
-
-                        result.AddRange(worklogs);
+                        continue;
                     }
+
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    var jsonResponse = JsonConvert.DeserializeObject<JObject>(content);
+
+                    var worklogsTokens = jsonResponse["worklogs"]
+                            .Select(x => (item, (string)x["id"], x))
+                            .ToList();
+
+                    worklogsResponses.AddRange(worklogsTokens);
                 }
-                catch(Exception ex)
+                catch
                 {
                     throw;
                 }
             }
 
+            var worklogsIds = worklogsResponses.Select(x => x.worklogsId).ToList();
+            var existedWorklogs = Uow.TimeEntryRepository
+                .GetByJiraWorklogIds(worklogsIds)
+                .ToDictionary(e => e.JiraWorklogId, e => e);
+
+            var result = worklogsResponses
+                .Select(x =>
+                {
+                    var token = x.token;
+                    var worklogId = x.worklogsId;
+                    var issue = x.issue;
+
+                    var content = token["comment"]?["content"] as JArray;
+                    var jiraWorklogContent = content != null && content.Count > 0 ? content[0]?["content"]?[0]?["text"] : null;
+
+                    var view = new JiraWorklogView
+                    {
+                        Description = (string)jiraWorklogContent,
+                        TimeActual = (int)token["timeSpentSeconds"],
+                        Date = (string)token["started"],
+                        ProjectId = issue.ProjectId,
+                        Key = issue.Key,
+                        ProjectName = projectsDic.GetValueOrDefault(issue.ProjectId),
+                        WorklogId = worklogId,
+                        Type = JiraWorklogType.New
+                    };
+
+                    var dto = DateTimeOffset.Parse(view.Date);
+
+                    existedWorklogs.TryGetValue(worklogId, out var existing);
+
+                    if (existing != null)
+                    {
+                        bool dateChanged = existing.Date != dto;
+                        bool timeChanged = existing.TimeActual != view.TimeActual;
+
+                        var currDesc = existing.Description.Replace($"{view.Key}: ", "");
+                        bool descChanged = !string.Equals(currDesc ?? string.Empty, view.Description ?? string.Empty);
+
+                        if (dateChanged || timeChanged || descChanged)
+                        {
+                            view.Type = JiraWorklogType.Edited;
+                            view.OldDate = existing.Date.ToString();
+                            view.OldDescription = currDesc;
+                            view.OldTimeActual = existing.TimeActual;
+                        }
+                    }
+
+                    return new
+                    {
+                        View = view,
+                        StartedDto = dto,
+                        Existing = existing
+                    };
+                })
+                .Where(x =>
+                {
+                    long ms = x.StartedDto.ToUnixTimeMilliseconds();
+                    bool inTimeRange = ms >= startedAfter && ms <= startedBefore;
+                    if (!inTimeRange)
+                        return false;
+
+                    if (x.Existing == null)
+                        return true;
+
+                    return x.View.Type == JiraWorklogType.Edited;
+                })
+                .Select(x => x.View)
+                .ToList();
+
+            var curUserId = Uow.MemberCurrent.UserId;
+
+            var deletedWorklogs = await Uow.TimeEntryRepository.GetDeletedWorklogs(curUserId, worklogsIds, dateFrom, dateTo);
+            var jiraDeleteWorklogs = deletedWorklogs
+                .Select(worklog => new JiraWorklogView
+                {
+                    ProjectId = worklog.ProjectId,
+                    Date = worklog.Date.ToString(),
+                    Description = worklog.Description,
+                    Type = JiraWorklogType.Deleted,
+                    WorklogId = worklog.JiraWorklogId,
+                    ProjectName = worklog.Project.Name,
+                    TimeActual = worklog.TimeActual
+                })
+                .ToList();
+
+
             result = result
+                .Union(jiraDeleteWorklogs)
                 .OrderByDescending(r => DateTimeOffset.Parse(r.Date))
                 .ToList();
+
             return result;
         }
 
@@ -265,7 +305,6 @@ namespace CoralTime.BL.Services
 
         public async Task<List<JiraWorklogView>> GetWorklogAsync(JiraWorklogFilterView filter)
         {
-            var currentUserId = Uow.MemberCurrent.UserId;
             var currentMemberId = Uow.MemberCurrent.Id;
             var jiraSetting = Uow.JiraSettingsRepository.GetById(filter.JiraSettingId)
                 ?? throw new CoralTimeEntityNotFoundException($"Jira setting with id {filter.JiraSettingId} not found");
@@ -282,10 +321,7 @@ namespace CoralTime.BL.Services
 
             var issues = await GetIssuesAsync(email, apiToken, domain, urlStringIssues, projectKeyToId);
 
-            long startedAfter = new DateTimeOffset(filter.DateFrom).ToUnixTimeMilliseconds();
-            long startedBefore = new DateTimeOffset(filter.DateTo.AddDays(1)).ToUnixTimeMilliseconds();
-
-            return await GetWorklogsAsync(email, apiToken, domain, startedAfter, startedBefore, issues);
+            return await GetWorklogsAsync(email, apiToken, domain, filter.DateFrom, filter.DateTo, issues);
         }
 
         public void LoadWorklog(JiraWorklogView[] worklogs)

@@ -59,6 +59,7 @@ export class TimeEntry {
 	memberName: string;
 	projectId: number;
 	projectName: string;
+	jiraWorklogId: string;
 	taskName: string;
 	taskTypesId: number;
 	timeOptions: TimeOptions;
@@ -79,6 +80,7 @@ export class TimeEntry {
 		this.projectName = data && data.projectName;
 		this.taskName = data && data.taskName;
 		this.taskTypesId = data && data.taskTypesId;
+		this.jiraWorklogId = data && data.jiraWorklogId;
 		this.timeOptions = {
 			isFromToShow: data && data.timeOptions && data.timeOptions.isFromToShow,
 			timeTimerStart: data && data.timeOptions && data.timeOptions.timeTimerStart || 0
