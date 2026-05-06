@@ -1,6 +1,7 @@
 ﻿using CoralTime.Common.Constants;
 using CoralTime.DAL.Models;
 using CoralTime.ViewModels.Azure;
+using Duende.IdentityModel;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
 using Microsoft.AspNetCore.Identity;
@@ -9,9 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -64,7 +67,10 @@ namespace CoralTime.Services.API.Services
 
                 if (user != null && ((user?.IsActive) ?? false))
                 {
-                    context.Result = new GrantValidationResult(user.Id, Constants.Authorization.CoralTimeAzure.AuthenticationMethod);
+                    context.Result = new GrantValidationResult(
+                        subject: user.Id,
+                        authenticationMethod: Constants.Authorization.CoralTimeAzure.AuthenticationMethod,
+                        claims: GetUserClaims(user));
                     return;
                 }
 
@@ -146,6 +152,15 @@ namespace CoralTime.Services.API.Services
             }
 
             return certificates;
+        }
+
+        private static IEnumerable<Claim> GetUserClaims(ApplicationUser user)
+        {
+            return new[]
+            {
+                new Claim(type: "user_id", value: user.Id ?? ""),
+                new Claim(type: JwtClaimTypes.Email, value: user.Email ?? "")
+            };
         }
     }
 }
