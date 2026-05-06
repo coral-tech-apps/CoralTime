@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthGuard } from '../../core/auth/auth-guard.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
-import { msalInstance, msalRedirectResult } from '../../core/core.module';
+import { msalRedirectResult } from '../../core/core.module';
 
 @Component({
     selector: 'ct-signin-oidc',
@@ -20,42 +20,11 @@ export class SignInOidcComponent implements OnInit {
 	            private router: Router) {
 	}
 
-	async ngOnInit(): Promise<void> {
-		const idToken = await this.resolveIdToken();
-		if (idToken) {
-			this.loginSSO(idToken);
+	ngOnInit() {
+		if (msalRedirectResult?.idToken) {
+			this.loginSSO(msalRedirectResult.idToken);
 		} else {
 			this.router.navigate(['/login']);
-		}
-	}
-
-	private async resolveIdToken(): Promise<string | null> {
-		if (msalRedirectResult?.idToken) {
-			return msalRedirectResult.idToken;
-		}
-		if (!msalInstance) {
-			return null;
-		}
-		try {
-			const redirect = await msalInstance.handleRedirectPromise();
-			if (redirect?.idToken) {
-				return redirect.idToken;
-			}
-		} catch {
-			
-		}
-		const accounts = msalInstance.getAllAccounts();
-		if (!accounts.length) {
-			return null;
-		}
-		try {
-			const silent = await msalInstance.acquireTokenSilent({
-				account: accounts[0],
-				scopes: ['openid', 'profile'],
-			});
-			return silent?.idToken ?? null;
-		} catch {
-			return null;
 		}
 	}
 

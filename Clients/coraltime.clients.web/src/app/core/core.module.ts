@@ -16,11 +16,17 @@ import { RefreshTokenInterceptor } from './refresh-token.interceptor';
 import { LoadingMaskModule } from '../shared/loading-indicator/loading-mask.module';
 import { AppInsightsInterceptor } from './app-insights.interceptor';
 import { AppInsightsService } from '../services/app-insights.service';
-import { PublicClientApplication, BrowserCacheLocation, AuthenticationResult } from '@azure/msal-browser';
+import { PublicClientApplication, BrowserCacheLocation, AuthenticationResult, NavigationClient, NavigationOptions } from '@azure/msal-browser';
 import { LoginSettings } from '../pages/login/login.service';
 
 export let msalInstance: PublicClientApplication | null = null;
 export let msalRedirectResult: AuthenticationResult | null = null;
+
+class NoReloadNavigationClient extends NavigationClient {
+    override async navigateInternal(_url: string, _options: NavigationOptions): Promise<boolean> {
+        return false;
+    }
+}
 
 export function initializeMsal(): () => Promise<void> {
     return async () => {
@@ -39,6 +45,9 @@ export function initializeMsal(): () => Promise<void> {
                 },
                 cache: {
                     cacheLocation: BrowserCacheLocation.LocalStorage
+                },
+                system: {
+                    navigationClient: new NoReloadNavigationClient(),
                 },
             });
 
