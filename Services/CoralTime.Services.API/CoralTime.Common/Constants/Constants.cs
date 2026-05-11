@@ -470,7 +470,7 @@ namespace CoralTime.Common.Constants
                 public const string GrantType = "azureAuth";
                 public const string AuthenticationMethod = "azure";
                 public const string UserTokenHeader = "id_token";
-                public const string UserNameClaim = "unique_name";
+                public const string UserNameClaim = "preferred_username";
             }
             public const string RolesScope = "roles";
             public const string WebApiScope = "WebAPI";
