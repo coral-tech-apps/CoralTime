@@ -16,11 +16,11 @@ import { RefreshTokenInterceptor } from './refresh-token.interceptor';
 import { LoadingMaskModule } from '../shared/loading-indicator/loading-mask.module';
 import { AppInsightsInterceptor } from './app-insights.interceptor';
 import { AppInsightsService } from '../services/app-insights.service';
-import { PublicClientApplication, BrowserCacheLocation, AuthenticationResult } from '@azure/msal-browser';
+import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation } from '@azure/msal-browser';
+import { MSAL_INSTANCE, MsalService } from '@azure/msal-angular';
 import { LoginSettings } from '../pages/login/login.service';
 
-export let msalInstance: PublicClientApplication | null = null;
-export let msalRedirectResult: AuthenticationResult | null = null;
+export let msalInstance: IPublicClientApplication | null = null;
 
 export function initializeMsal(): () => Promise<void> {
     return async () => {
@@ -43,14 +43,12 @@ export function initializeMsal(): () => Promise<void> {
             });
 
             await msalInstance.initialize();
-            const result = await msalInstance.handleRedirectPromise({ 
-                navigateToLoginRequestUrl: false 
-            });
-            if (result?.idToken) {
-                msalRedirectResult = result;
-            }
         }
     };
+}
+
+export function msalInstanceFactory(): IPublicClientApplication {
+    return msalInstance;
 }
 
 @NgModule({ exports: [
@@ -98,7 +96,13 @@ export function initializeMsal(): () => Promise<void> {
             useFactory: initializeMsal,
             multi: true,
         },
-    ] })
+        {
+            provide: MSAL_INSTANCE,
+            useFactory: msalInstanceFactory,
+        },
+        MsalService,
+    ]
+})
 
 export class CoreModule {
 }

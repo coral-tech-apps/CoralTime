@@ -2,6 +2,7 @@
 import {finalize} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MsalService } from '@azure/msal-angular';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthGuard } from '../../core/auth/auth-guard.service';
 import { LoginSettings } from './login.service';
@@ -23,6 +24,7 @@ export class LoginComponent implements OnInit {
 	constructor(private authService: AuthService,
 	            private auth: AuthGuard,
 	            private loadingService: LoadingMaskService,
+	            private msalService: MsalService,
 	            private route: ActivatedRoute,
 	            private router: Router,
                 private appInsightsService: AppInsightsService) {
@@ -53,7 +55,7 @@ export class LoginComponent implements OnInit {
 			this.errorMessage = 'Azure SSO is not configured';
 			return;
 		}
-		msalInstance.loginRedirect({
+		this.msalService.loginRedirect({
 			scopes: ['openid', 'profile'],
 		});
 	}
