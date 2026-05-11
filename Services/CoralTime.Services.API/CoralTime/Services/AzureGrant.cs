@@ -90,15 +90,21 @@ namespace CoralTime.Services.API.Services
             {
                 var certificates = await GetCertificateKeysAsync();
                 var tokenToCheck = new JwtSecurityToken(jwtToken);
+                var kid = tokenToCheck.Header.Kid;
                 var x5t = tokenToCheck.Header.X5t;
 
                 string Normalize(string s) => s?.Replace('-', '+').Replace('_', '/');
+                var normalizedKid = Normalize(kid);
                 var normalizedX5t = Normalize(x5t);
 
-                var matchingKey = certificates.Keys.FirstOrDefault(k => Normalize(k.X5t) == normalizedX5t);
+                var matchingKey = certificates.Keys.FirstOrDefault(k =>
+                    (normalizedKid != null && (k.Kid == kid || Normalize(k.Kid) == normalizedKid)) ||
+                    (normalizedX5t != null && Normalize(k.X5t) == normalizedX5t));
+
                 if (matchingKey?.X5c?.FirstOrDefault() is not string x5cBase64 || string.IsNullOrWhiteSpace(x5cBase64))
                 {
-                    _logger.LogError("Matching certificate not found for x5t: {x5t}", x5t);
+                    _logger.LogError("Matching certificate not found. kid: {kid}, x5t: {x5t}, available kids: {kids}",
+                        kid, x5t, string.Join(",", certificates.Keys.Select(k => k.Kid)));
                     return null;
                 }
 
