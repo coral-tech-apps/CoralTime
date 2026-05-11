@@ -16,11 +16,12 @@ import { RefreshTokenInterceptor } from './refresh-token.interceptor';
 import { LoadingMaskModule } from '../shared/loading-indicator/loading-mask.module';
 import { AppInsightsInterceptor } from './app-insights.interceptor';
 import { AppInsightsService } from '../services/app-insights.service';
-import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation } from '@azure/msal-browser';
+import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation, AuthenticationResult } from '@azure/msal-browser';
 import { MSAL_INSTANCE, MsalService, MsalBroadcastService } from '@azure/msal-angular';
 import { LoginSettings } from '../pages/login/login.service';
 
 export let msalInstance: IPublicClientApplication | null = null;
+export let msalRedirectResult: AuthenticationResult | null = null;
 export let isAzureSsoEnabled: boolean = false;
 
 export function initializeMsal(): () => Promise<void> {
@@ -50,6 +51,15 @@ export function initializeMsal(): () => Promise<void> {
         });
 
         await msalInstance.initialize();
+
+        try {
+            const result = await msalInstance.handleRedirectPromise({ navigateToLoginRequestUrl: false });
+            if (result?.idToken) {
+                msalRedirectResult = result;
+            }
+        } catch (err) {
+            console.error('[initializeMsal] handleRedirectPromise failed:', err);
+        }
     };
 }
 
