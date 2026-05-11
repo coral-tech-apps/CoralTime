@@ -26,13 +26,18 @@ export class SignInOidcComponent implements OnInit {
 			.handleRedirectObservable({ navigateToLoginRequestUrl: false })
 			.subscribe({
 				next: (result: AuthenticationResult | null) => {
+					console.log('[signin-oidc] handleRedirectObservable next:', result);
 					if (result?.idToken) {
 						this.loginSSO(result.idToken);
 					} else {
+						console.warn('[signin-oidc] no idToken in redirect result, navigating to /login');
 						this.router.navigate(['/login']);
 					}
 				},
-				error: () => this.router.navigate(['/login']),
+				error: (err) => {
+					console.error('[signin-oidc] handleRedirectObservable error:', err);
+					this.router.navigate(['/login']);
+				},
 			});
 	}
 

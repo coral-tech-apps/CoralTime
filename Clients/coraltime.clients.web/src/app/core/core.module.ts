@@ -21,29 +21,35 @@ import { MSAL_INSTANCE, MsalService } from '@azure/msal-angular';
 import { LoginSettings } from '../pages/login/login.service';
 
 export let msalInstance: IPublicClientApplication | null = null;
+export let isAzureSsoEnabled: boolean = false;
 
 export function initializeMsal(): () => Promise<void> {
     return async () => {
         const response = await fetch('/api/v1/AuthenticationSettings');
         const settings: LoginSettings = await response.json();
 
-        if (settings.enableAzure && settings.azureSettings) {
-            const azure = settings.azureSettings;
+        const azureEnabled = !!(settings.enableAzure && settings.azureSettings);
+        isAzureSsoEnabled = azureEnabled;
 
-            msalInstance = new PublicClientApplication({
-                auth: {
-                    clientId: azure.clientId,
-                    authority: `https://login.microsoftonline.com/${azure.tenant}`,
-                    postLogoutRedirectUri: window.location.origin + '/',
-                    redirectUri: azure.redirectUrl
-                },
-                cache: {
-                    cacheLocation: BrowserCacheLocation.LocalStorage
-                },
-            });
+        const clientId = azureEnabled ? settings.azureSettings.clientId : '00000000-0000-0000-0000-000000000000';
+        const authority = azureEnabled
+            ? `https://login.microsoftonline.com/${settings.azureSettings.tenant}`
+            : 'https://login.microsoftonline.com/common';
+        const redirectUri = azureEnabled ? settings.azureSettings.redirectUrl : window.location.origin + '/';
 
-            await msalInstance.initialize();
-        }
+        msalInstance = new PublicClientApplication({
+            auth: {
+                clientId,
+                authority,
+                postLogoutRedirectUri: window.location.origin + '/',
+                redirectUri,
+            },
+            cache: {
+                cacheLocation: BrowserCacheLocation.LocalStorage,
+            },
+        });
+
+        await msalInstance.initialize();
     };
 }
 
