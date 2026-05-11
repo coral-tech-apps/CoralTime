@@ -1,10 +1,8 @@
-import { finalize } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthGuard } from '../../core/auth/auth-guard.service';
-import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
-import { msalRedirectResult } from '../../core/core.module';
+import { msalInstance, msalRedirectResult } from '../../core/core.module';
 
 @Component({
     selector: 'ct-signin-oidc',
@@ -15,30 +13,53 @@ export class SignInOidcComponent implements OnInit {
 
 	constructor(private auth: AuthGuard,
 	            private authService: AuthService,
-	            private loadingService: LoadingMaskService,
 	            private router: Router) {
 	}
 
-	ngOnInit(): void {
-		console.log('[signin-oidc] msalRedirectResult:', msalRedirectResult);
-		if (msalRedirectResult?.idToken) {
-			this.loginSSO(msalRedirectResult.idToken);
+	async ngOnInit(): Promise<void> {
+		const idToken = await this.resolveIdToken();
+		if (idToken) {
+			this.loginSSO(idToken);
 		} else {
-			console.warn('[signin-oidc] no idToken in msalRedirectResult, navigating to /login');
 			this.router.navigate(['/login']);
 		}
 	}
 
+	private async resolveIdToken(): Promise<string | null> {
+		if (msalRedirectResult?.idToken) {
+			return msalRedirectResult.idToken;
+		}
+		if (!msalInstance) {
+			return null;
+		}
+		try {
+			const result = await msalInstance.handleRedirectPromise();
+			if (result?.idToken) {
+				return result.idToken;
+			}
+		} catch {
+		}
+		try {
+			const accounts = msalInstance.getAllAccounts();
+			if (accounts.length > 0) {
+				const silent = await msalInstance.acquireTokenSilent({
+					scopes: ['openid', 'profile'],
+					account: accounts[0],
+				});
+				if (silent?.idToken) {
+					return silent.idToken;
+				}
+			}
+		} catch {
+		}
+		return null;
+	}
+
 	private loginSSO(idToken: string): void {
-		this.loadingService.addLoading();
 		this.authService.loginSSO(idToken)
-			.pipe(finalize(() => this.loadingService.removeLoading()))
 			.subscribe({
 				next: () => this.router.navigate(['/' + this.auth.url]),
-				error: (err) => {
-					console.error('[signin-oidc] loginSSO failed:', err);
-					this.router.navigate(['/login']);
-				},
+				error: () => this.router.navigate(['/login']),
 			});
 	}
 }
