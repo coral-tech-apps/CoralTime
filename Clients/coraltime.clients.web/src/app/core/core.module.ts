@@ -17,7 +17,7 @@ import { LoadingMaskModule } from '../shared/loading-indicator/loading-mask.modu
 import { AppInsightsInterceptor } from './app-insights.interceptor';
 import { AppInsightsService } from '../services/app-insights.service';
 import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation } from '@azure/msal-browser';
-import { MSAL_INSTANCE, MsalService } from '@azure/msal-angular';
+import { MSAL_INSTANCE, MsalService, MsalBroadcastService } from '@azure/msal-angular';
 import { LoginSettings } from '../pages/login/login.service';
 
 export let msalInstance: IPublicClientApplication | null = null;
@@ -107,6 +107,7 @@ export function msalInstanceFactory(): IPublicClientApplication {
             useFactory: msalInstanceFactory,
         },
         MsalService,
+        MsalBroadcastService,
     ]
 })
 
