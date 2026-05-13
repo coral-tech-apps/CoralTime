@@ -16,15 +16,15 @@ import { RefreshTokenInterceptor } from './refresh-token.interceptor';
 import { LoadingMaskModule } from '../shared/loading-indicator/loading-mask.module';
 import { AppInsightsInterceptor } from './app-insights.interceptor';
 import { AppInsightsService } from '../services/app-insights.service';
-import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation, AuthenticationResult } from '@azure/msal-browser';
+import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation } from '@azure/msal-browser';
 import { MSAL_INSTANCE, MsalService, MsalBroadcastService } from '@azure/msal-angular';
+import { firstValueFrom } from 'rxjs';
 import { LoginSettings } from '../pages/login/login.service';
 
 export let msalInstance: IPublicClientApplication | null = null;
-export let msalRedirectResult: AuthenticationResult | null = null;
 export let isAzureSsoEnabled: boolean = false;
 
-export function initializeMsal(): () => Promise<void> {
+export function initializeMsal(authService: AuthService): () => Promise<void> {
     return async () => {
         const response = await fetch('/api/v1/AuthenticationSettings');
         const settings: LoginSettings = await response.json();
@@ -36,7 +36,7 @@ export function initializeMsal(): () => Promise<void> {
         const authority = azureEnabled
             ? `https://login.microsoftonline.com/${settings.azureSettings.tenant}`
             : 'https://login.microsoftonline.com/common';
-        const redirectUri = azureEnabled ? settings.azureSettings.redirectUrl : window.location.origin + '/';
+        const redirectUri = settings.azureSettings.redirectUrl;
 
         msalInstance = new PublicClientApplication({
             auth: {
@@ -55,7 +55,12 @@ export function initializeMsal(): () => Promise<void> {
         try {
             const result = await msalInstance.handleRedirectPromise({ navigateToLoginRequestUrl: false });
             if (result?.idToken) {
-                msalRedirectResult = result;
+                msalInstance.setActiveAccount(result.account);
+                try {
+                    await firstValueFrom(authService.loginSSO(result.idToken));
+                } catch (err) {
+                    console.error('[initializeMsal] loginSSO failed:', err);
+                }
             }
         } catch (err) {
             console.error('[initializeMsal] handleRedirectPromise failed:', err);
@@ -111,6 +116,7 @@ export function msalInstanceFactory(): IPublicClientApplication {
             provide: APP_INITIALIZER,
             useFactory: initializeMsal,
             multi: true,
+            deps: [AuthService],
         },
         {
             provide: MSAL_INSTANCE,
