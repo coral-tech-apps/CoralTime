@@ -10,7 +10,7 @@ import { AuthUser } from './auth-user';
 import { ImpersonationService } from '../../services/impersonation.service';
 import { NotificationService } from '../notification.service';
 import { AppInsightsService } from 'src/app/services/app-insights.service';
-import { msalInstance } from '../core.module';
+import { msalInstance } from '../msal-state';
 
 @Injectable()
 export class AuthService {

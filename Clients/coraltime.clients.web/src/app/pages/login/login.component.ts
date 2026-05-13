@@ -8,7 +8,7 @@ import { AuthGuard } from '../../core/auth/auth-guard.service';
 import { LoginSettings } from './login.service';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 import { AppInsightsService } from 'src/app/services/app-insights.service';
-import { msalInstance, isAzureSsoEnabled } from '../../core/core.module';
+import { msalInstance, isAzureSsoEnabled } from '../../core/msal-state';
 
 @Component({
     templateUrl: 'login.component.html',

@@ -20,9 +20,7 @@ import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation
 import { MSAL_INSTANCE, MsalService, MsalBroadcastService } from '@azure/msal-angular';
 import { firstValueFrom } from 'rxjs';
 import { LoginSettings } from '../pages/login/login.service';
-
-export let msalInstance: IPublicClientApplication | null = null;
-export let isAzureSsoEnabled: boolean = false;
+import { msalInstance, setMsalInstance, setAzureSsoEnabled } from './msal-state';
 
 export function initializeMsal(authService: AuthService): () => Promise<void> {
     return async () => {
@@ -30,7 +28,7 @@ export function initializeMsal(authService: AuthService): () => Promise<void> {
         const settings: LoginSettings = await response.json();
 
         const azureEnabled = !!(settings.enableAzure && settings.azureSettings);
-        isAzureSsoEnabled = azureEnabled;
+        setAzureSsoEnabled(azureEnabled);
 
         const clientId = azureEnabled ? settings.azureSettings.clientId : '00000000-0000-0000-0000-000000000000';
         const authority = azureEnabled
@@ -38,7 +36,7 @@ export function initializeMsal(authService: AuthService): () => Promise<void> {
             : 'https://login.microsoftonline.com/common';
         const redirectUri = azureEnabled ? settings.azureSettings.redirectUrl : window.location.origin + '/';
 
-        msalInstance = new PublicClientApplication({
+        const instance = new PublicClientApplication({
             auth: {
                 clientId,
                 authority,
@@ -50,12 +48,13 @@ export function initializeMsal(authService: AuthService): () => Promise<void> {
             },
         });
 
-        await msalInstance.initialize();
+        await instance.initialize();
+        setMsalInstance(instance);
 
         try {
-            const result = await msalInstance.handleRedirectPromise({ navigateToLoginRequestUrl: false });
+            const result = await instance.handleRedirectPromise({ navigateToLoginRequestUrl: false });
             if (result?.idToken) {
-                msalInstance.setActiveAccount(result.account);
+                instance.setActiveAccount(result.account);
                 try {
                     await firstValueFrom(authService.loginSSO(result.idToken));
                 } catch (err) {
