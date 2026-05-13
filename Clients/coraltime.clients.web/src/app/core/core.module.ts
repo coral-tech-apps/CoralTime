@@ -36,13 +36,13 @@ export function initializeMsal(authService: AuthService): () => Promise<void> {
         const authority = azureEnabled
             ? `https://login.microsoftonline.com/${settings.azureSettings.tenant}`
             : 'https://login.microsoftonline.com/common';
-        const redirectUri = settings.azureSettings.redirectUrl;
+        const redirectUri = azureEnabled ? settings.azureSettings.redirectUrl : window.location.origin + '/';
 
         msalInstance = new PublicClientApplication({
             auth: {
                 clientId,
                 authority,
-                postLogoutRedirectUri: window.location.origin + '/',
+                postLogoutRedirectUri: window.location.origin + '/login',
                 redirectUri,
             },
             cache: {

@@ -10,6 +10,7 @@ import { AuthUser } from './auth-user';
 import { ImpersonationService } from '../../services/impersonation.service';
 import { NotificationService } from '../notification.service';
 import { AppInsightsService } from 'src/app/services/app-insights.service';
+import { msalInstance } from '../core.module';
 
 @Injectable()
 export class AuthService {
@@ -170,15 +171,35 @@ export class AuthService {
 
 	logout(ignoreRedirect?: boolean, isSessionExpired?: boolean): void {
 		this.matDialog.closeAll();
+
+		const isSso = this.authUser ? this.authUser.isSso : false;
+
 		localStorage.removeItem('APPLICATION_USER');
+		localStorage.removeItem('ROLES');
+		localStorage.removeItem('USER_INFO');
+
+		this._roles = null;
+		this._policies = null;
+		this._isUserAdminOrManager = false;
+		
 		this.onChange.emit(null);
 		this.impersonateService.stopImpersonation(true);
     this.appInsightsService.clearAuthenticatedUser();
-		if (!ignoreRedirect) {
-			this.router.navigate(['/login']);
-		}
+		
 		if (isSessionExpired) {
 			this.notificationService.danger('Your session is expired.');
+		}
+
+		if(isSso) {
+			msalInstance.logoutRedirect({
+				account: msalInstance.getActiveAccount()
+			});
+
+			return;
+		}
+
+		if (!ignoreRedirect) {
+			this.router.navigate(['/login']);
 		}
 	}
 
