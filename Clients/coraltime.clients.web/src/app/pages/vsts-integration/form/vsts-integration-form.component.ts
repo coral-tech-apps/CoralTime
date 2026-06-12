@@ -133,9 +133,9 @@ export class VstsIntegrationFormComponent implements OnInit {
 		let submitObservable: Observable<any>;
 
 		if (updatedConnection.id) {
-			submitObservable = this.vstsIntegrationService.odata.Put(updatedConnection, updatedConnection.id.toString());
+			submitObservable = this.vstsIntegrationService.updateConnection(updatedConnection.id, updatedConnection);
 		} else {
-			submitObservable = this.vstsIntegrationService.odata.Post(updatedConnection);
+			submitObservable = this.vstsIntegrationService.createConnection(updatedConnection);
 		}
 
 		this.isRequestLoading = true;

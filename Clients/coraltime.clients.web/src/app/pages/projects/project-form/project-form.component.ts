@@ -148,9 +148,9 @@ export class ProjectFormComponent implements OnInit {
 		this.project = this.model.toProject(this.project);
 
 		if (this.project.id) {
-			submitObservable = this.projectsService.odata.Put(this.project, this.project.id.toString());
+			submitObservable = this.projectsService.update(this.project);
 		} else {
-			submitObservable = this.projectsService.odata.Post(this.project);
+			submitObservable = this.projectsService.create(this.project);
 		}
 
 		this.isRequestLoading = true;

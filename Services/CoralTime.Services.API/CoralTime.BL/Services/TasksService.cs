@@ -9,7 +9,6 @@ using CoralTime.DAL.Models;
 using CoralTime.DAL.Repositories;
 using CoralTime.ViewModels.Tasks;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CoralTime.BL.Services
@@ -19,7 +18,13 @@ namespace CoralTime.BL.Services
         public TasksService(UnitOfWork uow, IMapper mapper) 
             : base(uow, mapper) { }
 
-        public IEnumerable<TaskTypeView> Get() => Uow.TaskTypeRepository.LinkedCacheGetList().Select(x=>x.GetView(Mapper));
+        public IQueryable<TaskTypeView> Get()
+        {
+            var taskTypes = Uow.TaskTypeRepository.LinkedCacheGetList()
+                .AsQueryable();
+
+            return Mapper.ProjectTo<TaskTypeView>(taskTypes);
+        }
 
         public TaskTypeView GetById(int id)
         {

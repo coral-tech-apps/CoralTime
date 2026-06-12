@@ -77,7 +77,7 @@ export class ProjectSettingsFormComponent implements OnInit {
 
 	save(): void {
 		let updatedProject = this.model.toProject();
-		let observable = this.projectsService.odata.Put(updatedProject, updatedProject.id.toString());
+		let observable = this.projectsService.update(updatedProject);
 
 		this.loadingService.addLoading();
 		observable.subscribe(() => {

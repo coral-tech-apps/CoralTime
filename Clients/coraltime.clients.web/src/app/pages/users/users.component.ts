@@ -1,5 +1,5 @@
 
-import {switchMap, debounceTime} from 'rxjs/operators';
+import {switchMap, debounceTime, tap} from 'rxjs/operators';
 import { UserProjectAssignmentComponent } from './project-assignment/project-assignment.component';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -99,7 +99,9 @@ export class UsersComponent implements OnInit {
 	}
 
 	private getUsers(): void {
-		this.subject.pipe(debounceTime(500),switchMap(() => {
+		this.subject.pipe(debounceTime(500),
+			tap(() => { this.updatingGrid = true; }),
+			switchMap(() => {
 			return this.userService.getUsersWithCount(this.lastEvent, this.filterStr, this.isActiveTab);
 		}),)
 			.subscribe((res: PagedResult<User>) => {

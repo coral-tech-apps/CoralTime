@@ -1,4 +1,5 @@
 using CoralTime.BL.Interfaces;
+using CoralTime.Common.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

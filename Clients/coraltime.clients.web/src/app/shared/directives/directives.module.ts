@@ -21,6 +21,7 @@ import { SlimscrollArrowsDirective } from './slimscroll-arrows.directive';
 import { FocusInputDirective } from './focus-input.directive';
 import { TooltipDirective } from './tooltip.directive';
 import { ComparisonHighlightsDirective } from './compare-highlighting.directive';
+import { PaginationScrollingDirective } from './pagination-scrolling.directive';
 
 @NgModule({
 	declarations: [
@@ -46,7 +47,8 @@ import { ComparisonHighlightsDirective } from './compare-highlighting.directive'
 		SlimscrollArrowsDirective,
 		FocusInputDirective,
 		TooltipDirective,
-		ComparisonHighlightsDirective
+		ComparisonHighlightsDirective,
+		PaginationScrollingDirective
 	],
 	exports: [
 		IsGrantedDirective,
@@ -70,7 +72,8 @@ import { ComparisonHighlightsDirective } from './compare-highlighting.directive'
 		SlimscrollArrowsDirective,
 		FocusInputDirective,
 		TooltipDirective,
-		ComparisonHighlightsDirective
+		ComparisonHighlightsDirective,
+		PaginationScrollingDirective
 	]
 })
 

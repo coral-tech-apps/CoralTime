@@ -10,17 +10,18 @@ import { ConstantService } from '../core/constant.service';
 
 @Injectable()
 export class VstsIntegrationService {
-	readonly odata: ODataService<VstsProjectConnection>;
+	private readonly baseUrl = '/api/v1/VstsProjectIntegration';
 
 	constructor(private constantService: ConstantService,
 	            private http: HttpClient,
 	            private odataFactory: ODataServiceFactory) {
-		this.odata = this.odataFactory.CreateService<VstsProjectConnection>('VstsProjectIntegration');
 	}
 
 	getConnectionsWithCount(event, filterStr = ''): Observable<PagedResult<VstsProjectConnection>> {
+		const odata = this.odataFactory.CreateService<VstsProjectConnection>('VstsProjectIntegration/GetAllVstsProjects()');
+
 		const filters = [];
-		const query = this.odata
+		const query = odata
 			.Query()
 			.Top(event.rows)
 			.Skip(event.first);
@@ -52,7 +53,8 @@ export class VstsIntegrationService {
 			throw new Error('Please, specify project name');
 		}
 
-		const query = this.odata
+		const odata = this.odataFactory.CreateService<VstsProjectConnection>('VstsProjectIntegration/GetAllVstsProjects()');
+		const query = odata
 			.Query()
 			.Top(1);
 
@@ -66,7 +68,7 @@ export class VstsIntegrationService {
 	}
 
 	getConnectionsMembersWithCount(event, filterStr = '', connectionId: number): Observable<PagedResult<any>> {
-		const odata = this.odataFactory.CreateService<VstsUser>('VstsProjectIntegration(' + connectionId + ')/members');
+		const odata = this.odataFactory.CreateService<VstsUser>('VstsProjectIntegration/GetMembers(id=' + connectionId + ')');
 
 		const filters = [];
 		const query = odata
@@ -90,6 +92,18 @@ export class VstsIntegrationService {
 			res.data = res.data.map((x: Object) => new VstsUser(x));
 			return res;
 		}));
+	}
+
+	updateConnection(id: number, connection: VstsProjectConnection): Observable<VstsProjectConnection> {
+		return this.http.put<VstsProjectConnection>(`${this.baseUrl}/${id}`, connection);
+	}
+
+	createConnection(connection: VstsProjectConnection): Observable<VstsProjectConnection> {
+		return this.http.post<VstsProjectConnection>(this.baseUrl, connection);
+	}
+
+	deleteConnection(id: number): Observable<void> {
+		return this.http.delete<void>(`${this.baseUrl}/${id}`);
 	}
 
 	updateVstsUsers(): Observable<any> {

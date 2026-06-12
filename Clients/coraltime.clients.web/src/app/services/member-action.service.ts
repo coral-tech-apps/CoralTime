@@ -1,5 +1,5 @@
 
-import {map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { PagedResult, ODataServiceFactory, ODataService } from './odata';
@@ -7,15 +7,14 @@ import { MemberAction } from '../models/member-action';
 
 @Injectable()
 export class MemberActionsService {
-    readonly odata: ODataService<MemberAction>;
-
     constructor(private odataFactory: ODataServiceFactory) {
-        this.odata = this.odataFactory.CreateService<MemberAction>('MemberActions');
     }
 
     getMemberActions(event, filterStr = ''): Observable<PagedResult<MemberAction>> {
+        const odata = this.odataFactory.CreateService<MemberAction>('MemberActions/GetAllMemberActions()');
+
         let filters = [];
-        let query = this.odata
+        let query = odata
             .Query()
             .Top(event.rows)
             .Skip(event.first);

@@ -104,9 +104,9 @@ export class ClientFormComponent implements OnInit {
 		this.client = this.model.toClient(this.client);
 
 		if (this.client.id) {
-			submitObservable = this.clientsService.odata.Put(this.client, this.client.id.toString());
+			submitObservable = this.clientsService.update(this.client);
 		} else {
-			submitObservable = this.clientsService.odata.Post(this.client);
+			submitObservable = this.clientsService.create(this.client);
 		}
 
 		this.isRequestLoading = true;

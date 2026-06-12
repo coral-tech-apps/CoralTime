@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using CoralTime.Common.Helpers;
+using CoralTime.Common.Services;
 using CoralTime.DAL.Models;
 using CoralTime.DAL.Models.Jira;
-using CoralTime.DAL.Models.LogChanges;
 using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Models.ReportsSettings;
+using CoralTime.DAL.Models.Vsts;
 using CoralTime.ViewModels.Clients;
 using CoralTime.ViewModels.Jira;
 using CoralTime.ViewModels.JiraSettings;
 using CoralTime.ViewModels.Member;
-using CoralTime.ViewModels.MemberActions;
 using CoralTime.ViewModels.MemberProjectRoles;
 using CoralTime.ViewModels.ProjectRole;
 using CoralTime.ViewModels.Projects;
@@ -17,12 +17,22 @@ using CoralTime.ViewModels.Reports.Responce.DropDowns;
 using CoralTime.ViewModels.Settings;
 using CoralTime.ViewModels.Tasks;
 using CoralTime.ViewModels.TimeEntries;
+using CoralTime.ViewModels.Vsts;
+using System.Linq;
 using static CoralTime.Common.Constants.Constants;
 
 namespace CoralTime.DAL.Mapper
 {
     public class MappingProfile : Profile
     {
+        private readonly IImageService _avatarService;
+
+        public MappingProfile(
+            IImageService imageService)
+        {
+            _avatarService = imageService;
+        }
+
         public MappingProfile()
         {
             CreateMap<Member, MemberView>().ConvertUsing(new MemberToMemberViewConverter());
@@ -48,7 +58,12 @@ namespace CoralTime.DAL.Mapper
 
             CreateMap<ProjectView, ManagerProjectsView>();
 
-            CreateMap<Client, ClientView>();
+            CreateMap<Client, ClientView>()
+                .ForMember(dest => dest.ProjectsCount, opt => opt
+                .MapFrom(src => src.IsActive ? 
+                            src.Projects.Count(x => x.IsActive) : 
+                            src.Projects.Count));
+
             CreateMap<ClientView, Client>();
 
             CreateMap<TimeEntry, TimeEntryView>()
@@ -84,6 +99,11 @@ namespace CoralTime.DAL.Mapper
                 .ForMember(dest => dest.JiraSettingId, opt => opt.Ignore());
             CreateMap<JiraSetting, JiraSettingsView>();
             CreateMap<JiraProject, JiraProjectView>();
+
+            CreateMap<VstsProjectUser, VstsMemberView>()
+                .ForMember(x => x.FullName, x => x.MapFrom(z => z.VstsUser.Member.FullName))
+                .ForMember(x => x.MemberId, x => x.MapFrom(z => z.VstsUser.MemberId))
+                .ForMember(x => x.UrlIcon, x => x.MapFrom(z => _avatarService.GetUrlIcon(z.Id)));
         }
 
         private class MemberToMemberViewConverter : ITypeConverter<Member, MemberView>

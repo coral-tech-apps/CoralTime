@@ -14,8 +14,9 @@ namespace CoralTime.BL.Services
 
         public IQueryable<MemberActionView> Get()
         {
-            return Uow.MemberActionRepository.GetQuery(asNoTracking: true).Select(x=> 
-                new MemberActionView
+            return Uow.MemberActionRepository
+                .GetQuery(asNoTracking: true)
+                .Select(x => new MemberActionView
                 {
                     Action = x.Action,
                     ChangedFields = x.ChangedFields,

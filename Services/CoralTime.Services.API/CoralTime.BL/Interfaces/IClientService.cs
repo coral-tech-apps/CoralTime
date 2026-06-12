@@ -1,5 +1,6 @@
 ﻿using CoralTime.ViewModels.Clients;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 
 namespace CoralTime.BL.Interfaces
@@ -8,7 +9,7 @@ namespace CoralTime.BL.Interfaces
     {
         ClientView Create(ClientView client);
 
-        IEnumerable<ClientView> GetAllClients();
+        IQueryable<ClientView> GetAllClients();
 
         ClientView GetById(int clientId);
 

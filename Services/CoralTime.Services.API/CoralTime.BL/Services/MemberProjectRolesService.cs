@@ -1,28 +1,29 @@
 ﻿using AutoMapper;
 using CoralTime.BL.Interfaces;
+using CoralTime.Common.Constants;
 using CoralTime.Common.Exceptions;
+using CoralTime.Common.Helpers;
+using CoralTime.Common.Services;
 using CoralTime.DAL.ConvertModelToView;
+using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Repositories;
 using CoralTime.ViewModels.Member;
 using CoralTime.ViewModels.MemberProjectRoles;
 using CoralTime.ViewModels.ProjectRole;
 using CoralTime.ViewModels.Projects;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using CoralTime.DAL.Models.Member;
-using CoralTime.Common.Constants;
 
 namespace CoralTime.BL.Services
 {
     public class MemberProjectRoleService : BaseService, IMemberProjectRoleService
     {
-        private readonly IProjectService _projectService;
         private readonly IImageService _avatarService;
 
-        public MemberProjectRoleService(UnitOfWork uow, IProjectService projectService, IMapper mapper, IImageService avatarService)
+        public MemberProjectRoleService(UnitOfWork uow, IMapper mapper, IImageService avatarService)
             : base(uow, mapper)
         {
-            _projectService = projectService;
             _avatarService = avatarService;
         }
 
@@ -151,11 +152,13 @@ namespace CoralTime.BL.Services
             return customMemberProjectRole;
         }
 
-        public IEnumerable<ProjectRoleView> GetProjectRoles()
+        public IQueryable<ProjectRoleView> GetProjectRoles()
         {
-            var projectRole = Uow.ProjectRoleRepository.LinkedCacheGetList();
+            var projectRole = Uow.ProjectRoleRepository
+                .LinkedCacheGetList()
+                .AsQueryable();
 
-            return projectRole.Select(x => x.GetView(Mapper));
+            return Mapper.ProjectTo<ProjectRoleView>(projectRole);
         }
 
         public MemberProjectRoleView GetById(int id)
@@ -172,38 +175,27 @@ namespace CoralTime.BL.Services
             return memberProjRoleView;
         }
 
-        public IEnumerable<MemberView> GetNotAssignMembersAtProjByProjectId(int projectId)
+        public IQueryable<MemberView> GetNotAssignMembersAtProjByProjectId(int projectId)
         {
             if (!Uow.ProjectRepository.LinkedCacheGetById(projectId).IsPrivate)
             {
-                return Enumerable.Empty<MemberView>();
+                return Enumerable.Empty<MemberView>().AsQueryable();
             }
 
-            var membersNotAssignProjectByProjId = Uow.MemberRepository.LinkedCacheGetList()
-                .Where(member => member.MemberProjectRoles.All(mpr => mpr.ProjectId != projectId)); // for adequate count add in condition: && x.User.IsActive
-
-            if (membersNotAssignProjectByProjId == null)
-            {
-                throw new CoralTimeEntityNotFoundException($"MemberProjectRole with ProjectId = {projectId} not found.");
-            }
-
-            var membersNotAssigtProjectView = membersNotAssignProjectByProjId.Select(x => x.GetView(Mapper, _avatarService.GetUrlIcon(x.Id))).ToList();
-
-            return membersNotAssigtProjectView;
+            return Uow.MemberRepository
+                .GetQuery(asNoTracking: true)
+                .Include(x => x.User)
+                .Where(member => member.MemberProjectRoles.All(mpr => mpr.ProjectId != projectId))
+                .GetQuerableView(_avatarService);
         }
 
-        public IEnumerable<ProjectView> GetNotAssignMembersAtProjByMemberId(int memberId)
+        public IQueryable<ProjectView> GetNotAssignMembersAtProjByMemberId(int memberId)
         {
-            var projsWithNotAssignMembersByMembId = Uow.ProjectRepository.LinkedCacheGetList()
+            var projsWithNotAssignMembersByMembId = Uow.ProjectRepository
+                .GetQuery(asNoTracking: true)
                 .Where(project => project.MemberProjectRoles.All(mpr => mpr.MemberId != memberId)); // for adequate count add in condition: && project.IsPrivate && project.IsActive
-            
-            if (projsWithNotAssignMembersByMembId == null)
-            {
-                throw new CoralTimeEntityNotFoundException($"MemberProjectRole with MemberId = {memberId} not found.");
-            }
 
-            var memberProjRoleView = projsWithNotAssignMembersByMembId.Select(x => x.GetView(Mapper));
-            return memberProjRoleView;
+            return Mapper.ProjectTo<ProjectView>(projsWithNotAssignMembersByMembId);
         }
 
         public MemberProjectRoleView Create(MemberProjectRoleView memberProjectRoleView)

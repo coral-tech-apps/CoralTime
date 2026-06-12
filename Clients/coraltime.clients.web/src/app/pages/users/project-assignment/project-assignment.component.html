@@ -21,8 +21,9 @@
                    [lazy]="true"
                    [loading]="!isAllAssignedProjects"
                    (onLazyLoad)="updateAssignedProjects($event)"
-                   (onMoreContent)="updateAssignedProjects()"
-                   (onEndScrollEvent)="onAssignedProjectsEndScroll()">
+                   ctPaginationScrolling
+                   [isLoading]="updatingAssignedProjectsGrid"
+                   (onEndScroll)="onAssignedProjectsEndScroll()">
               <ng-template pTemplate="header">
                   <tr>
                       <th pSortableColumn="projectName" style="width:600px;">Project <p-sortIcon field="projectName"></p-sortIcon></th>
@@ -59,8 +60,9 @@
                    [lazy]="true"
                    [loading]="!isAllNotAssignedProjects"
                    (onLazyLoad)="updateNotAssignedProjects($event)"
-                   (onMoreContent)="updateNotAssignedProjects()"
-                   (onEndScrollEvent)="onNotAssignedProjectsEndScroll()">
+                   ctPaginationScrolling
+                   [isLoading]="updatingNotAssignedProjectsGrid"
+                   (onEndScroll)="onNotAssignedProjectsEndScroll()">
               <ng-template pTemplate="header">
                   <tr>
                       <th pSortableColumn="name" style="width:780px;">Unassigned Projects <p-sortIcon field="name"></p-sortIcon></th>

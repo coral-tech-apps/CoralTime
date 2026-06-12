@@ -10,7 +10,7 @@ import { JiraUsersComponent } from "./jira-member-form/jira-member.component";
 import { ConfirmDialogComponent } from "src/app/shared/form/confirm-dialog/confirm-dialog.component";
 import { PagedResult } from "src/app/services/odata";
 import { Table } from "primeng/table";
-import { debounceTime, Subject, switchMap } from "rxjs";
+import { debounceTime, Subject, switchMap, tap } from "rxjs";
 import { ROWS_ON_PAGE } from "src/app/core/constant.service";
 import { JiraLinkedProjectComponent } from './jira-linked-project/jira-linked-project.component';
 
@@ -48,14 +48,28 @@ ngOnInit(){
 }
 
 private loadInitialState(): void{
-  this.subject.pipe(debounceTime(500),switchMap(() => {
+  this.subject.pipe(debounceTime(500),
+        tap(() => { this.updatingGrid = true; }),
+        switchMap(() => {
         return this.jiraSettingService.loadSettingsTable(this.authService.authUser.id, this.lastEvent, this.filterStr);
       }),)
         .subscribe((result : PagedResult<JiraSetting>) => {
-          this.tableData = result.data;
-          this.pagedResult = result;
+          if (!this.pagedResult || !this.lastEvent.first) {
+            this.pagedResult = result;
+          } else {
+            this.pagedResult.data = this.pagedResult.data.concat(result.data);
+          }
+          this.tableData = this.pagedResult.data;
+          this.lastEvent.first = this.pagedResult.data.length;
+          this.updatingGrid = false;
           this.checkIsAllSettings();
         });
+}
+
+onEndScroll(): void {
+  if (!this.isAllSettings) {
+    this.loadLazy();
+  }
 }
 
 private checkIsAllSettings(): void {

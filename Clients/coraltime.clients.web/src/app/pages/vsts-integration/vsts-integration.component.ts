@@ -1,5 +1,5 @@
 
-import {finalize, switchMap, debounceTime} from 'rxjs/operators';
+import {finalize, switchMap, debounceTime, tap} from 'rxjs/operators';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -78,7 +78,7 @@ export class VstsIntegrationComponent implements OnInit {
 
 	removeConnection(connection: VstsProjectConnection, target: HTMLElement): void {
 		target.classList.add('ct-loading');
-		this.vstsIntegrationService.odata.Delete(connection.id + '')
+		this.vstsIntegrationService.deleteConnection(connection.id)
 			.subscribe(() => {
 					this.notificationService.success('Connection was deleted.');
 					this.loadLazy(null, true);
@@ -97,7 +97,9 @@ export class VstsIntegrationComponent implements OnInit {
 	}
 
 	private getConnections(): void {
-		this.subject.pipe(debounceTime(500),switchMap(() => {
+		this.subject.pipe(debounceTime(500),
+			tap(() => { this.updatingGrid = true; }),
+			switchMap(() => {
 			return this.vstsIntegrationService.getConnectionsWithCount(this.lastEvent, this.filterStr);
 		}),)
 			.subscribe((res: PagedResult<VstsProjectConnection>) => {

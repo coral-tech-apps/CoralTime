@@ -151,8 +151,6 @@ namespace CoralTime.Common.Constants
         {
             public const string BaseControllerRoute = BaseApiRoute + "[controller]";
             public const string IdRoute = "{id}";
-            public const string IdRouteWithMembers = IdRoute + WithMembers;
-            public const string IdRouteWithProjects = IdRoute + WithProjects;
             public const string UpdateManagerRolesRoute = "UpdateManagerRoles";
             public const string ResetCacheRoute = "ResetCache";
             public const string UpdateClaimsRoute = "UpdateClaims";
@@ -192,25 +190,22 @@ namespace CoralTime.Common.Constants
             public const string Setup = "Setup";
 
             //TODO: delete this
-            public const string GetJiraUserIdStatus = "GetJiraUserIdStatus";
-            public const string GetAssignedUsers = "GetAssignedUsers/{id}";
-            public const string GetNotAssignedUsers = "GetNotAssignedUsers/{id}";
-            public const string GetMemberSetting = "GetMemberSetting";
-            public const string GetMemberSettings = "GetMemberSettings";
-            public const string AssignToIntegration = "AssignToIntegration";
-            public const string FillJiraMemberSetting = "FillJiraMemberSetting";
-            public const string UnAssignToIntegration = "UnAssignToIntegration";
-            public const string GetAllJiraProjectsBySettingId = "GetAllJiraProjectsBySettingId";
-            public const string GetUnAssignJiraProject = "GetUnAssignJiraProject/{id}";
-            public const string GetAssignJiraProject = "GetAssignJiraProject/{id}";
-            public const string LoadJiraProject = "LoadJiraProject";
-            public const string LinkProjects = "LinkProjects";
-            public const string RemovProjectJiraLink = "RemoveProjectJiraLink";
             public const string GetWorklogs = "GetWorklogs";
             public const string LoadTimeEntryWorklogs = "LoadTimeEntryWorklogs";
 
-            private const string WithMembers = "/members";
-            private const string WithProjects = "/projects";
+            public const string GetMemberSettingRoute = "GetMemberSetting";
+            public const string GetJiraMemberSettingsRoute = "GetMemberSettings";
+            public const string AssignToIntegrationRoute = "AssignToIntegration";
+            public const string UnAssignToIntegrationRoute = "UnAssignToIntegration";
+            public const string FillJiraMemberSettingRoute = "FillJiraMemberSetting";
+
+            public const string GetJiraUserIdStatusRoute = "GetJiraUserIdStatus";
+            public const string LoadJiraProjectRoute = "LoadJiraProject";
+            public const string LinkProjectsRoute = "LinkProjects";
+            public const string RemovProjectJiraLinkRoute = "RemoveProjectJiraLink";
+
+            public const string ChangeJiraFieldRoute = "ChangeJiraField";
+
             private const string WithNotifications = "/Notifications";
             private const string WithPreferences = "/Preferences";
             private const string WithPersonalInfo = "/PersonalInfo";
@@ -220,27 +215,39 @@ namespace CoralTime.Common.Constants
             
             public static class OData
             {
-                public const string BaseODataRoute = BaseApiRoute + "odata";
-                public const string BaseODataControllerRoute = BaseODataRoute + "/[controller]";
+                public const string ODataRoute = "odata";
+                public const string BaseODataApiRoute = BaseApiRoute + ODataRoute;
+                public const string BaseODataControllerRoute = BaseODataApiRoute + "/[controller]";
                 public const string TasksWithIdRoute = "Tasks(" + IdRoute + ")";
                 public const string ClientsWithIdRoute = "Clients(" + IdRoute + ")";
                 public const string ProjectsWithIdRoute = "Projects(" + IdRoute + ")";
-                public const string ProjectsRouteWithMembers = ProjectsWithIdRoute + WithMembers;
                 public const string MembersWithIdRoute = "Members(" + IdRoute + ")";
-                public const string MembersRouteWithProjects = MembersWithIdRoute + WithProjects;
-                public const string MemberProjectRolesWithIdRoute = "MemberProjectRoles(" + IdRoute + ")";
-                public const string MemberProjectRolesRouteWithProjects = MemberProjectRolesWithIdRoute + WithProjects;
-                public const string MemberProjectRolesRouteWithMembers = MemberProjectRolesWithIdRoute + WithMembers;
+                public const string GetAllMemberProjectRoles = "GetAllMemberProjectRoles";
                 public const string VstsProjectIntegrationWithIdRoute = "VstsProjectIntegration(" + IdRoute + ")";
-                public const string VstsProjectIntegrationMembersByProject = "VstsProjectIntegration(" + IdRoute + ")" + WithMembers;
                 public const string IsJiraEnableRoute = "IsJiraEnable";
-                public const string ChangeJiraFieldRoute = "ChangeJiraField";
-                public const string GetAssignedUsersRoute = "GetAssignedUsers(" + IdRoute + ")";
-                public const string GetNosAssignedUsersRoute = "GetNotAssignedUsers(" + IdRoute + ")";
+                public const string GetAssignedUsers = "GetAssignedUsers";
+                public const string GetNotAssignedUsers = "GetNotAssignedUsers";
                 public const string GetSettingsRoute = "GetSettings";
-                public const string GetAllJiraProjectsBySettingIdRotute = "GetAllJiraProjectsBySettingId(" + IdRoute + ")";
-                public const string GetUnAssignedJiraProjectRoute = "GetUnAssignJiraProject(" + IdRoute + ")";
-                public const string GetAssignedJiraProjectRoute = "GetAssignJiraProject(" + IdRoute + ")";
+                public const string GetAllJiraProjectsBySettingId = "GetAllJiraProjectsBySettingId";
+                public const string GetUnAssignJiraProject = "GetUnAssignJiraProject";
+                public const string GetAssignJiraProject = "GetAssignJiraProject";
+                public const string GetAllMembers = "GetAllMembers";
+                public const string GetNotAssignedProjectMembers = "GetNotAssignedProjectMembers";
+                public const string GetProjectMembers = "GetMembers";
+                public const string GetVstsProjectMembers = "GetMembers";
+                public const string GetTimeTrackerAllProjects = "GetTimeTrackerAllProjects";
+                public const string GetAllProjectRoles = "GetAllProjectRoles";
+                public const string GetAllMemberActions = "GetAllMemberActions";
+                public const string GetProjects = "GetProjects";
+                public const string GetAllProjectNames = "GetAllProjectNames";
+                public const string GetManageProjectsOfManager = "GetManageProjectsOfManager";
+                public const string GetAllTasks = "GetAllTasks";
+                public const string GetAllVstsProjects = "GetAllVstsProjects";
+                public const string GetAllClients = "GetAllClients";
+
+                public const string GetSettings = "GetSettings";
+
+                public const string IdParam = "id";
             }
         }
 

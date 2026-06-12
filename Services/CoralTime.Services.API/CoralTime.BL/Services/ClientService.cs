@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CoralTime.DAL.ConvertModelToView;
 using System.Text.Json;
+using AutoMapper.QueryableExtensions;
 
 namespace CoralTime.BL.Services
 {
@@ -51,12 +52,12 @@ namespace CoralTime.BL.Services
             return result;
         }
 
-        public IEnumerable<ClientView> GetAllClients()
+        public IQueryable<ClientView> GetAllClients()
         {
-            var result = Uow.ClientRepository.LinkedCacheGetList()
-                .Select(client => client.GetViewActiveInactiveProjectsForClientCount(Mapper));
+            var clients = Uow.ClientRepository.LinkedCacheGetList()
+                .AsQueryable();
 
-            return result;
+            return Mapper.ProjectTo<ClientView>(clients);
         }
 
         public ClientView GetById(int clientId)

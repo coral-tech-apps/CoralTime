@@ -25,16 +25,20 @@
       <div class="ct-popup-table-wrapper">
         <p-table #assignedTable class="ct-grid-container ct-grid-row-border ct-grid-blue"
                    [value]="assignedJiraProjects?.data"
-                   scrollable="true" [sortField]="'jiraProjectName'"
+                   [sortField]="'jiraProjectName'"
+                   [scrollable]="true"
+                   [scrollHeight]="'calc((100vh - 220px) / 2)'"
+                   [rows]="assignedProjectsLastEvent.rows"
                    [lazy]="true"
-                   [loading]="!isAssingedProjects"
+                   [loading]="firstLoadingAssignedJiraProject"
                    (onLazyLoad)="updateAssignedProjects($event)"
-                   (onMoreContent)="updateAssignedProjects()">
-
+                   ctPaginationScrolling
+                   [isLoading]="updatingAssignedJiraProject"
+                   (onEndScroll)="onEndScrollAssigned()">
               <ng-template pTemplate="header">
                   <tr>
                       <th pSortableColumn="jiraProjectName" [style]="{'width':'330px'}" class="ct-info-col">
-                          {{AddssignedJiraProjects?.count}} Jira project name
+                          Jira project name
                           <p-sortIcon field="jiraProjectName"></p-sortIcon>
                       </th>
                       <th pSortableColumn="projectName" [style]="{'width':'470px'}">
@@ -62,11 +66,16 @@
 
           <p-table #notAssignTable class="ct-grid-container ct-grid-row-border"
                    [value]="notAssignedJiraProjects?.data"
-                   scrollable="true" [sortField]="'key'"
+                   [sortField]="'key'"
+                   [scrollable]="true"
+                   [scrollHeight]="'calc((100vh - 220px) / 2)'"
+                   [rows]="notAssignedProjectsLastEvent.rows"
                    [lazy]="true"
-                   [loading]="!isNotAssingedProjects"
+                   [loading]="firstLoadingNotAssignedJiraProject"
                    (onLazyLoad)="updateNotAssignedProjects($event)"
-                   (onMoreContent)="updateNotAssignedProjects()">
+                   ctPaginationScrolling
+                   [isLoading]="updatingNotAssignedJiraProject"
+                   (onEndScroll)="onEndScrollNotAssigned()">
 
               <ng-template pTemplate="header">
                   <tr>

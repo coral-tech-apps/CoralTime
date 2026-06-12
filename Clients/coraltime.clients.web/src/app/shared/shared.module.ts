@@ -8,6 +8,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
+import { SkeletonModule } from 'primeng/skeleton';
 import { ReadMoreComponent } from './read-more/read-more.component';
 import { DirectivesModule } from './directives/directives.module';
 import { DatepickerModule } from './form/datepicker/datepicker.module';
@@ -37,6 +38,7 @@ import { CtFormatDatePipe } from './pipes/ct-format-date.pipe';
 		MenuModule,
     MultiSelectModule,
 		SharedFormModule,
+		SkeletonModule,
 		CtFormatDatePipe,
 		MarkdownModule.forRoot({
 			markedOptions: {
@@ -71,6 +73,7 @@ import { CtFormatDatePipe } from './pipes/ct-format-date.pipe';
 		MenuModule,
     MultiSelectModule,
 		SharedFormModule,
+		SkeletonModule,
 		UserPicComponent,
 		ConfirmationComponent,
 		ChartComponent,

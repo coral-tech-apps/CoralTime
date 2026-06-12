@@ -1,4 +1,4 @@
-import {switchMap, debounceTime} from 'rxjs/operators';
+import { switchMap, debounceTime, tap} from 'rxjs/operators';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Table } from 'primeng/table';
@@ -99,7 +99,9 @@ export class ProjectsComponent implements OnInit {
 	}
 
 	private getProjects(): void {
-		this.subject.pipe(debounceTime(500),switchMap(() => {
+		this.subject.pipe(debounceTime(500),
+			tap(() => { this.updatingGrid = true; }),
+			switchMap(() => {
 			return this.projectsService.getManagerProjectsWithCount(this.lastEvent, this.filterStr, this.isActiveTab);
 		}),)
 			.subscribe((res: PagedResult<Project>) => {

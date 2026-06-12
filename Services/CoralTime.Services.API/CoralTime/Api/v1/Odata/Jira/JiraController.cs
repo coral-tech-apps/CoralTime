@@ -1,7 +1,6 @@
-﻿using CoralTime.BL.Interfaces;
+using CoralTime.BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using CoralTime.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 using CoralTime.ViewModels.JiraSettings;
 using System.Threading.Tasks;
@@ -9,14 +8,12 @@ using CoralTime.ViewModels.Jira;
 using System;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
-using static CoralTime.Common.Constants.Constants.Routes.OData;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
-using Microsoft.AspNetCore.OData.Formatter;
+using ODataRoutes = CoralTime.Common.Constants.Constants.Routes.OData;
 
 namespace CoralTime.Services.API.Api.v1.Odata.Jira
 {
     [Authorize]
-    [Route(BaseODataControllerRoute)]
+    [Route(BaseControllerRoute)]
     public class JiraController : BaseODataController<JiraController, IJiraServices>
     {
         public JiraController(IJiraServices service, ILogger<JiraController> logger)
@@ -24,15 +21,17 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
         {
         }
 
-        // GET: api/v1/odata/Jira
+        // GET: api/v1/odata/Jira/GetSettings()
+        // GET: api/v1/Jira
         [HttpGet]
+        [HttpGet(ODataRoutes.GetSettings)]
         public IActionResult GetSettings()
         {
             return Ok(_service.GetSettings());
         }
 
-        // GET: api/v1/odata/Jira/GetJiraUserIdStatus
-        [HttpGet((Constants.Routes.GetJiraUserIdStatus))]
+        // GET: api/v1/Jira/GetJiraUserIdStatus?id=7
+        [HttpGet(GetJiraUserIdStatusRoute)]
         public async Task<IActionResult> ConnectJiraAsync(int id)
         {
             try
@@ -46,37 +45,37 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        // GET: api/v1/odata/Jira/GetAssignedUsers/7
-        [ODataRouteComponent(GetAssignedUsersRoute)]
-        [HttpGet(Constants.Routes.GetAssignedUsers)]
-        public IActionResult GetAssignedUsers([FromODataUri] int id)
+        // GET: api/v1/odata/Jira/GetAssignedUsers(id=7)
+        // GET: api/v1/Jira/GetAssignedUsers?id=7
+        [HttpGet(ODataRoutes.GetAssignedUsers)]
+        public IActionResult GetAssignedUsers(int id)
         {
             return Ok(_service.GetAssignedUsers(id));
         }
 
-        // GET: api/v1/odata/Jira/GetNotAssignedUsers
-        [ODataRouteComponent(GetAssignedUsersRoute)]
-        [HttpGet(Constants.Routes.GetNotAssignedUsers)]
+        // GET: api/v1/odata/Jira/GetNotAssignedUsers(id=7)
+        // GET: api/v1/Jira/GetNotAssignedUsers?id=7
+        [HttpGet(ODataRoutes.GetNotAssignedUsers)]
         public IActionResult GetNotAssignedUsers(int id)
         {
             return Ok(_service.GetNotAssignedUsers(id));
         }
 
-        //GET: api/v1/odata/Jira/GetMemberSetting
-        [HttpGet(Constants.Routes.GetMemberSetting)]
+        //GET: api/v1/Jira/GetMemberSetting
+        [HttpGet(GetMemberSettingRoute)]
         public IActionResult GetMemberSetting(int id)
         {
             return Ok(_service.GetJiraMemberSetting(id));
         }
 
-        // GET: api/v1/odata/Jira/GetMemberSettings
-        [HttpGet(Constants.Routes.GetMemberSettings)]
+        // GET: api/v1/Jira/GetMemberSettings
+        [HttpGet(GetJiraMemberSettingsRoute)]
         public IActionResult GetJiraMemberSettings(int id)
         {
             return Ok(_service.GetMemberSettings(id));
         }
 
-        // POST: api/v1/odata/Jira
+        // POST: api/v1/Jira
         [HttpPost]
         [Authorize(Policy = PolicyCreateJiraIntegration)]
         public IActionResult Create([FromBody] JiraSettingsView jiraSettingsView)
@@ -97,8 +96,8 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        // POST: api/v1/odata/Jira/AssignToIntegration
-        [HttpPost(Constants.Routes.AssignToIntegration)]
+        // POST: api/v1/Jira/AssignToIntegration
+        [HttpPost(AssignToIntegrationRoute)]
         public IActionResult AssignToIntegration(int memberId, int jiraSettingId)
         {
             try
@@ -112,7 +111,7 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        // PATCH: api/v1/odata/Jira
+        // PATCH: api/v1/Jira
         [HttpPatch]
         [Authorize(Policy = PolicyEditJiraIntegration)]
         public IActionResult Update(int id, [FromBody] JiraSettingsView jiraSettingsView)
@@ -133,8 +132,8 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        // PATCH: api/v1/odata/Jira
-        [HttpPatch(Constants.Routes.FillJiraMemberSetting)]
+        // PATCH: api/v1/Jira/FillJiraMemberSetting
+        [HttpPatch(FillJiraMemberSettingRoute)]
         public IActionResult FillJiraMember(int id, [FromBody] JiraMemberSettingView jiraMemberSettingView)
         {
             if (!ModelState.IsValid)
@@ -153,7 +152,7 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        // DELETE: api/v1/odata/Jira
+        // DELETE: api/v1/Jira
         [HttpDelete]
         public IActionResult Delete(int id)
         {
@@ -168,8 +167,8 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        // POST: api/v1/odata/Jira/AssignToIntegration
-        [HttpDelete(Constants.Routes.UnAssignToIntegration)]
+        // DELETE: api/v1/Jira/UnAssignToIntegration
+        [HttpDelete(UnAssignToIntegrationRoute)]
         public IActionResult UnAssignToIntegration(int memberId, int jiraSettingId)
         {
             try

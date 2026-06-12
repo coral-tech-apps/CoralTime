@@ -23,7 +23,9 @@
                    [lazy]="true"
                    [loading]="!isAssingedProjects"
                    (onLazyLoad)="updateAssignedProjects($event)"
-                   (onMoreContent)="updateAssignedProjects()">
+                   ctPaginationScrolling
+                   [isLoading]="updatingAssignedJiraProject"
+                   (onEndScroll)="onAssignedProjectsEndScroll()">
 
               <ng-template pTemplate="header">
                   <tr>

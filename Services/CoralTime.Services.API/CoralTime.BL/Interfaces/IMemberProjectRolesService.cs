@@ -3,12 +3,13 @@ using CoralTime.ViewModels.ProjectRole;
 using CoralTime.ViewModels.Projects;
 using System.Collections.Generic;
 using CoralTime.ViewModels.Member;
+using System.Linq;
 
 namespace CoralTime.BL.Interfaces
 {
     public interface IMemberProjectRoleService
     {
-        IEnumerable<ProjectRoleView> GetProjectRoles();
+        IQueryable<ProjectRoleView> GetProjectRoles();
 
         IEnumerable<MemberProjectRoleView> GetAllProjectRoles();
 
@@ -24,8 +25,8 @@ namespace CoralTime.BL.Interfaces
 
         bool FixAllManagerRoles();
 
-        IEnumerable<MemberView> GetNotAssignMembersAtProjByProjectId(int projectId);
+        IQueryable<MemberView> GetNotAssignMembersAtProjByProjectId(int projectId);
 
-        IEnumerable<ProjectView> GetNotAssignMembersAtProjByMemberId(int memberId);
+        IQueryable<ProjectView> GetNotAssignMembersAtProjByMemberId(int memberId);
     }
 }

@@ -17,6 +17,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using CoralTime.Common.Helpers;
+using CoralTime.Common.Services;
+using AutoMapper;
 
 namespace CoralTime.BL.Services
 {
@@ -27,14 +29,16 @@ namespace CoralTime.BL.Services
         private readonly ITimeEntryService _timeEntryService;
         private readonly ILogger _logger;
         private readonly IImageService _imageService;
+        private readonly IMapper _mapper;
 
-        public VstsService(UnitOfWork uow, IConfiguration config, ITimeEntryService timeEntryService, ILogger<VstsService> logger, IImageService imageService)
+        public VstsService(UnitOfWork uow, IConfiguration config, ITimeEntryService timeEntryService, ILogger<VstsService> logger, IImageService imageService, IMapper mapper)
         {
             _uow = uow;
             _config = config;
             _timeEntryService = timeEntryService;
             _logger = logger;
             _imageService = imageService;
+            _mapper = mapper;
         }
 
         public int? GetProjectIdByVstsProjectId(string projectId)
@@ -519,22 +523,13 @@ namespace CoralTime.BL.Services
             //return null;
         }
 
-        public IEnumerable<VstsMemberView> GetMembersByProjectId(int vstsProjectId)
+        public IQueryable<VstsMemberView> GetMembersByProjectId(int vstsProjectId)
         {
-            var members =_uow.VstsProjectUserRepository
-                .GetQuery()
-                .Where(x => x.VstsProjectId == vstsProjectId)
-                .Select(x => new VstsMemberView
-                {
-                    Id = x.Id,
-                    MemberId = x.VstsUser.MemberId,
-                    FullName = x.VstsUser.Member.FullName
-                }).ToList();
-            foreach (var item in members)
-            {
-                item.UrlIcon = _imageService.GetUrlIcon(item.MemberId);
-            }
-            return members;
+            var members = _uow.VstsProjectUserRepository
+                .GetQuery(asNoTracking: true)
+                .Where(x => x.VstsProjectId == vstsProjectId);
+
+            return _mapper.ProjectTo<VstsMemberView>(members);
         }
 
         #endregion VSTS Project Integration

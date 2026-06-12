@@ -1,5 +1,5 @@
 
-import {switchMap, debounceTime} from 'rxjs/operators';
+import {switchMap, debounceTime, tap} from 'rxjs/operators';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { PagedResult } from '../../../services/odata';
@@ -44,7 +44,9 @@ export class ProjectUsersFormComponent implements OnInit {
 	// ASSIGNED USERS GRID
 
 	loadAssignedUsers(): void {
-		this.assignedUsersSubject.pipe(debounceTime(500),switchMap(() => {
+		this.assignedUsersSubject.pipe(debounceTime(500),
+			tap(() => { this.updatingAssignedUsersGrid = true; }),
+			switchMap(() => {
 			return this.vstsIntegrationService.getConnectionsMembersWithCount(this.assignedUsersLastEvent, this.filterStr, this.connection.id);
 		}),)
 			.subscribe((res: PagedResult<UserProject>) => {

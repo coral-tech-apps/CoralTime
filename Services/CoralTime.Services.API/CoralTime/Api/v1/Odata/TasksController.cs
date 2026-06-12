@@ -1,20 +1,16 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.Tasks;
-using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
-using static CoralTime.Common.Constants.Constants.Routes.OData;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
-using Microsoft.AspNetCore.OData.Formatter;
+using ODataRouts = CoralTime.Common.Constants.Constants.Routes.OData;
 
 namespace CoralTime.Services.API.Api.v1.Odata
 {
-    [Route(BaseODataControllerRoute)]
+    [Route(BaseControllerRoute)]
     [Authorize]
     public class TasksController : BaseODataController<TasksController, ITasksService>
     {
@@ -22,14 +18,19 @@ namespace CoralTime.Services.API.Api.v1.Odata
             : base(logger, service) { }
 
 
-        // GET: api/v1/odata/Tasks
+        // GET: api/v1/odata/Tasks/GetAllTasks()
+        // GET: api/v1/Tasks
+        // TODO: returns not Iquerable collection -> response without Count
         [HttpGet]
-        public IActionResult Get() => new ObjectResult(_service.Get());
+        [HttpGet(ODataRouts.GetAllTasks)]
+        public IActionResult GetAllTasks()
+        {
+            return Ok(_service.Get());
+        }
 
-        // GET api/v1/odata/Tasks(2)
-        [ODataRouteComponent(TasksWithIdRoute)]
+        // GET api/v1/Tasks/2
         [HttpGet(IdRoute)]
-        public IActionResult GetById([FromODataUri]int id)
+        public IActionResult GetById(int id)
         {
             try
             {
@@ -42,7 +43,7 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // POST api/v1/odata/Tasks
+        // POST api/v1/Tasks
         [HttpPost]
         public IActionResult Create([FromBody]TaskTypeView taskTypeView)
         {
@@ -54,7 +55,7 @@ namespace CoralTime.Services.API.Api.v1.Odata
             try
             {
                 var taskTypeViewResult = _service.Create(taskTypeView);
-                var locationUri = $"{Request.Host}/{BaseODataRoute}/Tasks({taskTypeViewResult.Id})";
+                var locationUri = $"{Request.Host}/{ODataRouts.BaseODataApiRoute}/Tasks({taskTypeViewResult.Id})";
 
                 return Created(locationUri, taskTypeViewResult);
             }
@@ -64,10 +65,9 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // PUT api/v1/odata/Tasks(1)
-        [ODataRouteComponent(TasksWithIdRoute)]
+        // PUT api/v1/Tasks/1
         [HttpPut(IdRoute)]
-        public IActionResult Update([FromODataUri] int id, [FromBody]TaskTypeView taskTypeView)
+        public IActionResult Update(int id, [FromBody]TaskTypeView taskTypeView)
         {
             if (!ModelState.IsValid)
             {
@@ -87,10 +87,9 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // PATCH api/v1/odata/Tasks(1)
-        [ODataRouteComponent(TasksWithIdRoute)]
+        // PATCH api/v1/Tasks/1
         [HttpPatch(IdRoute)]
-        public IActionResult Patch([FromODataUri] int id, [FromBody]TaskTypeView taskTypeView)
+        public IActionResult Patch(int id, [FromBody]TaskTypeView taskTypeView)
         {
             if (!ModelState.IsValid)
             {
@@ -110,11 +109,10 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        //DELETE :api/v1/odata/Tasks(1)
+        //DELETE :api/v1/Tasks/1
         [Authorize(Policy = PolicyEditTask)]
-        [ODataRouteComponent(TasksWithIdRoute)]
         [HttpDelete(IdRoute)]
-        public IActionResult Delete([FromODataUri] int id)
+        public IActionResult Delete(int id)
         {
             try
             {

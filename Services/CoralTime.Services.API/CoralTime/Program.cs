@@ -1,10 +1,38 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
-using Microsoft.AspNetCore.DataProtection;
+﻿using CoralTime.BL.Interfaces;
+using CoralTime.BL.Interfaces.Reports;
+using CoralTime.BL.Services;
+using CoralTime.BL.Services.Notifications;
+using CoralTime.BL.Services.Reports.DropDownsAndGrid;
+using CoralTime.BL.Services.Reports.Export;
+using CoralTime.Common.Attributes;
+using CoralTime.Common.Constants;
+using CoralTime.Common.Middlewares;
+using CoralTime.Common.Services;
+using CoralTime.DAL;
+using CoralTime.DAL.Helpers;
+using CoralTime.DAL.Models;
+using CoralTime.DAL.Models.Jira;
+using CoralTime.DAL.Repositories;
+using CoralTime.Services.API;
+using CoralTime.Services.API.Services;
+using CoralTime.ViewModels.Clients;
+using CoralTime.ViewModels.Errors;
+using CoralTime.ViewModels.Jira;
+using CoralTime.ViewModels.JiraSettings;
+using CoralTime.ViewModels.Member;
+using CoralTime.ViewModels.MemberActions;
+using CoralTime.ViewModels.MemberProjectRoles;
+using CoralTime.ViewModels.ProjectRole;
+using CoralTime.ViewModels.Projects;
+using CoralTime.ViewModels.Settings;
+using CoralTime.ViewModels.Tasks;
+using CoralTime.ViewModels.Vsts;
+using Duende.IdentityServer.Configuration;
+using Duende.IdentityServer.Stores;
+using Duende.IdentityServer.Validation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
@@ -14,42 +42,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
-using NLog.Web;
-using CoralTime.BL.Interfaces;
-using CoralTime.BL.Services;
-using CoralTime.BL.Services.Notifications;
-using CoralTime.BL.Services.Reports.DropDownsAndGrid;
-using CoralTime.BL.Services.Reports.Export;
-using CoralTime.Common.Constants;
-using CoralTime.Common.Middlewares;
-using CoralTime.DAL;
-using CoralTime.DAL.Helpers;
-using CoralTime.DAL.Models;
-using CoralTime.Services.API.Services;
-using CoralTime.ViewModels.Clients;
-using CoralTime.ViewModels.Errors;
-using CoralTime.ViewModels.Member;
-using CoralTime.ViewModels.MemberActions;
-using CoralTime.ViewModels.MemberProjectRoles;
-using CoralTime.ViewModels.ProjectRole;
-using CoralTime.ViewModels.Projects;
-using CoralTime.ViewModels.Settings;
-using CoralTime.ViewModels.Tasks;
-using CoralTime.ViewModels.Vsts;
-using Duende.IdentityServer.Stores;
-using Duende.IdentityServer.Validation;
-using CoralTime.BL.Interfaces.Reports;
-using CoralTime.Common.Attributes;
-using CoralTime.DAL.Repositories;
 using Microsoft.OData.ModelBuilder;
-using CoralTime.Services.API;
-using CoralTime.ViewModels.JiraSettings;
-using Duende.IdentityServer.Configuration;
-using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using NLog.Web;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using ODataRoutes = CoralTime.Common.Constants.Constants.Routes.OData;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
@@ -223,7 +226,8 @@ builder.Services.AddMemoryCache();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddControllers()
-    .AddOData(opt => opt.AddRouteComponents("/odata", GetEdmModel()).EnableQueryFeatures(100));
+        .AddOData(opt => opt.AddRouteComponents(ODataRoutes.BaseODataApiRoute, GetEdmModel()).EnableQueryFeatures(100));
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -322,21 +326,160 @@ app.Run();
 IEdmModel GetEdmModel()
 {
     var odataBuilder = new ODataConventionModelBuilder();
-    odataBuilder.EntitySet<ClientView>("Clients");
     odataBuilder.EntitySet<ProjectView>("Projects");
     odataBuilder.EntitySet<MemberView>("Members");
-    odataBuilder.EntitySet<MemberProjectRoleView>("MemberProjectRoles");
+    odataBuilder.EntitySet<MemberView>("MemberViews");
     odataBuilder.EntitySet<ProjectRoleView>("ProjectRoles");
-    odataBuilder.EntitySet<TaskTypeView>("Tasks");
     odataBuilder.EntitySet<ErrorODataView>("Errors");
+    odataBuilder.EntitySet<TaskTypeView>("Tasks");
     odataBuilder.EntitySet<SettingsView>("Settings");
     odataBuilder.EntitySet<ManagerProjectsView>("ManagerProjects");
     odataBuilder.EntitySet<ProjectNameView>("ProjectsNames");
     odataBuilder.EntitySet<MemberActionView>("MemberActions");
     odataBuilder.EntitySet<VstsProjectIntegrationView>("VstsProjectIntegration");
-    odataBuilder.EntitySet<JiraSettingsView>("GetAssignedUsers");
+    odataBuilder.EntitySet<JiraProject>("JiraProject");
+    odataBuilder.EntitySet<JiraProjectView>("JiraProjectViews");
+    odataBuilder.EntitySet<JiraProjectLinkedView>("JiraProjectLinkedViews");
+    odataBuilder.EntitySet<JiraSetting>("Jira");
+    odataBuilder.EntitySet<JiraSettingsView>("JiraSettingsViews");
+
+    RegisterODataFunctions(odataBuilder);
+
     odataBuilder.EnableLowerCamelCase();
     return odataBuilder.GetEdmModel();
+}
+
+void RegisterODataFunctions(ODataConventionModelBuilder odataBuilder)
+{
+    // JiraProject Controller
+    var jiraProject = odataBuilder.EntitySet<JiraProject>("JiraProject");
+
+    var getJiraProj = jiraProject.EntityType.Collection
+        .Function(ODataRoutes.GetAllJiraProjectsBySettingId);
+    getJiraProj.Parameter<int>(ODataRoutes.IdParam);
+    getJiraProj.ReturnsCollectionFromEntitySet<JiraProject>("JiraProject");
+
+    var getUnAssign = jiraProject.EntityType.Collection
+        .Function(ODataRoutes.GetUnAssignJiraProject);
+    getUnAssign.Parameter<int>(ODataRoutes.IdParam);
+    getUnAssign.ReturnsCollectionFromEntitySet<JiraProjectView>("JiraProjectViews");
+
+    var getAssign = jiraProject.EntityType.Collection
+        .Function(ODataRoutes.GetAssignJiraProject);
+    getAssign.Parameter<int>(ODataRoutes.IdParam);
+    getAssign.ReturnsCollectionFromEntitySet<JiraProjectLinkedView>("JiraProjectLinkedViews");
+
+    // Jira Controller
+    var jira = odataBuilder.EntitySet<JiraSetting>("Jira");
+
+    var jiraSettings = jira.EntityType.Collection
+        .Function(ODataRoutes.GetSettings);
+    jiraSettings.ReturnsCollectionFromEntitySet<JiraSettingsView>("JiraSettingsViews");
+
+    var getAssignUs = jira.EntityType.Collection
+        .Function(ODataRoutes.GetAssignedUsers);
+    getAssignUs.Parameter<int>(ODataRoutes.IdParam);
+    getAssignUs.ReturnsCollectionFromEntitySet<MemberView>("MemberViews");
+
+    var getNotAssignUs = jira.EntityType.Collection
+        .Function(ODataRoutes.GetNotAssignedUsers);
+    getNotAssignUs.Parameter<int>(ODataRoutes.IdParam);
+    getNotAssignUs.ReturnsCollectionFromEntitySet<MemberView>("MemberViews");
+
+    // Clients Controller
+    var clients = odataBuilder.EntitySet<ClientView>("Clients");
+
+    var getClients = clients.EntityType.Collection
+        .Function(ODataRoutes.GetAllClients);
+    getClients.ReturnsCollectionFromEntitySet<ClientView>("Clients");
+
+    // Members Controller
+    var members = odataBuilder.EntitySet<MemberView>("Members");
+
+    var getMembers = members.EntityType.Collection
+        .Function(ODataRoutes.GetAllMembers);
+    getMembers.ReturnsCollectionFromEntitySet<MemberView>("Members");
+
+    var getMemberProjects = members.EntityType.Collection
+        .Function(ODataRoutes.GetProjects);
+    getMemberProjects.Parameter<int>(ODataRoutes.IdParam);
+    getMemberProjects.ReturnsCollectionFromEntitySet<ProjectView>("Projects");
+
+    // Projects Controller
+    var projects = odataBuilder.EntitySet<ProjectView>("Projects");
+
+    var getProjectMembers = projects.EntityType.Collection
+        .Function(ODataRoutes.GetProjectMembers);
+    getProjectMembers.Parameter<int>(ODataRoutes.IdParam);
+    getProjectMembers.ReturnsCollectionFromEntitySet<MemberView>("Members");
+
+    var getTrackerAllProj = projects.EntityType.Collection
+        .Function(ODataRoutes.GetTimeTrackerAllProjects);
+    getTrackerAllProj.ReturnsCollectionFromEntitySet<ProjectView>("Projects");
+
+    // MemberProjectRoles Controller
+    var memberProjectRoles = odataBuilder.EntitySet<MemberProjectRoleView>("MemberProjectRoles");
+
+    var getMemberProjectRoles = memberProjectRoles.EntityType.Collection
+        .Function(ODataRoutes.GetAllMemberProjectRoles);
+    getMemberProjectRoles.ReturnsCollectionFromEntitySet<MemberProjectRoleView>("MemberProjectRoles");
+
+    var getMprMembers = memberProjectRoles.EntityType.Collection
+        .Function(ODataRoutes.GetNotAssignedProjectMembers);
+    getMprMembers.Parameter<int>(ODataRoutes.IdParam);
+    getMprMembers.ReturnsCollectionFromEntitySet<MemberView>("Members");
+
+    var getMprProjects = memberProjectRoles.EntityType.Collection
+        .Function(ODataRoutes.GetProjects);
+    getMprProjects.Parameter<int>(ODataRoutes.IdParam);
+    getMprProjects.ReturnsCollectionFromEntitySet<ProjectView>("Projects");
+
+    // ProjectRoles Controller
+    var projectRoles = odataBuilder.EntitySet<ProjectRoleView>("ProjectRoles");
+
+    var getProjectRoles = projectRoles.EntityType.Collection
+        .Function(ODataRoutes.GetAllProjectRoles);
+    getProjectRoles.ReturnsCollectionFromEntitySet<ProjectRoleView>("ProjectRoles");
+
+    // ProjectNames Controller
+    var projectNames = odataBuilder.EntitySet<ProjectNameView>("ProjectsNames");
+
+    var getProjectNames = projectNames.EntityType.Collection
+        .Function(ODataRoutes.GetAllProjectNames);
+    getProjectNames.ReturnsCollectionFromEntitySet<ProjectNameView>("ProjectsNames");
+
+    // ManagerProjects Controller
+    var managerProjects = odataBuilder.EntitySet<ManagerProjectsView>("ManagerProjects");
+
+    var getManagerProjects = managerProjects.EntityType.Collection
+        .Function(ODataRoutes.GetManageProjectsOfManager);
+    getManagerProjects.ReturnsCollectionFromEntitySet<ManagerProjectsView>("ManagerProjects");
+
+    // MemberActions Controller
+    var memberActions = odataBuilder.EntitySet<MemberActionView>("MemberActions");
+
+    var getMemberActions = memberActions.EntityType.Collection
+        .Function(ODataRoutes.GetAllMemberActions);
+    getMemberActions.ReturnsCollectionFromEntitySet<MemberActionView>("MemberActions");
+
+    // Tasks Controller
+    var tasks = odataBuilder.EntitySet<TaskTypeView>("Tasks");
+
+    var getTaskTypes = tasks.EntityType.Collection
+        .Function(ODataRoutes.GetAllTasks);
+    getTaskTypes.ReturnsCollectionFromEntitySet<TaskTypeView>("Tasks");
+
+    // VstsProjectIntegration Controller
+    var vstsProjectIntegration = odataBuilder.EntitySet<VstsProjectIntegrationView>("VstsProjectIntegration");
+
+    var getVstsProjects = vstsProjectIntegration.EntityType.Collection
+        .Function(ODataRoutes.GetAllVstsProjects);
+    getVstsProjects.ReturnsCollectionFromEntitySet<VstsProjectIntegrationView>("VstsProjectIntegration");
+
+    var getVstsMembers = vstsProjectIntegration.EntityType.Collection
+        .Function(ODataRoutes.GetVstsProjectMembers);
+    getVstsMembers.Parameter<int>(ODataRoutes.IdParam);
+    getVstsMembers.ReturnsCollectionFromEntitySet<MemberView>("Members");
 }
 
 void CombineFileWkhtmltopdf(IWebHostEnvironment environment)

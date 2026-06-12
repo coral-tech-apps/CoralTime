@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using static CoralTime.Common.Constants.Constants.Routes.OData;
+using static CoralTime.Common.Constants.Constants.Routes;
+using ODataRoutes = CoralTime.Common.Constants.Constants.Routes.OData;
 
 namespace CoralTime.Services.API.Api.v1.Odata.Projects
 {
-    [Route(BaseODataControllerRoute)]
+    [Route(BaseControllerRoute)]
     [Authorize]
     public class ProjectsNamesController : BaseODataController<ProjectsNamesController, IProjectService>
     {
@@ -15,9 +16,11 @@ namespace CoralTime.Services.API.Api.v1.Odata.Projects
         {
         }
 
-        // GET: api/v1/odata/ProjectsNames
+        // GET: api/v1/odata/ProjectsNames/GetAllProjectNames()
+        // GET: api/v1/ProjectsNames
         [HttpGet]
-        public IActionResult Get()
+        [HttpGet(ODataRoutes.GetAllProjectNames)]
+        public IActionResult GetAllProjectNames()
         {
             try
             {

@@ -1,5 +1,5 @@
 
-import {switchMap, debounceTime} from 'rxjs/operators';
+import {switchMap, debounceTime, tap} from 'rxjs/operators';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Client } from '../../../models/client';
@@ -63,7 +63,9 @@ export class ClientProjectAssignmentComponent implements OnInit {
 	// ASSIGNED PROJECTS GRID
 
 	loadAssignedProjects(): void {
-		this.assignedProjectsSubject.pipe(debounceTime(500),switchMap(() => {
+		this.assignedProjectsSubject.pipe(debounceTime(500),
+			tap(() => { this.updatingAssignedProjectsGrid = true; }),
+			switchMap(() => {
 			return this.projectsService.getClientProjects(this.assignedProjectsLastEvent, this.filterStr, this.client.isActive, this.client.id);
 		}),)
 			.subscribe(
@@ -126,7 +128,9 @@ export class ClientProjectAssignmentComponent implements OnInit {
 	// NOT ASSIGNED PROJECTS GRID
 
 	loadNotAssignedProjects(): void {
-		this.notAssignedProjectsSubject.pipe(debounceTime(500),switchMap(() => {
+		this.notAssignedProjectsSubject.pipe(debounceTime(500),
+			tap(() => { this.updatingNotAssignedProjectsGrid = true; }),
+			switchMap(() => {
 			return this.projectsService.getClientProjects(this.notAssignedProjectsLastEvent, this.filterStr, true, null);
 		}),)
 			.subscribe((res: PagedResult<Project>) => {
@@ -196,7 +200,7 @@ export class ClientProjectAssignmentComponent implements OnInit {
 		}
 
 		target.classList.add('ct-loading');
-		this.projectsService.odata.Put(newProjectClient, newProjectClient.id.toString())
+		this.projectsService.update(newProjectClient)
 			.subscribe(() => {
 					this.updateAssignedProjects(null, true);
 					this.updateNotAssignedProjects(null, true);

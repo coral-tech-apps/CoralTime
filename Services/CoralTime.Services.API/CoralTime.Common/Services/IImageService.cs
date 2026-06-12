@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace CoralTime.BL.Interfaces
+namespace CoralTime.Common.Services
 {
     public interface IImageService
     {

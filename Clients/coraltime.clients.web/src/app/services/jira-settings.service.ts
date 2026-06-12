@@ -18,7 +18,7 @@ export class JiraSettingService {
 	}
 
   getAssignedUsers(id: number, event, filterStr = ''): any{
-    let odata = this.odataFactory.CreateService<User>('jira/GetAssignedUsers/'+id);
+    let odata = this.odataFactory.CreateService<User>(`Jira/GetAssignedUsers(id=${id})`);
     let filters: string[] = []
 
     let query = odata
@@ -42,7 +42,7 @@ export class JiraSettingService {
   }
 
   getNotAssignedUsers(id: number, event, filterStr = ''): any{
-    let odata = this.odataFactory.CreateService<User>('jira/GetNotAssignedUsers/'+id);
+    let odata = this.odataFactory.CreateService<User>(`Jira/GetNotAssignedUsers(id=${id})`);
     let filters: string[] = []
 
     let query = odata
@@ -74,7 +74,7 @@ export class JiraSettingService {
   }
 
   isEnableJira(): Observable<boolean>{
-    return this.http.get<boolean>(this.constantService.apiBaseUrl + '/odata/Members/IsJiraEnable').pipe(
+    return this.http.get<boolean>(this.constantService.apiBaseUrl + '/Members/IsJiraEnable').pipe(
       map(response => {
         return response;
       })
@@ -90,7 +90,7 @@ export class JiraSettingService {
   }
 
   changeJiraStatus(status: boolean): Observable<boolean>{
-    return this.http.post<boolean>(this.constantService.apiBaseUrl + `/odata/Members/ChangeJiraField?jiraSatus=${status}`, {}).pipe(
+    return this.http.post<boolean>(this.constantService.apiBaseUrl + `/Members/ChangeJiraField?jiraSatus=${status}`, {}).pipe(
         map(response => {
           return response;
         })
@@ -113,7 +113,7 @@ export class JiraSettingService {
   }
 
   loadSettingsTable(id: number, event, filterStr = ''): any{
-    let odata = this.odataFactory.CreateService<JiraSetting>('Jira');
+    let odata = this.odataFactory.CreateService<JiraSetting>('Jira/GetSettings()');
     let filters: string[] = []
 
     let query = odata

@@ -4,23 +4,37 @@ import {of as observableOf,  Observable } from 'rxjs';
 import {mergeMap, map} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PagedResult, ODataServiceFactory, ODataService } from './odata';
+import { PagedResult, ODataServiceFactory } from './odata';
 import { ODataConfiguration } from './odata/config';
 import { Project } from '../models/project';
+import { TableLazyLoadEvent } from 'primeng/table';
 
 @Injectable()
 export class ProjectsService {
-	readonly odata: ODataService<Project>;
+	private readonly baseUrl = '/api/v1/Projects';
 
 	constructor(private http: HttpClient,
 	            private odataFactory: ODataServiceFactory,
 	            private odataConfig: ODataConfiguration) {
-		this.odata = this.odataFactory.CreateService<Project>('Projects');
+	}
+
+	create(project: Project): Observable<Project> {
+		return this.http.post<Project>(this.baseUrl, project);
+	}
+
+	update(project: Project): Observable<Project> {
+		return this.http.put<Project>(`${this.baseUrl}/${project.id}`, project);
+	}
+
+	delete(id: number): Observable<any> {
+		return this.http.delete(`${this.baseUrl}/${id}`);
 	}
 
 	getProjects(): Observable<Project[]> {
-		let filters = [];
-		let query = this.odata
+		const odata = this.odataFactory.CreateService<Project>('Projects/GetTimeTrackerAllProjects()');
+
+		const filters = [];
+		const query = odata
 			.Query();
 
 		query.OrderBy('name asc');
@@ -36,9 +50,9 @@ export class ProjectsService {
 			throw new Error('Please, specify projects name');
 		}
 
-		let odata = this.odataFactory.CreateService<Project>('ProjectsNames');
+		const odata = this.odataFactory.CreateService<Project>('ProjectsNames/GetAllProjectNames()');
 
-		let query = odata
+		const query = odata
 			.Query()
 			.Top(1);
 
@@ -46,21 +60,22 @@ export class ProjectsService {
 
 		return query.Exec().pipe(
 			mergeMap(result => {
-				let project = result[0] ? new Project(result[0]) : null;
+				const project = result[0] ? new Project(result[0]) : null;
 				return observableOf(project);
 			}));
 	}
 
 	getManagerProjectsCount(): Observable<number> {
-		return this.http.get(this.odataConfig.baseUrl + '/ManagerProjects?$count=true')
-      .pipe(map((res : any) => Array.isArray(res) ? res.length : NaN));
+		const odata = this.odataFactory.CreateService<Project>('ManagerProjects/GetManageProjectsOfManager()');
+
+		return odata.Query().ExecWithCount().pipe(map(res => res.count));
 	}
 
-	getManagerProjectsWithCount(event, filterStr = '', isActive: boolean = true): Observable<PagedResult<Project>> {
-		let odata = this.odataFactory.CreateService<Project>('ManagerProjects');
+	getManagerProjectsWithCount(event: TableLazyLoadEvent, filterStr = '', isActive: boolean = true): Observable<PagedResult<Project>> {
+		const odata = this.odataFactory.CreateService<Project>('ManagerProjects/GetManageProjectsOfManager()');
 
-		let filters = [];
-		let query = odata
+		const filters = [];
+		const query = odata
 			.Query()
 			.Top(event.rows)
 			.Skip(event.first);
@@ -85,11 +100,11 @@ export class ProjectsService {
 
 	//  CLIENTS
 
-	getClientProjects(event, filterStr = '', isActive: boolean = true, clientId: number = null): Observable<PagedResult<Project>> {
-		let odata = this.odataFactory.CreateService<Project>('Projects');
+	getClientProjects(event: TableLazyLoadEvent, filterStr = '', isActive: boolean = true, clientId: number = null): Observable<PagedResult<Project>> {
+		const odata = this.odataFactory.CreateService<Project>('Projects/GetTimeTrackerAllProjects()');
 
-		let filters = [];
-		let query = odata
+		const filters = [];
+		const query = odata
 			.Query()
 			.Top(event.rows)
 			.Skip(event.first);

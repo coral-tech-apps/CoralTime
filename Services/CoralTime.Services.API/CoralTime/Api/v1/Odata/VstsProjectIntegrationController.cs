@@ -1,21 +1,17 @@
 ﻿using CoralTime.BL.Interfaces;
 using CoralTime.Common.Exceptions;
 using CoralTime.ViewModels.Vsts;
-using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
-using static CoralTime.Common.Constants.Constants.Routes.OData;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
-using Microsoft.AspNetCore.OData.Formatter;
+using ODataRoutes = CoralTime.Common.Constants.Constants.Routes.OData;
 
 namespace CoralTime.Services.API.Api.v1.Odata
 {
-    [Route(BaseODataControllerRoute)]
+    [Route(BaseControllerRoute)]
     [Authorize(Policy = PolicyViewIntegrationPage)]
     public class VstsProjectIntegrationController : BaseODataController<VstsProjectIntegrationController, IVstsService>
     {
@@ -27,14 +23,16 @@ namespace CoralTime.Services.API.Api.v1.Odata
             _vstsAdminService = vstsAdminService;
         }
 
-        // GET: api/v1/odata/VstsProjectIntegration
+        // GET: api/v1/odata/VstsProjectIntegration/GetAllVstsProjects()
+        // GET: api/v1/VstsProjectIntegration
         [HttpGet]
-        public IActionResult Get() => new ObjectResult(_service.Get());
+        [HttpGet(ODataRoutes.GetAllVstsProjects)]
+        public IActionResult GetAllVstsProjects() => new ObjectResult(_service.Get());
 
-        // GET api/v1/odata/VstsProjectIntegration(2)/members
-        [ODataRouteComponent(VstsProjectIntegrationMembersByProject)]
-        [HttpGet(IdRouteWithMembers)]
-        public IActionResult GetNotAssignMembersAtProjByProjectId([FromODataUri] int id)
+        // GET: api/v1/odata/VstsProjectIntegration/GetMembers(id=2)
+        // GET: api/v1/VstsProjectIntegration/GetMembers&id=2
+        [HttpGet(OData.GetVstsProjectMembers)]
+        public IActionResult GetMembers(int id)
         {
             try
             {
@@ -46,7 +44,7 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // POST api/v1/odata/VstsProjectIntegration
+        // POST api/v1/VstsProjectIntegration
         [HttpPost]
         public IActionResult Create([FromBody]VstsProjectIntegrationView vstsProjectIntegrationView)
         {
@@ -61,7 +59,7 @@ namespace CoralTime.Services.API.Api.v1.Odata
 
                 UpdateVstsInfo(vstsProjectIntegrationViewResult);
 
-                var locationUri = $"{Request.Host}/{BaseODataRoute}/VstsProjectIntegrationView({vstsProjectIntegrationViewResult.Id})";
+                var locationUri = $"{Request.Host}/{ODataRoutes.BaseODataApiRoute}/VstsProjectIntegrationView({vstsProjectIntegrationViewResult.Id})";
 
                 return Created(locationUri, vstsProjectIntegrationViewResult);
             }
@@ -71,10 +69,9 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // PUT api/v1/odata/VstsProjectIntegration(1)
-        [ODataRouteComponent(VstsProjectIntegrationWithIdRoute)]
+        // PUT api/v1/VstsProjectIntegration/1
         [HttpPut(IdRoute)]
-        public IActionResult Update([FromODataUri] int id, [FromBody]VstsProjectIntegrationView vstsProjectIntegrationView)
+        public IActionResult Update(int id, [FromBody]VstsProjectIntegrationView vstsProjectIntegrationView)
         {
             if (!ModelState.IsValid)
             {
@@ -97,10 +94,9 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        //DELETE :api/v1/odata/VstsProjectIntegration(1)
-        [ODataRouteComponent(VstsProjectIntegrationWithIdRoute)]
+        //DELETE :api/v1/VstsProjectIntegration/1
         [HttpDelete(IdRoute)]
-        public IActionResult Delete([FromODataUri] int id)
+        public IActionResult Delete(int id)
         {
             try
             {

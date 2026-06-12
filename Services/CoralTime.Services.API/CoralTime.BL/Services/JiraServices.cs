@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using CoralTime.BL.Interfaces;
 using CoralTime.Common.Exceptions;
+using CoralTime.Common.Helpers;
+using CoralTime.Common.Services;
+using CoralTime.DAL.ConvertModelToView;
 using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Repositories;
 using CoralTime.ViewModels.Jira;
 using CoralTime.ViewModels.JiraSettings;
 using CoralTime.ViewModels.Member;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
-using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace CoralTime.BL.Services
 {
     [Authorize]
     public class JiraServices : BaseService, IJiraServices
     {
-        private readonly IImageService _avatarService;
+        private readonly IImageService _imageService;
 
-        public JiraServices(UnitOfWork uow, IMapper mapper, IImageService avatarService)
+        public JiraServices(UnitOfWork uow, IMapper mapper, IImageService imageService)
             :base(uow, mapper)
         {
-            _avatarService = avatarService;
+            _imageService = imageService;
         }
 
         private async Task<string> GetJiraAccountIdAsync(string domain, string email, string apiToken)
@@ -152,22 +153,22 @@ namespace CoralTime.BL.Services
             return result;
         }
 
-        public List<JiraMemberSettingView> GetMemberSettings(int memberId)
+        public IQueryable<JiraMemberSettingView> GetMemberSettings(int memberId)
         {
             if(memberId == 0)
             {
                 memberId = Uow.MemberCurrent.Id;
             }
-            return Uow.jiraMemberSettingsRepository.GetJiraMemberSettings(memberId);
-             
+
+            return Uow.jiraMemberSettingsRepository.GetJiraMemberSettings(memberId); 
         }
 
-        public List<MemberView> GetAssignedUsers(int id)
+        public IQueryable<MemberView> GetAssignedUsers(int id)
         {
             return GetUsers(id, true);
         }
 
-        public List<MemberView> GetNotAssignedUsers(int id)
+        public IQueryable<MemberView> GetNotAssignedUsers(int id)
         {
             return GetUsers(id, false);
         }
@@ -324,24 +325,21 @@ namespace CoralTime.BL.Services
             }
         }
 
-        private List<MemberView> GetUsers(int id, bool assigned)
+        private IQueryable<MemberView> GetUsers(int id, bool assigned)
         {
             var assignedJiraUsers = Uow.jiraMemberSettingsRepository.GetAssignedUsers(id);
-            var assignedJiraUsersId = assignedJiraUsers.Select(u => u.Id).ToArray();
+            var assignedJiraUsersId = assignedJiraUsers.Select(u => u.Id);
 
-            var query = Uow.MemberRepository.GetQuery();
+            var query = Uow.MemberRepository
+                .GetQuery(asNoTracking: true)
+                .Include(x => x.User)
+                .Select(x => x);
+
             query = assigned
                 ? query.Where(m => assignedJiraUsersId.Contains(m.Id))
                 : query.Where(m => !assignedJiraUsersId.Contains(m.Id) && m.EnableJira);
 
-            var result = Mapper.Map<List<MemberView>>(query);
-
-            foreach(var item in result)
-            {
-                item.UrlIcon = _avatarService.GetUrlIcon(item.Id);
-            }
-
-            return result;
+            return query.GetQuerableView(_imageService);
         }
     }
 }

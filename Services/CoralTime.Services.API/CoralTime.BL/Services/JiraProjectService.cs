@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
 using CoralTime.BL.Interfaces;
+using CoralTime.Common.Exceptions;
 using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Repositories;
-using Newtonsoft.Json;
+using CoralTime.ViewModels.Jira;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using CoralTime.ViewModels.Jira;
-using CoralTime.Common.Exceptions;
-using CoralTime.ViewModels.JiraSettings;
-using Newtonsoft.Json.Linq;
 
 namespace CoralTime.BL.Services
 {
@@ -114,38 +112,38 @@ namespace CoralTime.BL.Services
             }
         }
 
-        public List<JiraProject> GetJiraProjects(int jiraSettingId)
+        public IQueryable<JiraProject> GetJiraProjects(int jiraSettingId)
         {
-            return Uow.JiraProjectRepository.GetJiraProjectsBySettingId(jiraSettingId);
+            return Uow.JiraProjectRepository
+                .GetQuery(asNoTracking: true)
+                .Where(j => j.JiraSettingId == jiraSettingId);
         }
 
-        public List<JiraProjectView> GetUnAssignJiraProject(int jiraSettingId)
+        public IQueryable<JiraProjectView> GetUnAssignJiraProject(int jiraSettingId)
         {
             var linkedProjectIds = Uow.LinkedJiraProjectRepository
-                .GetLinkedJiraProjects(jiraSettingId)
+                .GetQuery(asNoTracking: true)
+                .Where(x => x.JiraProject.JiraSettingId == jiraSettingId)
                 .Select(j => j.JiraProjectId);
 
             var unLinkedProjects = Uow.JiraProjectRepository
-                .GetAll()
-                .Where(j => !linkedProjectIds.Contains(j.Id) && j.JiraSettingId == jiraSettingId)
-                .ToList();
+                .GetQuery(asNoTracking: true)
+                .Where(j => !linkedProjectIds.Contains(j.Id) && j.JiraSettingId == jiraSettingId);
 
-            var result = Mapper.Map<List<JiraProjectView>>(unLinkedProjects);
-
-            return result;
+            return Mapper.ProjectTo<JiraProjectView>(unLinkedProjects);
         }
 
-        public List<JiraProjectLinkedView> GetAssingJiraProject(int jiraSettingId)
+        public IQueryable<JiraProjectLinkedView> GetAssingJiraProject(int jiraSettingId)
         {
             var linkedProject = Uow.LinkedJiraProjectRepository
-              .GetLinkedJiraProjects(jiraSettingId)
+              .GetQuery(asNoTracking: true)
+              .Where(x => x.JiraProject.JiraSettingId == jiraSettingId)
               .Select(j => new JiraProjectLinkedView
               {
                   Id = j.Id,
                   JiraProjectName = j.JiraProject.Name,
                   ProjectName = j.Project.Name
-              })
-              .ToList();
+              });
 
             return linkedProject;
         }

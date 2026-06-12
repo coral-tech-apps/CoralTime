@@ -1,5 +1,5 @@
 
-import {switchMap, debounceTime} from 'rxjs/operators';
+import {switchMap, debounceTime, tap} from 'rxjs/operators';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Project } from '../../../models/project';
@@ -41,7 +41,9 @@ export class ProjectTasksComponent implements OnInit {
 	}
 
 	loadTasks(): void {
-		this.tasksSubject.pipe(debounceTime(500),switchMap(() => {
+		this.tasksSubject.pipe(debounceTime(500),
+			tap(() => { this.updatingGrid = true; }),
+			switchMap(() => {
 			return this.tasksService.getProjectTasks(this.tasksLastEvent, this.filterStr, this.project.id);
 		}),)
 			.subscribe((res: PagedResult<Task>) => {

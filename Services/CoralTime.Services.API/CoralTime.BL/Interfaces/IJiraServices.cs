@@ -16,11 +16,11 @@ namespace CoralTime.BL.Interfaces
 
         JiraMemberSettingView GetJiraMemberSetting(int jiraSettingId);
 
-        List<MemberView> GetAssignedUsers(int id);
+        IQueryable<MemberView> GetAssignedUsers(int id);
 
-        List<MemberView> GetNotAssignedUsers(int id);
+        IQueryable<MemberView> GetNotAssignedUsers(int id);
 
-        List<JiraMemberSettingView> GetMemberSettings(int memberId);
+        IQueryable<JiraMemberSettingView> GetMemberSettings(int memberId);
 
         void CreateSetting(JiraSettingsView jiraSettingsView);
 

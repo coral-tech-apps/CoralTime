@@ -1,6 +1,8 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
+using CoralTime.Common.Helpers;
+using CoralTime.Common.Services;
 using CoralTime.DAL.Models.Member;
+using System.Linq;
 using MemberView = CoralTime.ViewModels.Member.MemberView;
 
 namespace CoralTime.DAL.ConvertModelToView
@@ -14,6 +16,40 @@ namespace CoralTime.DAL.ConvertModelToView
             memberView.UrlIcon = urlIcon;
             
             return memberView;
+        }
+
+        public static IQueryable<MemberView> GetQuerableView(this IQueryable<Member> members, IImageService imageService)
+        {
+            return members
+                .Select(x => new MemberView
+                {
+                    UserName = x.User.UserName,
+                    Email = x.User.Email,
+                    Id = x.Id,
+                    IsActive = x.User.IsActive,
+                    DefaultProjectId = x.DefaultProjectId,
+                    Role = x.User.Role,
+                    DefaultTaskId = x.DefaultTaskId,
+                    FullName = x.FullName,
+                    IsWeeklyTimeEntryUpdatesSend = x.IsWeeklyTimeEntryUpdatesSend,
+                    DateFormatId = x.DateFormatId,
+                    SendEmailDays = x.SendEmailDays.ToString(),
+                    TimeFormat = x.TimeFormat,
+                    SendEmailTime = x.SendEmailTime,
+                    WeekStart = (int)x.WeekStart,
+                    UrlIcon = imageService.GetUrlIcon(x.Id),
+                    WorkingHoursPerDay = x.WorkingHoursPerDay
+                })
+                .AsEnumerable()
+                .Select(x =>
+                {
+                    x.DateFormat = DateFormatsStorage.GetDateFormatById(x.DateFormatId);
+                    x.SendEmailDays = string.IsNullOrWhiteSpace(x.SendEmailDays) ?
+                        string.Empty :
+                        ConverterBitMask.DayOfWeekIntToString(int.Parse(x.SendEmailDays));
+                    return x;
+                })
+                .AsQueryable();
         }
 
         public static MemberView GetViewWithProjectCount(this Member member, IMapper mapper, string urlIcon)

@@ -1,5 +1,5 @@
 
-import {finalize, switchMap, debounceTime} from 'rxjs/operators';
+import {finalize, switchMap, debounceTime, tap} from 'rxjs/operators';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Project } from '../../../models/project';
 import { UserProject } from '../../../models/user-project';
@@ -84,7 +84,9 @@ export class ProjectUsersComponent implements OnInit {
 	// ASSIGNED USERS GRID
 
 	loadAssignedUsers(): void {
-		this.assignedUsersSubject.pipe(debounceTime(500),switchMap(() => {
+		this.assignedUsersSubject.pipe(debounceTime(500),
+			tap(() => { this.updatingAssignedUsersGrid = true; }),
+			switchMap(() => {
 			return this.usersService.getProjectUsersWithCount(this.assignedUsersLastEvent, this.filterStr, this.project.id);
 		}),)
 			.subscribe((res: PagedResult<UserProject>) => {
@@ -146,7 +148,9 @@ export class ProjectUsersComponent implements OnInit {
 	// NOT ASSIGNED USERS GRID
 
 	loadNotAssignedUsers(): void {
-		this.notAssignedUsersSubject.pipe(debounceTime(500),switchMap(() => {
+		this.notAssignedUsersSubject.pipe(debounceTime(500),
+			tap(() => { this.updatingNotAssignedUsersGrid = true; }),
+			switchMap(() => {
 			return this.usersService.getUnassignedUsersWithCount(this.notAssignedUsersLastEvent, this.filterStr, this.project.id);
 		}),)
 			.subscribe((res: PagedResult<User>) => {

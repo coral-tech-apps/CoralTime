@@ -1,7 +1,5 @@
 using CoralTime.BL.Interfaces;
 using CoralTime.ViewModels.Clients;
-using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,22 +7,22 @@ using System;
 using System.Text.Json;
 using static CoralTime.Common.Constants.Constants;
 using static CoralTime.Common.Constants.Constants.Routes;
-using static CoralTime.Common.Constants.Constants.Routes.OData;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
-using Microsoft.AspNetCore.OData.Formatter;
+using ODataRoutes = CoralTime.Common.Constants.Constants.Routes.OData;
 
 namespace CoralTime.Services.API.Api.v1.Odata
 {
-    [Route(BaseODataControllerRoute)]
+    [Route(BaseControllerRoute)]
     [Authorize]
     public class ClientsController : BaseODataController<ClientsController, IClientService>
     {
         public ClientsController(IClientService service, ILogger<ClientsController> logger)
             : base(logger, service) { }
 
-        // GET: api/v1/odata/Clients
+        // GET: api/v1/odata/Clients/GetAllClients()
+        // GET: api/v1/Clients
         [HttpGet]
-        public IActionResult Get()
+        [HttpGet(ODataRoutes.GetAllClients)]
+        public IActionResult GetAllClients()
         {
             try
             {
@@ -36,7 +34,7 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // POST: api/v1/odata/Clients
+        // POST: api/v1/Clients
         [HttpPost]
         [Authorize(Policy = PolicyAddClient)]
         public IActionResult Create([FromBody] ClientView clientData)
@@ -50,7 +48,7 @@ namespace CoralTime.Services.API.Api.v1.Odata
             {
                 var result = _service.Create(clientData);
 
-                var locationUri = $"{Request.Host}/{BaseODataRoute}/Clients({result.Id})";
+                var locationUri = $"{Request.Host}/{ODataRoutes.BaseODataApiRoute}/Clients({result.Id})";
                 return Created(locationUri, result);
             }
             catch (Exception e)
@@ -59,10 +57,9 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // GET api/v1/odata/Clients(2)
-        [ODataRouteComponent(ClientsWithIdRoute)]
+        // GET api/v1/Clients/2
         [HttpGet(IdRoute)]
-        public IActionResult GetById([FromODataUri] int id)
+        public IActionResult GetById(int id)
         {
             try
             {
@@ -75,11 +72,10 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // PUT: api/v1/odata/Clients(2)
-        [ODataRouteComponent(ClientsWithIdRoute)]
+        // PUT: api/v1/Clients/2
         [HttpPut(IdRoute)]
         [Authorize(Policy = PolicyEditClient)]
-        public IActionResult Update([FromODataUri]int id, [FromBody] JsonElement clientData)
+        public IActionResult Update(int id, [FromBody] JsonElement clientData)
         {
             if (!ModelState.IsValid)
             {
@@ -97,11 +93,10 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        // PATCH: api/v1/odata/Clients(30)
-        [ODataRouteComponent(ClientsWithIdRoute)]
+        // PATCH: api/v1/Clients/2
         [HttpPatch(IdRoute)]
         [Authorize(Policy = PolicyEditClient)]
-        public IActionResult Patch([FromODataUri]int id, [FromBody] JsonElement clientData)
+        public IActionResult Patch(int id, [FromBody] JsonElement clientData)
         {
             if (!ModelState.IsValid)
             {
@@ -119,11 +114,10 @@ namespace CoralTime.Services.API.Api.v1.Odata
             }
         }
 
-        //DELETE :api/v1/odata/Clients(1)
+        //DELETE :api/v1/Clients/1
         [HttpDelete(IdRoute)]
-        [ODataRouteComponent(ClientsWithIdRoute)]
         [Authorize(Policy = PolicyEditClient)]
-        public IActionResult Delete([FromODataUri]int id)
+        public IActionResult Delete(int id)
         {
             return BadRequest($"Can't delete the client with Id - {id}");
         }

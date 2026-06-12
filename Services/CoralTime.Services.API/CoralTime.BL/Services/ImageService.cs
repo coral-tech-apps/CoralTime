@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using CoralTime.BL.Helpers;
-using CoralTime.BL.Interfaces;
 using CoralTime.Common.Constants;
 using CoralTime.Common.Exceptions;
 using CoralTime.DAL.ConvertViewToModel;
@@ -14,6 +13,7 @@ using System.Text;
 using CoralTime.DAL.Models.Member;
 using System.Drawing;
 using System.Drawing.Imaging;
+using CoralTime.Common.Services;
 
 namespace CoralTime.BL.Services
 {

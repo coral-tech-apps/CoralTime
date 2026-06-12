@@ -21,7 +21,8 @@
                    [lazy]="true"
                    [loading]="!isAllAssignedUsers"
                    (onLazyLoad)="updateAssignedUsers($event)"
-                   (onMoreContent)="updateAssignedUsers()"
+                   ctPaginationScrolling
+                   [isLoading]="updatingAssignedUsersGrid"
                    (onEndScroll)="onAssignedUsersEndScroll()">
 
               <ng-template pTemplate="header">
@@ -92,7 +93,8 @@
                    [lazy]="true"
                    [loading]="!isAllNotAssignedUsers"
                    (onLazyLoad)="updateNotAssignedUsers($event)"
-                   (onMoreContent)="updateNotAssignedUsers()"
+                   ctPaginationScrolling
+                   [isLoading]="updatingNotAssignedUsersGrid"
                    (onEndScroll)="onNotAssignedUsersEndScroll()">
 
               <ng-template pTemplate="header">

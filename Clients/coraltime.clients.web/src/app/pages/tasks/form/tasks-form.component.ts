@@ -98,9 +98,9 @@ export class TaskFormComponent implements OnInit {
 		this.task = this.model.toTask(this.task);
 
 		if (this.task.id) {
-			submitObservable = this.tasksService.odata.Put(this.task, this.task.id.toString());
+			submitObservable = this.tasksService.update(this.task);
 		} else {
-			submitObservable = this.tasksService.odata.Post(this.task);
+			submitObservable = this.tasksService.create(this.task);
 		}
 
 		this.isRequestLoading = true;

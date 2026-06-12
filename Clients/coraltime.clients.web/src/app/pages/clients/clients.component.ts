@@ -1,4 +1,4 @@
-import { switchMap, debounceTime} from 'rxjs/operators';
+import { switchMap, debounceTime, tap} from 'rxjs/operators';
 import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -92,7 +92,9 @@ export class ClientsComponent implements OnInit {
 	}
 
 	private getClients(): void {
-		this.subject.pipe(debounceTime(500),switchMap(() => {
+		this.subject.pipe(debounceTime(500),
+			tap(() => { this.updatingGrid = true; }),
+			switchMap(() => {
 			return this.clientsService.getClientsWithCount(this.lastEvent, this.filterStr, this.isActiveTab);
 		}),)
 			.subscribe((res: PagedResult<Client>) => {

@@ -13,7 +13,6 @@ import { AuthService } from '../../core/auth/auth.service';
 
 @Injectable()
 export class CalendarProjectsService {
-	readonly odata: ODataService<Project>;
 
 	defaultProject: Project;
 	filteredProjects: number[] = [];
@@ -22,8 +21,6 @@ export class CalendarProjectsService {
 	constructor(private authService: AuthService,
 	            private impersonationService: ImpersonationService,
 	            private odataFactory: ODataServiceFactory) {
-		this.odata = this.odataFactory.CreateService<Project>('Projects');
-
 		if (localStorage.hasOwnProperty('DEFAULT_PROJECT')) {
 			this.defaultProject = JSON.parse(localStorage.getItem('DEFAULT_PROJECT'));
 		}
@@ -50,8 +47,10 @@ export class CalendarProjectsService {
 	}
 
 	loadProjects(showOnlyActive: boolean): Observable<Project[]> {
+		const odata = this.odataFactory.CreateService<Project>('Projects/GetTimeTrackerAllProjects()');
+
 		let filters = [];
-		let query = this.odata
+		let query = odata
 			.Query();
 
 		query.OrderBy('name asc');

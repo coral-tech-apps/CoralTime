@@ -13,8 +13,6 @@ import { PagedResult, ODataServiceFactory, ODataService } from './odata';
 
 @Injectable()
 export class UsersService {
-	readonly odata: ODataService<User>;
-
 	onChange: EventEmitter<User> = new EventEmitter<User>();
 	private userInfo: User;
 
@@ -22,7 +20,6 @@ export class UsersService {
 	            private constantService: ConstantService,
 	            private http: HttpClient,
 	            private odataFactory: ODataServiceFactory) {
-		this.odata = this.odataFactory.CreateService<User>('Members');
 		if (localStorage.hasOwnProperty('USER_INFO')) {
 			this.userInfo = JSON.parse(localStorage.getItem('USER_INFO'));
 		}
@@ -90,7 +87,7 @@ export class UsersService {
 	}
 
 	getProjectUsersWithCount(event, filterStr = '', projectId: number): Observable<PagedResult<UserProject>> {
-		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles');
+		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles/GetAllMemberProjectRoles()');
 
 		let filters = [];
 		let query = odata
@@ -119,8 +116,10 @@ export class UsersService {
 	}
 
 	getUsersWithCount(event, filterStr = '', isActive?: boolean): Observable<PagedResult<User>> {
+		const odata = this.odataFactory.CreateService<User>('Members/GetAllMembers()');
+		
 		let filters = [];
-		let query = this.odata
+		let query = odata
 			.Query()
 			.Top(event.rows)
 			.Skip(event.first);
@@ -159,7 +158,8 @@ export class UsersService {
 			throw new Error('Please, specify email');
 		}
 
-		let query = this.odata
+		const odata = this.odataFactory.CreateService<User>('Members/GetAllMembers()');
+		let query = odata
 			.Query()
 			.Top(1);
 
@@ -174,7 +174,7 @@ export class UsersService {
 
 	getUserById(id: number): Observable<User> {
 
-		return this.http.get(this.constantService.apiBaseUrl + '/odata/Members/' + id).pipe(
+		return this.http.get(this.constantService.apiBaseUrl + '/Members/' + id).pipe(
 			map((user: Object) => new User(user)));
 	}
 
@@ -184,7 +184,8 @@ export class UsersService {
 			throw new Error('Please, specify username');
 		}
 
-		let query = this.odata
+		const odata = this.odataFactory.CreateService<User>('Members/GetAllMembers()');
+		let query = odata
 			.Query()
 			.Top(1);
 
@@ -198,7 +199,7 @@ export class UsersService {
 	}
 
 	getUserProjectsWithCount(event, filterStr = '', memberId: number): Observable<PagedResult<UserProject>> {
-		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles');
+		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles/GetAllMemberProjectRoles()');
 
 		let filters = [];
 		let query = odata
@@ -227,7 +228,7 @@ export class UsersService {
 	}
 
 	getUnassignedProjectsWithCount(event, filterStr = '', memberId: number): Observable<PagedResult<Project>> {
-		let odata = this.odataFactory.CreateService<Project>('MemberProjectRoles/' + memberId + '/projects');
+		let odata = this.odataFactory.CreateService<Project>('MemberProjectRoles/GetProjects(id=' + memberId + ')');
 
 		let filters = [];
 		let query = odata
@@ -256,7 +257,7 @@ export class UsersService {
 	}
 
 	getUnassignedUsersWithCount(event, filterStr = '', projectId: number): Observable<PagedResult<User>> {
-		let odata = this.odataFactory.CreateService<User>('MemberProjectRoles/' + projectId + '/members');
+		let odata = this.odataFactory.CreateService<User>('MemberProjectRoles/GetNotAssignedProjectMembers(id=' + projectId + ')');
 
 		let filters = [];
 		let query = odata
@@ -287,5 +288,17 @@ export class UsersService {
 		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles');
 
 		return odata.Delete(userProject.id.toString());
+	}
+
+	updateUser(id: number, user: User): Observable<User> {
+		return this.http.put<User>(this.constantService.apiBaseUrl + '/Members/' + id, user);
+	}
+
+	createUser(user: User): Observable<string> {
+		return this.http.post<string>(this.constantService.apiBaseUrl + '/Members', user);
+	}
+
+	deleteUser(id: number): Observable<void> {
+		return this.http.delete<void>(this.constantService.apiBaseUrl + '/Members/' + id);
 	}
 }

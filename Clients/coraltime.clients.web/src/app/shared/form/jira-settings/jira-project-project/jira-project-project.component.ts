@@ -1,4 +1,4 @@
-import { debounceTime, Subject, switchMap } from 'rxjs';
+import { debounceTime, Subject, switchMap, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/core/auth/auth.service';
@@ -54,13 +54,28 @@ export class JiraProjectProjectComponent implements OnInit{
   //Assigned Projects
 
   loadAssignedProjects(): void{
-    this.assignedProjectsSubject.pipe(debounceTime(500),switchMap(() => {
+    this.assignedProjectsSubject.pipe(debounceTime(500),
+      tap(() => { this.updatingAssignedJiraProject = true; }),
+      switchMap(() => {
       return this.jiraProjectService.getAssignedProjects(this.jiraSettingId, this.assignedProjectsLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<AssignedJiraProject>) => {
-      this.assignedJiraProjects = result;
-      this.isAssingedProjects = true;
+      if (!this.assignedJiraProjects || !this.assignedProjectsLastEvent.first || this.updatingAssignedJiraProject) {
+        this.assignedJiraProjects = result;
+      } else {
+        this.assignedJiraProjects.data = this.assignedJiraProjects.data.concat(result.data);
+      }
+
+      this.assignedProjectsLastEvent.first = this.assignedJiraProjects.data.length;
+      this.updatingAssignedJiraProject = false;
+      this.checkIsAllAssignedProjects();
     })
+  }
+
+  onAssignedProjectsEndScroll(): void {
+    if (!this.isAssingedProjects) {
+      this.updateAssignedProjects();
+    }
   }
 
   updateAssignedProjects(event = null, updatePage?: boolean): void {
@@ -89,13 +104,28 @@ export class JiraProjectProjectComponent implements OnInit{
   //Not Assigned Projects
 
   loadUnAssignedProjects(): void{
-    this.notAssignedProjectsSubject.pipe(debounceTime(500),switchMap(() => {
+    this.notAssignedProjectsSubject.pipe(debounceTime(500),
+      tap(() => { this.updatingNotAssignedJiraProject = true; }),
+      switchMap(() => {
       return this.jiraProjectService.getNotAssignedProjects(this.jiraSettingId, this.notAssignedProjectsLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<NotAssignedJiraProject>) => {
-      this.notAssignedJiraProjects = result;
-      this.isNotAssingedProjects = true;
+      if (!this.notAssignedJiraProjects || !this.notAssignedProjectsLastEvent.first || this.updatingNotAssignedJiraProject) {
+        this.notAssignedJiraProjects = result;
+      } else {
+        this.notAssignedJiraProjects.data = this.notAssignedJiraProjects.data.concat(result.data);
+      }
+
+      this.notAssignedProjectsLastEvent.first = this.notAssignedJiraProjects.data.length;
+      this.updatingNotAssignedJiraProject = false;
+      this.checkIsAllNotAssignedProjects();
     })
+  }
+
+  onNotAssignedProjectsEndScroll(): void {
+    if (!this.isNotAssingedProjects) {
+      this.updateNotAssignedProjects();
+    }
   }
 
   updateNotAssignedProjects(event = null, updatePage?: boolean): void {
@@ -127,6 +157,18 @@ export class JiraProjectProjectComponent implements OnInit{
     this.assignTable.filterGlobal(value, 'contains');
     if(this.notAssignTable){
      this.notAssignTable.filterGlobal(value, 'contains');
+    }
+  }
+
+  private checkIsAllAssignedProjects(): void {
+    if (this.assignedJiraProjects && this.assignedJiraProjects.data.length >= this.assignedJiraProjects.count) {
+      this.isAssingedProjects = true;
+    }
+  }
+
+  private checkIsAllNotAssignedProjects(): void {
+    if (this.notAssignedJiraProjects && this.notAssignedJiraProjects.data.length >= this.notAssignedJiraProjects.count) {
+      this.isNotAssingedProjects = true;
     }
   }
 }

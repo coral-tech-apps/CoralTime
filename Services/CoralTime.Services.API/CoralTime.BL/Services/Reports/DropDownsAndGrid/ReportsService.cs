@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CoralTime.BL.Interfaces;
 using CoralTime.BL.Interfaces.Reports;
+using CoralTime.Common.Services;
 using CoralTime.DAL.Models.Member;
 using CoralTime.DAL.Repositories;
 using Microsoft.Extensions.Configuration;

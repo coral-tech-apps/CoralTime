@@ -2,21 +2,36 @@
 import {of as observableOf,  Observable } from 'rxjs';
 
 import {mergeMap, map} from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PagedResult, ODataServiceFactory, ODataService } from './odata';
 import { Client } from '../models/client';
 
 @Injectable()
 export class ClientsService {
-	readonly odata: ODataService<Client>;
+	private readonly baseUrl = '/api/v1/Clients';
 
-	constructor(private odataFactory: ODataServiceFactory) {
-		this.odata = this.odataFactory.CreateService<Client>('Clients');
+	constructor(private http: HttpClient,
+	            private odataFactory: ODataServiceFactory) {
+	}
+
+	create(client: Client): Observable<Client> {
+		return this.http.post<Client>(this.baseUrl, client);
+	}
+
+	update(client: Client): Observable<Client> {
+		return this.http.put<Client>(`${this.baseUrl}/${client.id}`, client);
+	}
+
+	delete(id: number): Observable<any> {
+		return this.http.delete(`${this.baseUrl}/${id}`);
 	}
 
 	getClients(): Observable<Client[]> {
+		const odata = this.odataFactory.CreateService<Client>('Clients/GetAllClients()');
+		
 		const filters = [];
-		const query = this.odata
+		const query = odata
 			.Query();
 
 		query.OrderBy('name asc');
@@ -27,8 +42,10 @@ export class ClientsService {
 	}
 
 	getClientsWithCount(event, filterStr = '', isActive: boolean = true): Observable<PagedResult<Client>> {
+		const odata = this.odataFactory.CreateService<Client>('Clients/GetAllClients()');
+		
 		const filters = [];
-		const query = this.odata
+		const query = odata
 			.Query()
 			.Top(event.rows)
 			.Skip(event.first);
@@ -58,7 +75,8 @@ export class ClientsService {
 			throw new Error('Please, specify client name');
 		}
 
-		const query = this.odata
+		const odata = this.odataFactory.CreateService<Client>('Clients/GetAllClients()');
+		const query = odata
 			.Query()
 			.Top(1);
 

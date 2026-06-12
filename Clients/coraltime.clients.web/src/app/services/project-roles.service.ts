@@ -10,7 +10,7 @@ export class ProjectRolesService {
     readonly odata: ODataService<ProjectRole>;
 
     constructor(private odataFactory: ODataServiceFactory) {
-        this.odata = this.odataFactory.CreateService<ProjectRole>('ProjectRoles');
+        this.odata = this.odataFactory.CreateService<ProjectRole>('ProjectRoles/GetAllProjectRoles()');
     }
 
     getProjectRoles(): Observable<ProjectRole[]> {

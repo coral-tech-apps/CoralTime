@@ -5,14 +5,14 @@
 </div>
 <!-- [resizeObservable]="resizeObservable"-->
 <div class="ct-data-table-wrapper" (window:resize)="onResize()">
-  <p-table class="ct-grid-container ct-grid-row-border"
+  <p-table #tableRef class="ct-grid-container ct-grid-row-border"
            [value]="pagedResult?.data"
-
            scrollable="true" [sortField]="'date'"
            [lazy]="true"
            [loading]="!isAllActions"
            (onLazyLoad)="loadLazy($event)"
-           (onMoreContent)="loadLazy()"
+           ctPaginationScrolling
+           [isLoading]="updatingGrid"
            (onEndScroll)="onEndScroll()">
       <ng-template pTemplate="header">
           <tr>

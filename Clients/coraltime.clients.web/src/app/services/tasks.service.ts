@@ -2,6 +2,7 @@
 import {of as observableOf,  Observable } from 'rxjs';
 
 import {mergeMap, map} from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PagedResult, ODataServiceFactory, ODataService } from './odata';
 import { Task } from '../models/task';
@@ -9,9 +10,23 @@ import { Task } from '../models/task';
 @Injectable()
 export class TasksService {
 	readonly odata: ODataService<Task>;
+	private readonly baseUrl = '/api/v1/Tasks';
 
-	constructor(private odataFactory: ODataServiceFactory) {
-		this.odata = this.odataFactory.CreateService<Task>('Tasks');
+	constructor(private http: HttpClient,
+	            private odataFactory: ODataServiceFactory) {
+		this.odata = this.odataFactory.CreateService<Task>('Tasks/GetAllTasks()');
+	}
+
+	create(task: Task): Observable<Task> {
+		return this.http.post<Task>(this.baseUrl, task);
+	}
+
+	update(task: Task): Observable<Task> {
+		return this.http.put<Task>(`${this.baseUrl}/${task.id}`, task);
+	}
+
+	delete(id: number): Observable<any> {
+		return this.http.delete(`${this.baseUrl}/${id}`);
 	}
 
 	getActiveTasks(projectId?: number): Observable<PagedResult<Task>> {
@@ -110,12 +125,12 @@ export class TasksService {
 	toggleActive(task: Task): Observable<any> {
 		task.isActive = !task.isActive;
 
-		return this.odata.Patch({
+		return this.http.patch(`${this.baseUrl}/${task.id}`, {
 			isActive: task.isActive,
             name: task.name,
             projectId: task.projectId,
 			color: task.color,
 			description: task.description
-		}, task.id.toString());
+		});
 	}
 }

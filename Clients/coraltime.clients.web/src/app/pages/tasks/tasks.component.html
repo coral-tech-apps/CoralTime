@@ -25,7 +25,8 @@
                [lazy]="true"
                [loading]="!isAllTasks"
                (onLazyLoad)="loadLazy($event)"
-               (onMoreContent)="loadLazy()"
+               ctPaginationScrolling
+               [isLoading]="updatingGrid"
                (onEndScroll)="onEndScroll()">
 
           <ng-template pTemplate="header">

@@ -33,8 +33,9 @@
         [loading]="!isAllAssignedProjects"
         [globalFilterFields]="['name', 'clientName', 'description']"
         (onLazyLoad)="updateAssignedProjects($event)"
-        (onMoreContent)="updateAssignedProjects()"
-        (onEndScrollEvent)="onAssignedProjectsEndScroll()"
+        ctPaginationScrolling
+        [isLoading]="updatingAssignedProjectsGrid"
+        (onEndScroll)="onAssignedProjectsEndScroll()"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -72,8 +73,9 @@
         [loading]="!isAllNotAssignedProjects"
         [globalFilterFields]="['name', 'clientName', 'description']"
         (onLazyLoad)="updateNotAssignedProjects($event)"
-        (onMoreContent)="updateNotAssignedProjects()"
-        (onEndScrollEvent)="onNotAssignedProjectsEndScroll()"
+        ctPaginationScrolling
+        [isLoading]="updatingNotAssignedProjectsGrid"
+        (onEndScroll)="onNotAssignedProjectsEndScroll()"
       >
         <ng-template pTemplate="header">
           <tr>

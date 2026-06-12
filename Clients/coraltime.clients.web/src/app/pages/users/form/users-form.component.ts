@@ -140,11 +140,11 @@ export class UsersFormComponent implements OnInit {
 		let updatedUser = this.model.toUser(this.user);
 
 		if (updatedUser.id) {
-			submitObservable = this.userService.odata.Put(updatedUser, updatedUser.id.toString());
+			submitObservable = this.userService.updateUser(updatedUser.id, updatedUser);
 		} else {
 			updatedUser.dateFormatId = this.settingsService.getDefaultDateFormat();
 			updatedUser.timeFormat = this.settingsService.getDefaultTimeFormat();
-			submitObservable = this.userService.odata.Post(updatedUser);
+			submitObservable = this.userService.createUser(updatedUser);
 		}
 
 		this.isRequestLoading = true;

@@ -4,7 +4,7 @@ import { NotificationService } from '../../../core/notification.service';
 import { AclService } from '../../../core/auth/acl.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { User } from '../../../models/user';
-import { debounceTime, Subject, switchMap } from 'rxjs';
+import { debounceTime, Subject, switchMap, tap } from 'rxjs';
 import { JiraSetting } from 'src/app/models/jira-setting';
 import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { HttpClient } from '@angular/common/http';
@@ -56,13 +56,27 @@ export class JiraUsersComponent implements OnInit{
   //Assigned users
 
   loadAssignedUsers(): void{
-    this.assignedUsersSubject.pipe(debounceTime(500),switchMap(() => {
+    this.assignedUsersSubject.pipe(debounceTime(500),
+    tap(() => { this.updatingAssignedUsersGrid = true; }),
+    switchMap(() => {
       return this.jiraSettingService.getAssignedUsers(this.jiraSetting.id,  this.assignedUsersLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<User>) => {
-      this.assignedUsersPagedResult = result;
+      if (!this.assignedUsersPagedResult || !this.assignedUsersLastEvent.first) {
+        this.assignedUsersPagedResult = result;
+      } else {
+        this.assignedUsersPagedResult.data = this.assignedUsersPagedResult.data.concat(result.data);
+      }
+      this.assignedUsersLastEvent.first = this.assignedUsersPagedResult.data.length;
+      this.updatingAssignedUsersGrid = false;
       this.checkIsAllAssignedUsers();
     })
+  }
+
+  onAssignedUsersEndScroll(): void {
+    if (!this.isAllAssignedUsers) {
+      this.updateAssignedUsers();
+    }
   }
 
   updateAssignedUsers(event = null, updatePage?: boolean): void {
@@ -97,13 +111,27 @@ export class JiraUsersComponent implements OnInit{
   //UnAssignedUsers
 
   loadnUnAssignedUsers(): void{
-    this.notAssignedUsersSubject.pipe(debounceTime(500),switchMap(() => {
+    this.notAssignedUsersSubject.pipe(debounceTime(500),
+    tap(() => { this.updatingNotAssignedUsersGrid = true; }),
+    switchMap(() => {
       return this.jiraSettingService.getNotAssignedUsers(this.jiraSetting.id, this.notAssignedUsersLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<User>) => {
-      this.notAssignedUsersPagedResult = result;
+      if (!this.notAssignedUsersPagedResult || !this.notAssignedUsersLastEvent.first) {
+        this.notAssignedUsersPagedResult = result;
+      } else {
+        this.notAssignedUsersPagedResult.data = this.notAssignedUsersPagedResult.data.concat(result.data);
+      }
+      this.notAssignedUsersLastEvent.first = this.notAssignedUsersPagedResult.data.length;
+      this.updatingNotAssignedUsersGrid = false;
       this.checkIsAllUnassignedUsers();
     })
+  }
+
+  onNotAssignedUsersEndScroll(): void {
+    if (!this.isAllNotAssignedUsers) {
+      this.updateNotAssignedUsers();
+    }
   }
 
   updateNotAssignedUsers(event = null, updatePage?: boolean): void {

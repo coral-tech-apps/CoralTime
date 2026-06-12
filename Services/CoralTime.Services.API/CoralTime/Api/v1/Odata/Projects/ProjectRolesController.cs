@@ -3,20 +3,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using static CoralTime.Common.Constants.Constants.Routes.OData;
+using static CoralTime.Common.Constants.Constants.Routes;
 
 namespace CoralTime.Services.API.Api.v1.Odata.Projects
 {
-    [Route(BaseODataControllerRoute)]
+    [Route(BaseControllerRoute)]
     [Authorize]
     public class ProjectRolesController : BaseODataController<ProjectRolesController, IMemberProjectRoleService>
     {
         public ProjectRolesController(IMemberProjectRoleService service, ILogger<ProjectRolesController> logger)
             : base(logger, service) { }
 
-        // GET: api/v1/odata/ProjectRoles
+        // GET: api/v1/odata/ProjectRoles/GetAllProjectRoles()
+        // GET: api/v1/ProjectRoles
         [HttpGet]
-        public IActionResult Get()
+        [HttpGet(OData.GetAllProjectRoles)]
+        public IActionResult GetAllProjectRoles()
         {
             try
             {

@@ -1,5 +1,5 @@
 
-import { switchMap, debounceTime, filter } from 'rxjs/operators';
+import { switchMap, debounceTime, filter, tap } from 'rxjs/operators';
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { PagedResult } from '../../../services/odata';
@@ -53,7 +53,9 @@ export class MemberActionsComponent implements OnInit {
 	}
 
 	getMemberActions(): void {
-		this.subject.pipe(debounceTime(500),switchMap(() => {
+		this.subject.pipe(debounceTime(500),
+			tap(() => { this.updatingGrid = true; }),
+			switchMap(() => {
 			return this.memberActionsService.getMemberActions(this.lastEvent, this.filterStr);
 		}),)
 			.subscribe((res: PagedResult<MemberAction>) => {

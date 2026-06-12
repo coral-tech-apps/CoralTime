@@ -18,19 +18,22 @@ export class JiraProjectService {
 	}
 
   getAllJiraProjectsBySettingId(id: number): Observable<any[]>{
-    return this.http.get<any[]>(this.constantService.jiraProject + `/GetAllJiraProjectsBySettingId?jiraSettingId=${id}`).pipe(
+    return this.http.get<any[]>(this.constantService.jiraProject + `/GetAllJiraProjectsBySettingId?id=${id}`).pipe(
       map(response => {
         return response;
       })
     )
   }
 
-  getNotAssignedProjects(id: number, event: TableLazyLoadEvent, filterStr = ''): any{
-    let odata = this.odataFactory.CreateService<NotAssignedJiraProject>('JiraProject/GetUnAssignJiraProject/'+id);
+  getNotAssignedProjects(id: number, event: TableLazyLoadEvent, filterStr = ''): 
+  Observable<PagedResult<NotAssignedJiraProject>> {
+    let odata = this.odataFactory.CreateService<NotAssignedJiraProject>(`JiraProject/GetUnAssignJiraProject(id=${id})`);
     let filters: string[] = []
 
     let query = odata
-      .Query();
+      .Query()
+      .Skip(event.first)
+      .Top(event.rows);
 
     if (event.sortField) {
       query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
@@ -50,12 +53,15 @@ export class JiraProjectService {
 		}));
   }
 
-  getAssignedProjects(id: number, event: TableLazyLoadEvent, filterStr = ''): any{
-    let odata = this.odataFactory.CreateService<AssignedJiraProject>('JiraProject/GetAssignJiraProject/'+id);
+  getAssignedProjects(id: number, event: TableLazyLoadEvent, filterStr = ''): 
+    Observable<PagedResult<AssignedJiraProject>> {
+    let odata = this.odataFactory.CreateService<AssignedJiraProject>(`JiraProject/GetAssignJiraProject(id=${id})`);
     let filters: string[] = []
 
     let query = odata
-      .Query();
+      .Query()
+      .Skip(event.first)
+      .Top(event.rows);
 
     if (event.sortField) {
       query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));

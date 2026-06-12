@@ -10,20 +10,7 @@
   .ui-datatable table {
     table-layout: auto;
   }
-
-  .ct-popup-table-wrapper {
-    .ui-datatable-scrollable-body {
-      max-height: calc((100vh - 325px) / 2);
-      overflow: hidden;
-    }
-
-    .ct-grid-container:only-child {
-      .ui-datatable-scrollable-body {
-        max-height: calc(100vh - 250px);
-      }
-    }
-  }
-
+    
   .ct-dialog-message {
     margin: 30px 0 20px;
   }

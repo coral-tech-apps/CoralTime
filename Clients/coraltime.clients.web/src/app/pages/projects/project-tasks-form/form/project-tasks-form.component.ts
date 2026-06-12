@@ -74,7 +74,7 @@ export class ProjectTasksFormComponent {
 		});
 
 		target.classList.add('ct-loading');
-		this.tasksService.odata.Post(projectTask)
+		this.tasksService.create(projectTask)
 			.subscribe(() => {
 					this.delTask(index);
 					this.onTaskSubmitted.emit();

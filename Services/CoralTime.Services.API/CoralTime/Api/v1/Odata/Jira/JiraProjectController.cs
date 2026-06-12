@@ -1,24 +1,16 @@
 ﻿using CoralTime.BL.Interfaces;
-using CoralTime.Common.Constants;
-using CoralTime.DAL.Models.Jira;
-using CoralTime.DAL.Models;
-using CoralTime.ViewModels.Jira;
-using CoralTime.ViewModels.JiraSettings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using static CoralTime.Common.Constants.Constants;
+using ODataRoutes = CoralTime.Common.Constants.Constants.Routes.OData;
 using static CoralTime.Common.Constants.Constants.Routes;
-using static CoralTime.Common.Constants.Constants.Routes.OData;
-using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace CoralTime.Services.API.Api.v1.Odata.Jira 
 {
     [Authorize]
-    [Route(BaseODataControllerRoute)]
+    [Route(BaseControllerRoute)]
     public class JiraProjectController : BaseODataController<JiraProjectController, IJiraProjectService>
     {
         public JiraProjectController(IJiraProjectService service, ILogger<JiraProjectController> logger)
@@ -26,32 +18,33 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
         {
         }
 
-        // GET: api/v1/odata/JiraProject/GetAllJiraProjectsBySettingId
-        [ODataRouteComponent(GetAllJiraProjectsBySettingIdRotute)]
-        [HttpGet(Constants.Routes.GetAllJiraProjectsBySettingId)]
-        public IActionResult GetJiraProjects(int id)
+        // GET: api/v1/odata/JiraProject/GetAllJiraProjectsBySettingId(id=7)
+        // GET: api/v1/JiraProject/GetAllJiraProjectsBySettingId?id=7
+        [HttpGet(ODataRoutes.GetAllJiraProjectsBySettingId)]
+        public IActionResult GetAllJiraProjectsBySettingId(int id)
         {
             return Ok(_service.GetJiraProjects(id));
         }
 
-        // GET: api/v1/odata/JiraProject/GetUnAssignJiraProject
-        [ODataRouteComponent(GetUnAssignedJiraProjectRoute)]
-        [HttpGet(Constants.Routes.GetUnAssignJiraProject)]
+        // GET: api/v1/odata/JiraProject/GetUnAssignJiraProject(id=7)
+        // GET: api/v1/JiraProject/GetUnAssignJiraProject?id=7
+        [HttpGet(ODataRoutes.GetUnAssignJiraProject)]
+        [AllowAnonymous]
         public IActionResult GetUnAssignJiraProject(int id)
         {
             return Ok(_service.GetUnAssignJiraProject(id));
         }
 
-        // GET: api/v1/odata/JiraProject/GetAssignJiraProject
-        [ODataRouteComponent(GetAssignedJiraProjectRoute)]
-        [HttpGet(Constants.Routes.GetAssignJiraProject)]
-        public IActionResult GetAssingJiraProject(int id)
+        // GET: api/v1/odata/JiraProject/GetAssignJiraProject(id=7)
+        // GET: api/v1/JiraProject/GetAssignJiraProject?id=7
+        [HttpGet(ODataRoutes.GetAssignJiraProject)]
+        public IActionResult GetAssignJiraProject(int id)
         {
             return Ok(_service.GetAssingJiraProject(id));
         }
 
-        // POST: api/v1/odata/JiraProject/GetAssignJiraProject
-        [HttpPost(Constants.Routes.LoadJiraProject)]
+        // POST: api/v1/JiraProject/LoadJiraProject
+        [HttpPost(LoadJiraProjectRoute)]
         public async Task<IActionResult> LoadJiraProjects(int id)
         {
             try
@@ -65,7 +58,7 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        [HttpPost(Constants.Routes.LinkProjects)]
+        [HttpPost(LinkProjectsRoute)]
         public IActionResult LinkProjectJiraProject(int projectId, int jiraProjectId)
         {
             try
@@ -79,7 +72,7 @@ namespace CoralTime.Services.API.Api.v1.Odata.Jira
             }
         }
 
-        [HttpDelete(Constants.Routes.RemovProjectJiraLink)]
+        [HttpDelete(RemovProjectJiraLinkRoute)]
         public IActionResult RemoveProjectJiraLink(int id)
         {
             try

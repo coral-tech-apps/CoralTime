@@ -35,7 +35,7 @@ namespace CoralTime.DAL.Repositories.Jira
                 .FirstOrDefault();
         }
 
-        public List<JiraMemberSettingView> GetJiraMemberSettings(int memberId)
+        public IQueryable<JiraMemberSettingView> GetJiraMemberSettings(int memberId)
         {
             return GetQuery()
                 .Where(x => x.MemberId == memberId)
@@ -49,17 +49,15 @@ namespace CoralTime.DAL.Repositories.Jira
                     ApiTokenStatus = !(string.IsNullOrEmpty(x.ApiToken)),
                     Domain = x.JiraSetting.Domain,
                     IsEnableConntection = x.JiraUserId != null ? true : false
-                })
-                .ToList();
+                });
         }
 
-        public List<Models.Member.Member> GetAssignedUsers(int id)
+        public IQueryable<Models.Member.Member> GetAssignedUsers(int id)
         {
-            return GetQuery()
+            return GetQuery(asNoTracking:true)
                 .Where(x => x.JiraSettingId == id)
                 .Select(x => x.Member)
-                .Distinct()
-                .ToList();
+                .Distinct();
         }
 
         public JiraMemberSettings GetJiraMemberSetting(int jiraSettingId, int memberId)
