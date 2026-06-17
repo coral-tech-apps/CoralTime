@@ -10,8 +10,8 @@ import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { PagedResult } from 'src/app/services/odata';
-import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
-import { Table } from 'primeng/table';
+import { ROWS_ON_PAGE, DEFAULT_TABLE_LOAD_EVENT, createDefaultPageResult } from 'src/app/core/constant.service';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 
 @Component({
     selector: 'ct-jira-members',
@@ -29,17 +29,17 @@ export class JiraUsersComponent implements OnInit{
   isAllProjects: boolean = false;
   pagedResult: PagedResult<User>;
 
-  assignedUsersPagedResult: PagedResult<User>;
+  assignedUsersPagedResult: PagedResult<User> = createDefaultPageResult<User>();
   updatingAssignedUsersGrid: boolean = false;
 	isAllAssignedUsers: boolean = false;
   private assignedUsersSubject = new Subject<any>();
-  private assignedUsersLastEvent: any;
+  public assignedUsersLastEvent: TableLazyLoadEvent = DEFAULT_TABLE_LOAD_EVENT;
 
-	notAssignedUsersPagedResult: PagedResult<User>;
+	notAssignedUsersPagedResult: PagedResult<User> = createDefaultPageResult<User>();
 	updatingNotAssignedUsersGrid: boolean = false;
 	isAllNotAssignedUsers: boolean = false;
   private notAssignedUsersSubject = new Subject<any>();
-  private notAssignedUsersLastEvent: any;
+  public notAssignedUsersLastEvent: TableLazyLoadEvent = DEFAULT_TABLE_LOAD_EVENT;
 
   constructor(private http: HttpClient,
     public authService: AuthService,
@@ -62,12 +62,13 @@ export class JiraUsersComponent implements OnInit{
       return this.jiraSettingService.getAssignedUsers(this.jiraSetting.id,  this.assignedUsersLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<User>) => {
-      if (!this.assignedUsersPagedResult || !this.assignedUsersLastEvent.first) {
+      if (!this.assignedUsersPagedResult || this.assignedUsersPagedResult.data.length === 0 || this.assignedUsersLastEvent.first === 0) {
         this.assignedUsersPagedResult = result;
       } else {
         this.assignedUsersPagedResult.data = this.assignedUsersPagedResult.data.concat(result.data);
       }
-      this.assignedUsersLastEvent.first = this.assignedUsersPagedResult.data.length;
+      this.assignedUsersLastEvent = {...this.assignedUsersLastEvent,
+        first: (this.assignedUsersPagedResult?.data.length ?? 0) + ROWS_ON_PAGE};
       this.updatingAssignedUsersGrid = false;
       this.checkIsAllAssignedUsers();
     })
@@ -75,29 +76,31 @@ export class JiraUsersComponent implements OnInit{
 
   onAssignedUsersEndScroll(): void {
     if (!this.isAllAssignedUsers) {
-      this.updateAssignedUsers();
+      this.updateAssignedUsers(this.assignedUsersLastEvent, true);
     }
   }
 
-  updateAssignedUsers(event = null, updatePage?: boolean): void {
+  updateAssignedUsers(event: TableLazyLoadEvent | null = null, updatePage?: boolean): void {
     if (event) {
       this.assignedUsersLastEvent = event;
-    }
-    if (updatePage) {
-      this.updatingAssignedUsersGrid = updatePage;
-      this.assignedUsersLastEvent.first = 0;
+
+      if (event.first === 0) {
+        this.assignedUsersPagedResult = createDefaultPageResult<User>();
+      }
+    } else {
+      this.assignedUsersLastEvent = DEFAULT_TABLE_LOAD_EVENT;
+      this.assignedUsersPagedResult = createDefaultPageResult<User>();
     }
     if (event || updatePage) {
       this.isAllAssignedUsers = false;
-      this.assignedUsersPagedResult = null;
     }
-    this.assignedUsersLastEvent.rows = ROWS_ON_PAGE;
+
     if (!updatePage && this.isAllAssignedUsers) {
       return;
     }
 
     this.assignedUsersSubject.next({
-      event,
+      event: this.assignedUsersLastEvent,
       filterStr: this.filterStr
     });
   }
@@ -117,12 +120,13 @@ export class JiraUsersComponent implements OnInit{
       return this.jiraSettingService.getNotAssignedUsers(this.jiraSetting.id, this.notAssignedUsersLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<User>) => {
-      if (!this.notAssignedUsersPagedResult || !this.notAssignedUsersLastEvent.first) {
+      if (!this.notAssignedUsersPagedResult || this.notAssignedUsersPagedResult.data.length === 0 || this.notAssignedUsersLastEvent.first === 0) {
         this.notAssignedUsersPagedResult = result;
       } else {
         this.notAssignedUsersPagedResult.data = this.notAssignedUsersPagedResult.data.concat(result.data);
       }
-      this.notAssignedUsersLastEvent.first = this.notAssignedUsersPagedResult.data.length;
+      this.notAssignedUsersLastEvent = {...this.notAssignedUsersLastEvent,
+        first: (this.notAssignedUsersPagedResult?.data.length ?? 0) + ROWS_ON_PAGE};
       this.updatingNotAssignedUsersGrid = false;
       this.checkIsAllUnassignedUsers();
     })
@@ -130,29 +134,31 @@ export class JiraUsersComponent implements OnInit{
 
   onNotAssignedUsersEndScroll(): void {
     if (!this.isAllNotAssignedUsers) {
-      this.updateNotAssignedUsers();
+      this.updateNotAssignedUsers(this.notAssignedUsersLastEvent, true);
     }
   }
 
-  updateNotAssignedUsers(event = null, updatePage?: boolean): void {
+  updateNotAssignedUsers(event: TableLazyLoadEvent | null = null, updatePage?: boolean): void {
     if (event) {
       this.notAssignedUsersLastEvent = event;
-    }
-    if (updatePage) {
-      this.updatingNotAssignedUsersGrid = updatePage;
-      this.notAssignedUsersLastEvent.first = 0;
+
+      if (event.first === 0) {
+        this.notAssignedUsersPagedResult = createDefaultPageResult<User>();
+      }
+    } else {
+      this.notAssignedUsersLastEvent = DEFAULT_TABLE_LOAD_EVENT;
+      this.notAssignedUsersPagedResult = createDefaultPageResult<User>();
     }
     if (event || updatePage) {
       this.isAllNotAssignedUsers = false;
-      this.notAssignedUsersPagedResult = null;
     }
-    this.notAssignedUsersLastEvent.rows = ROWS_ON_PAGE;
+
     if (!updatePage && this.isAllNotAssignedUsers) {
       return;
     }
 
     this.notAssignedUsersSubject.next({
-      event,
+      event: this.notAssignedUsersLastEvent,
       filterStr: this.filterStr
     });
   }

@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, forwardRef, ChangeDetectorRef, 
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Overlay, OverlayRef, OverlayConfig, PositionStrategy } from '@angular/cdk/overlay';
+import { TemplatePortal } from '@angular/cdk/portal';
 
 export const LIST_ITEM_HEIGHT = 42;
 
@@ -42,8 +43,6 @@ export class SelectComponent implements ControlValueAccessor {
   isListShowToTop: boolean = false;
   selectedObject: any;
 
-  @ViewChild('slimScroll', { static: true }) slimScroll: any;
-  @ViewChild('matList', { read: ElementRef, static: true }) matList: ElementRef;
   @ViewChild('overlayTemplate', { static: true }) overlayTemplate: TemplateRef<any>;
 
   private overlayRef: OverlayRef;
@@ -61,6 +60,7 @@ export class SelectComponent implements ControlValueAccessor {
     private ref: ChangeDetectorRef,
     private renderer: Renderer2,
     private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef,
   ) {
   }
 
@@ -162,6 +162,12 @@ export class SelectComponent implements ControlValueAccessor {
 
     this.isOpen = true;
     this.oldSelectedObject = this.selectedObject;
+
+    if (!this.overlayRef.hasAttached()) {
+      const portal = new TemplatePortal(this.overlayTemplate, this.viewContainerRef);
+      this.overlayRef.attach(portal);
+    }
+
     setTimeout(() => {
       this.isAnimate = true;
       this.ref.markForCheck();
@@ -171,6 +177,8 @@ export class SelectComponent implements ControlValueAccessor {
       this.renderer.addClass(pane, 'ct-select-opened');
       this.renderer.addClass(pane, "ct-select-animate");
       this.renderer.setStyle(pane, 'width', `${width}px`);
+      this.renderer.setStyle(pane, 'height', 'auto');
+      this.renderer.setStyle(pane, 'margin-top', '0');
     }, 0);
   }
 
@@ -191,14 +199,14 @@ export class SelectComponent implements ControlValueAccessor {
       optionIndex = optionIndex + 1 < this.options.length ? optionIndex + 1 : optionIndex;
       this.selectedObject = this.options[optionIndex];
       this.changeScrollTop(optionIndex);
-      this.slimScroll.scrollContent(this.scrollTopNumber, false, true);
+      this.scrollOverlayContent();
       return;
     }
     if (event.key === 'ArrowUp') {
       optionIndex = optionIndex > 0 ? optionIndex - 1 : 0;
       this.selectedObject = this.options[optionIndex];
       this.changeScrollTop(optionIndex);
-      this.slimScroll.scrollContent(this.scrollTopNumber, false, true);
+      this.scrollOverlayContent();
       return;
     }
     if (event.key === 'Enter') {
@@ -216,6 +224,13 @@ export class SelectComponent implements ControlValueAccessor {
     }
   }
 
+  private scrollOverlayContent(): void {
+    const wrapper = this.overlayRef?.overlayElement?.querySelector('.ct-select-options-wrapper');
+    if (wrapper) {
+      wrapper.scrollTop = this.scrollTopNumber * LIST_ITEM_HEIGHT;
+    }
+  }
+
   private _emitChangeEvent() {
     let event = new SelectChange();
     event.source = this;
@@ -228,8 +243,9 @@ export class SelectComponent implements ControlValueAccessor {
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const clickedInside = this.el.nativeElement.contains(target);
+    const clickedInOverlay = this.overlayRef?.overlayElement?.contains(target);
 
-    if (!clickedInside) {
+    if (!clickedInside && !clickedInOverlay) {
       this.closeSelect();
     }
   }

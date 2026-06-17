@@ -6,10 +6,8 @@ using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Repositories;
 using CoralTime.ViewModels.Jira;
 using Duende.IdentityServer.Extensions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using NLog.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,203 +58,173 @@ namespace CoralTime.BL.Services
             }
         }
 
-        // TODO AZ: we can get worklogs here
-        private async Task<List<IssuesWithProject>> GetIssuesAsync(
-            string email, 
-            string apiToken, 
-            string domain, 
+        private async Task<List<JiraWorklogView>> GetIssuesAsync(
+            string email,
+            string apiToken,
+            string domain,
             string urlQuery,
-            Dictionary<string, int> projectKeyToInternalId)
+            Dictionary<string, (Project Project, JiraProject JiraProject)> projectKeyToProject,
+            DateTime dateFrom,
+            DateTime dateTo)
         {
-            var issues = new List<IssuesWithProject>();
-
             var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
-
-            if (response.IsSuccessStatusCode)
-            {
-                try
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var jsonResponse = JObject.Parse(content);
-
-                    foreach (var issue in jsonResponse["issues"])
-                    {
-                        var issueId = issue["id"].ToString();
-                        var projectKey = issue["fields"]["project"]["key"].ToString();
-                        var issueKey = issue["key"].ToString();
-
-                        if (projectKeyToInternalId.TryGetValue(projectKey, out var projectId))
-                        {
-                            issues.Add(new IssuesWithProject
-                            {
-                                IssueId = issueId,
-                                ProjectId = projectId,
-                                Key = issueKey,
-                            });
-                        }
-
-                        //issues.Add(issue["id"].ToString());
-                    }
-
-                    return issues;
-                    //found
-                }
-                catch(Exception e)
-                {
-                    throw;
-                }
-            }
-            else
+            if (!response.IsSuccessStatusCode)
             {
                 //notSuccessStatusCode
-                return issues;
+                return [];
             }
-        }
 
-        private async Task<List<JiraWorklogView>> GetWorklogsAsync(
-            string email, 
-            string apiToken, 
-            string domain, 
-            DateTime dateFrom,
-            DateTime dateTo,
-            List<IssuesWithProject> issues)
-        {
-            long startedAfter = new DateTimeOffset(dateFrom).ToUnixTimeMilliseconds();
-            long startedBefore = new DateTimeOffset(dateTo.AddDays(1)).ToUnixTimeMilliseconds();
+            var content = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JObject.Parse(content);
 
-            var projectIds = issues
-                .Select(x => x.ProjectId)
+            var rawWorklogs = ExtractWorklogs(jsonResponse, projectKeyToProject);
+            var worklogsIds = rawWorklogs.Select(x => x.WorklogId).ToList();
+            var jiraProjectIds = projectKeyToProject.Values
+                .Select(x => x.JiraProject.Id)
                 .Distinct()
                 .ToList();
-            var projectsDic = (await Uow.ProjectRepository.GetByIds(projectIds))
-                .ToDictionary(x => x.Id, x => x.Name);
 
-            var worklogsResponses = new List<(IssuesWithProject issue, string worklogsId, JToken token)>();
-
-            foreach (var item in issues)
-            {
-                try
-                {
-                    var urlQuery = $"/rest/api/3/issue/{item.IssueId}/worklog";
-
-                    var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
-
-                    if(!response.IsSuccessStatusCode)
-                    {
-                        continue;
-                    }
-
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var jsonResponse = JsonConvert.DeserializeObject<JObject>(content);
-
-                    var worklogsTokens = jsonResponse["worklogs"]
-                            .Select(x => (item, (string)x["id"], x))
-                            .ToList();
-
-                    worklogsResponses.AddRange(worklogsTokens);
-                }
-                catch
-                {
-                    throw;
-                }
-            }
-
-            var worklogsIds = worklogsResponses.Select(x => x.worklogsId).ToList();
             var existedWorklogs = Uow.TimeEntryRepository
                 .GetByJiraWorklogIds(worklogsIds)
                 .ToDictionary(e => e.JiraWorklogId, e => e);
 
-            var result = worklogsResponses
-                .Select(x =>
-                {
-                    var token = x.token;
-                    var worklogId = x.worklogsId;
-                    var issue = x.issue;
+            var startedAfter = new DateTimeOffset(dateFrom).ToUnixTimeMilliseconds();
+            var startedBefore = new DateTimeOffset(dateTo.AddDays(1)).ToUnixTimeMilliseconds();
 
-                    var content = token["comment"]?["content"] as JArray;
-                    var jiraWorklogContent = content != null && content.Count > 0 ? content[0]?["content"]?[0]?["text"] : null;
+            var newAndEdited = rawWorklogs
+                .Select(BuildWorklogView)
+                .Where(item => IsInTimeRange(item.StartedDto, startedAfter, startedBefore))
+                .Select(item => ApplyExistingState(item, existedWorklogs))
+                .Where(item => item.Existing == null || item.View.Type == JiraWorklogType.Edited)
+                .ToList();
 
-                    var view = new JiraWorklogView
-                    {
-                        Description = (string)jiraWorklogContent,
-                        TimeActual = (int)token["timeSpentSeconds"],
-                        Date = (string)token["started"],
-                        ProjectId = issue.ProjectId,
-                        Key = issue.Key,
-                        ProjectName = projectsDic.GetValueOrDefault(issue.ProjectId),
-                        WorklogId = worklogId,
-                        Type = JiraWorklogType.New
-                    };
+            var deleted = await LoadDeletedWorklogViewsAsync(worklogsIds, jiraProjectIds, dateFrom, dateTo);
 
-                    var dto = DateTimeOffset.Parse(view.Date);
-
-                    existedWorklogs.TryGetValue(worklogId, out var existing);
-
-                    if (existing != null)
-                    {
-                        bool dateChanged = existing.Date != dto;
-                        bool timeChanged = existing.TimeActual != view.TimeActual;
-
-                        var currDesc = existing.Description.Replace($"{view.Key}: ", "");
-                        bool descChanged = !string.Equals(currDesc ?? string.Empty, view.Description ?? string.Empty);
-
-                        if (dateChanged || timeChanged || descChanged)
-                        {
-                            view.Type = JiraWorklogType.Edited;
-                            view.OldDate = existing.Date.ToString();
-                            view.OldDescription = currDesc;
-                            view.OldTimeActual = existing.TimeActual;
-                        }
-                    }
-
-                    return new
-                    {
-                        View = view,
-                        StartedDto = dto,
-                        Existing = existing
-                    };
-                })
-                .Where(x =>
-                {
-                    long ms = x.StartedDto.ToUnixTimeMilliseconds();
-                    bool inTimeRange = ms >= startedAfter && ms <= startedBefore;
-                    if (!inTimeRange)
-                        return false;
-
-                    if (x.Existing == null)
-                        return true;
-
-                    return x.View.Type == JiraWorklogType.Edited;
-                })
+            return newAndEdited
+                .Select(x => (x.View, x.StartedDto))
+                .Concat(deleted.Select(v => (View: v, StartedDto: DateTimeOffset.Parse(v.Date))))
+                .OrderByDescending(x => x.StartedDto)
                 .Select(x => x.View)
                 .ToList();
+        }
 
-            var curUserId = Uow.MemberCurrent.UserId;
+        private static List<RawWorklog> ExtractWorklogs(
+            JObject jsonResponse,
+            Dictionary<string, (Project Project, JiraProject JiraProject)> projectKeyToProject)
+        {
+            var result = new List<RawWorklog>();
 
-            var deletedWorklogs = await Uow.TimeEntryRepository.GetDeletedWorklogs(curUserId, worklogsIds, dateFrom, dateTo);
-            var jiraDeleteWorklogs = deletedWorklogs
-                .Select(worklog => new JiraWorklogView
+            foreach (var issue in jsonResponse["issues"])
+            {
+                var projectKey = issue["fields"]["project"]["key"].ToString();
+                if (!projectKeyToProject.TryGetValue(projectKey, out var project))
                 {
-                    ProjectId = worklog.ProjectId,
-                    Date = worklog.Date.ToString(),
-                    Description = worklog.Description,
-                    Type = JiraWorklogType.Deleted,
-                    WorklogId = worklog.JiraWorklogId,
-                    ProjectName = worklog.Project.Name,
-                    TimeActual = worklog.TimeActual
-                })
-                .ToList();
+                    continue;
+                }
 
+                if (issue["fields"]["worklog"]["worklogs"] is not JArray worklogs)
+                {
+                    continue;
+                }
 
-            result = result
-                .Union(jiraDeleteWorklogs)
-                .OrderByDescending(r => DateTimeOffset.Parse(r.Date))
-                .ToList();
+                var issueId = issue["id"].ToString();
+                foreach (var w in worklogs)
+                {
+                    result.Add(new RawWorklog(
+                        new IssuesWithProject 
+                        { 
+                            IssueId = issueId, 
+                            ProjectId = project.Project.Id, 
+                            Key = projectKey 
+                        },
+                        (string)w["id"],
+                        w,
+                        project));
+                }
+            }
 
             return result;
         }
+
+        private static (JiraWorklogView View, DateTimeOffset StartedDto) BuildWorklogView(RawWorklog raw)
+        {
+            var token = raw.Token;
+
+            var content = token["comment"]?["content"] as JArray;
+            var jiraWorklogContent = content != null && content.Count > 0 ? content[0]?["content"]?[0]?["text"] : null;
+
+            var view = new JiraWorklogView
+            {
+                Description = (string)jiraWorklogContent,
+                TimeActual = (int)token["timeSpentSeconds"],
+                Date = (string)token["started"],
+                ProjectId = raw.Issue.ProjectId,
+                Key = raw.Issue.Key,
+                ProjectName = raw.Project.JiraProject.Name,
+                JiraProjectId = raw.Project.JiraProject.Id,
+                WorklogId = raw.WorklogId,
+                Type = JiraWorklogType.New,
+            };
+
+            return (view, DateTimeOffset.Parse(view.Date));
+        }
+
+        private static bool IsInTimeRange(DateTimeOffset started, long after, long before)
+        {
+            var ms = started.ToUnixTimeMilliseconds();
+            return ms >= after && ms <= before;
+        }
+
+        private static (JiraWorklogView View, DateTimeOffset StartedDto, TimeEntry Existing) ApplyExistingState(
+            (JiraWorklogView View, DateTimeOffset StartedDto) item,
+            Dictionary<string, TimeEntry> existedWorklogs)
+        {
+            if (!existedWorklogs.TryGetValue(item.View.WorklogId, out var existing))
+                return (item.View, item.StartedDto, null);
+
+            var currDesc = existing.Description.Replace($"{item.View.Key}: ", "");
+
+            var dateChanged = existing.Date != item.StartedDto;
+            var timeChanged = existing.TimeActual != item.View.TimeActual;
+            var descChanged = !string.Equals(currDesc ?? string.Empty, item.View.Description ?? string.Empty);
+
+            if (dateChanged || timeChanged || descChanged)
+            {
+                item.View.Type = JiraWorklogType.Edited;
+                item.View.OldDate = existing.Date.ToString();
+                item.View.OldDescription = currDesc;
+                item.View.OldTimeActual = existing.TimeActual;
+                item.View.JiraProjectId = existing.JiraProjectId;
+            }
+
+            return (item.View, item.StartedDto, existing);
+        }
+
+        private async Task<List<JiraWorklogView>> LoadDeletedWorklogViewsAsync(
+            List<string> worklogsIds, List<int> jiraProjectids, DateTime dateFrom, DateTime dateTo)
+        {
+            var curUserId = Uow.MemberCurrent.UserId;
+            var deleted = await Uow.TimeEntryRepository.GetDeletedWorklogs(curUserId, worklogsIds, jiraProjectids, dateFrom, dateTo);
+
+            return deleted.Select(w => new JiraWorklogView
+            {
+                Key = w.JiraProject.Key,
+                ProjectId = w.ProjectId,
+                Date = w.Date.ToString(),
+                Description = w.Description,
+                Type = JiraWorklogType.Deleted,
+                WorklogId = w.JiraWorklogId,
+                ProjectName = w.Project.Name,
+                TimeActual = w.TimeActual,
+                JiraProjectId = w.JiraProjectId,
+            }).ToList();
+        }
+
+        private sealed record RawWorklog(
+            IssuesWithProject Issue,
+            string WorklogId,
+            JToken Token,
+            (Project Project, JiraProject JiraProject) Project);
 
         private string GenerateUrlFoIssues(JiraWorklogFilterView filter, int currentMemberId)
         {
@@ -268,38 +236,28 @@ namespace CoralTime.BL.Services
             var jiraAccountId = Uow.jiraMemberSettingsRepository.GetJiraUserId(filter.JiraSettingId, currentMemberId);
 
             var projectList = string.Join(", ", Array.ConvertAll<string, string>(assignedProjects, p => p));
-            var jql = $"/rest/api/3/search/jql?jql=project IN ({projectList}) AND worklogAuthor = {jiraAccountId} AND worklogDate >= \"{filter.DateFrom.ToString("yyyy-MM-dd")}\" AND worklogDate <= \"{filter.DateTo.ToString("yyyy-MM-dd")}\"" +
-                $"&fields=id,key,project";
+            var jql = $"/rest/api/3/search/jql?jql=project IN ({projectList}) " +
+                $"AND worklogAuthor = {jiraAccountId} " +
+                $"AND worklogDate >= \"{filter.DateFrom.ToString("yyyy-MM-dd")}\" AND worklogDate <= \"{filter.DateTo.ToString("yyyy-MM-dd")}\"" +
+                $"&fields=id,key,project,worklog";
 
             return jql;
         }
 
-        private Dictionary<string, int> GetKeyToPrjId(JiraWorklogFilterView filter)
+        private async Task<Dictionary<string, (Project Project, JiraProject JiraProject)>> GetKeyToPrj(JiraWorklogFilterView filter)
         {
-            var linked = new List<LinkedJiraProject>();
-            foreach (var id in filter.ProjectIds)
-            {
-                linked.Add(Uow.LinkedJiraProjectRepository.GetById(id));
-            }
+            var projectIds = filter.ProjectIds;
 
-            var jiraProjects = new List<JiraProject>();
-            foreach (var item in linked)
-            {
-                jiraProjects.Add(Uow.JiraProjectRepository.GetById(item.JiraProjectId));
-            }
-
-            var projectKeyToId = linked
-                .Join(jiraProjects,
-                        linkedItem => linkedItem.JiraProjectId,
-                        jiraProject => jiraProject.Id,
-                        (linkedItem, jiraProject) => new
-                        {
-                            jiraProject.Key,
-                            linkedItem.ProjectId
-                        })
-                .ToDictionary(x => x.Key, x => x.ProjectId);
-
-            return projectKeyToId;
+            return await Uow.LinkedJiraProjectRepository
+                .GetQuery(asNoTracking: true)
+                .Where(x => projectIds.Contains(x.Id))
+                .Select(x => new
+                {
+                    x.JiraProject.Key,
+                    x.Project,
+                    x.JiraProject
+                })
+                .ToDictionaryAsync(x => x.Key, x => (x.Project, x.JiraProject));
         }
 
 
@@ -315,13 +273,11 @@ namespace CoralTime.BL.Services
             string email = jiraMemberSetting.UserEmail;
             string apiToken = jiraMemberSetting.ApiToken;
 
-            var projectKeyToId = GetKeyToPrjId(filter);
+            var projectKeyToProject = await GetKeyToPrj(filter);
 
             var urlStringIssues = GenerateUrlFoIssues(filter, currentMemberId);
 
-            var issues = await GetIssuesAsync(email, apiToken, domain, urlStringIssues, projectKeyToId);
-
-            return await GetWorklogsAsync(email, apiToken, domain, filter.DateFrom, filter.DateTo, issues);
+            return await GetIssuesAsync(email, apiToken, domain, urlStringIssues, projectKeyToProject, filter.DateFrom, filter.DateTo);
         }
 
         public void LoadWorklog(JiraWorklogView[] worklogs)
@@ -365,6 +321,7 @@ namespace CoralTime.BL.Services
                         TaskTypesId = item.TaskId,
                         MemberId = currentMemberId,
                         JiraWorklogId = item.WorklogId,
+                        JiraProjectId = item.JiraProjectId
                     };
 
                     try

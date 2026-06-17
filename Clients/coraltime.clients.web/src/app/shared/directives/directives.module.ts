@@ -22,6 +22,7 @@ import { FocusInputDirective } from './focus-input.directive';
 import { TooltipDirective } from './tooltip.directive';
 import { ComparisonHighlightsDirective } from './compare-highlighting.directive';
 import { PaginationScrollingDirective } from './pagination-scrolling.directive';
+import { HoverPopupDirective } from './hover-popup.directive';
 
 @NgModule({
 	declarations: [
@@ -48,7 +49,8 @@ import { PaginationScrollingDirective } from './pagination-scrolling.directive';
 		FocusInputDirective,
 		TooltipDirective,
 		ComparisonHighlightsDirective,
-		PaginationScrollingDirective
+		PaginationScrollingDirective,
+		HoverPopupDirective
 	],
 	exports: [
 		IsGrantedDirective,
@@ -73,7 +75,8 @@ import { PaginationScrollingDirective } from './pagination-scrolling.directive';
 		FocusInputDirective,
 		TooltipDirective,
 		ComparisonHighlightsDirective,
-		PaginationScrollingDirective
+		PaginationScrollingDirective,
+		HoverPopupDirective
 	]
 })
 

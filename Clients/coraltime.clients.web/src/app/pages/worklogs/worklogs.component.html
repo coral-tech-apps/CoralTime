@@ -73,30 +73,35 @@
             <div class="ct-page-header">
               <h3 class="ct-header">Worklogs</h3>
 
-              <div class="hover-wrapper small-hover">
-                <button mat-raised-button class="ct-blue-button"
-                        (click)="addTimeEntries()"
-                        [disabled]="isDisable()">
-                  Add time entries
-                </button>
-
-                <div class="hover-popup small-popup" *ngIf="hasSelectedWorklogsWithoutTask">
-                  Choose task for every worklog.
+              @if (worklogs.length > 0) {
+                <div ctHoverPopup>
+                  <button mat-raised-button class="ct-blue-button"
+                          (click)="addTimeEntries()"
+                          [disabled]="isDisable()">
+                    Add time entries
+                  </button>
+                  
+                  <ng-template #overlayTemplate>
+                    <div *ngIf="hasSelectedWorklogsWithoutTask">
+                      Choose task for every worklog.
+                    </div>
+                    <div *ngIf="hasNoJiraFiltersSelected">
+                      Choose Jira setting.
+                    </div>
+                    <div *ngIf="hasJiraFiltersButNoWorklogsSelected">
+                      Choose worklog.
+                    </div>
+                  </ng-template>
                 </div>
-                <div class="hover-popup small-popup" *ngIf="hasNoJiraFiltersSelected">
-                  Choose Jira setting.
-                </div>
-                <div class="hover-popup small-popup" *ngIf="hasJiraFiltersButNoWorklogsSelected">
-                  Choose worklog.
-                </div>
-              </div>
+              }
             </div>
               <div class="ct-reports-data">
 
             <p-table class="ct-grid-container" class="ct-reports-grid"
                     [value]="worklogs"
                     [loading]="!isWorklogsLoaded"
-                    >
+                    [scrollable]="true"
+                    scrollHeight="calc(100vh - 180px)">
 
               <ng-template pTemplate="header">
                 <tr>
@@ -124,23 +129,24 @@
                       New worklog
                     }
                     @else if (item.type === worklogTypes.Edited) {
-                      <div class="hover-wrapper">
+                      <div ctHoverPopup>
                         <span class="simple-text">Edited</span>
-                        <div class="hover-popup">
+                        
+                        <ng-template #overlayTemplate>
                           <div class="ct-worklog-edited">
                             <h3>Incoming worklog</h3>
                             <h3>Coral Time worklog</h3>
-
+  
                             <p comparisonHighlights [leftValue]="item.description" [rightValue]="item.oldDescription"><strong>Description:</strong> {{ item.description }} </p>
                             <p><strong>Description:</strong> {{ item.oldDescription }}</p>
-
+  
                             <p comparisonHighlights [leftValue]="item.timeActualString" [rightValue]="item.oldTimeActualString"><strong>Time:</strong> {{ item.timeActualString }} </p>
                             <p><strong>Time:</strong> {{ item.oldTimeActualString }}</p>
-
+  
                             <p comparisonHighlights [leftValue]="item.date" [rightValue]="item.oldDate"><strong>Date:</strong> {{ item.date | ctFormatDate: this.user.dateFormat }} </p>
                             <p><strong>Date:</strong> {{ item.oldDate | ctFormatDate: this.user.dateFormat }}</p>
                           </div>
-                        </div>
+                        </ng-template>
                       </div>
                     }
                     @else {

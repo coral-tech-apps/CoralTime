@@ -9,9 +9,9 @@ import { JiraSettingService } from "src/app/services/jira-settings.service";
 import { JiraUsersComponent } from "./jira-member-form/jira-member.component";
 import { ConfirmDialogComponent } from "src/app/shared/form/confirm-dialog/confirm-dialog.component";
 import { PagedResult } from "src/app/services/odata";
-import { Table } from "primeng/table";
+import { Table, TableLazyLoadEvent } from "primeng/table";
 import { debounceTime, Subject, switchMap, tap } from "rxjs";
-import { ROWS_ON_PAGE } from "src/app/core/constant.service";
+import { ROWS_ON_PAGE, DEFAULT_TABLE_LOAD_EVENT, createDefaultPageResult } from "src/app/core/constant.service";
 import { JiraLinkedProjectComponent } from './jira-linked-project/jira-linked-project.component';
 
 @Component({
@@ -24,13 +24,13 @@ export class JiraIntegrationComponent {
   filterStr: string = '';
   @ViewChild('dt') tableRef!: Table;
   tableData: any[];
-  pagedResult: PagedResult<JiraSetting>;
+  pagedResult: PagedResult<JiraSetting> = createDefaultPageResult<JiraSetting>();
   updatingGrid: boolean = false;
   resizeObservable: Subject<any> = new Subject();
   isAllSettings: boolean = false;
 
   private subject = new Subject<any>();
-  private lastEvent: any;
+  public lastEvent: TableLazyLoadEvent = DEFAULT_TABLE_LOAD_EVENT;
   private dialogRef: MatDialogRef<JiraIntegrationFormComponent>;
   private dialogUserRef: MatDialogRef<JiraUsersComponent>;
   private dialogLinkedPrjectRef: MatDialogRef<JiraLinkedProjectComponent>;
@@ -54,13 +54,14 @@ private loadInitialState(): void{
         return this.jiraSettingService.loadSettingsTable(this.authService.authUser.id, this.lastEvent, this.filterStr);
       }),)
         .subscribe((result : PagedResult<JiraSetting>) => {
-          if (!this.pagedResult || !this.lastEvent.first) {
+          if (!this.pagedResult || this.pagedResult.data.length === 0 || this.lastEvent.first === 0) {
             this.pagedResult = result;
           } else {
             this.pagedResult.data = this.pagedResult.data.concat(result.data);
           }
           this.tableData = this.pagedResult.data;
-          this.lastEvent.first = this.pagedResult.data.length;
+          this.lastEvent = {...this.lastEvent,
+            first: (this.pagedResult?.data.length ?? 0) + ROWS_ON_PAGE};
           this.updatingGrid = false;
           this.checkIsAllSettings();
         });
@@ -68,7 +69,7 @@ private loadInitialState(): void{
 
 onEndScroll(): void {
   if (!this.isAllSettings) {
-    this.loadLazy();
+    this.loadLazy(this.lastEvent, true);
   }
 }
 
@@ -147,26 +148,28 @@ filterTable(value: string): void{
   }
 }
 
-loadLazy(event = null, updatePage?: boolean): void {
+loadLazy(event: TableLazyLoadEvent | null = null, updatePage?: boolean): void {
     if (event) {
       this.lastEvent = event;
-    }
-    if (updatePage) {
-      this.updatingGrid = updatePage;
-      this.lastEvent.first = 0;
+
+      if (event.first === 0) {
+        this.pagedResult = createDefaultPageResult<JiraSetting>();
+      }
+    } else {
+      this.lastEvent = DEFAULT_TABLE_LOAD_EVENT;
+      this.pagedResult = createDefaultPageResult<JiraSetting>();
     }
     if (event || updatePage) {
       this.isAllSettings = false;
-      this.pagedResult = null;
       this.resizeObservable.next(true);
     }
-    this.lastEvent.rows = ROWS_ON_PAGE;
+
     if (!updatePage && this.isAllSettings) {
       return;
     }
 
     this.subject.next({
-      event,
+      event: this.lastEvent,
       filterStr: this.filterStr
     });
   }

@@ -9,6 +9,7 @@ export class JiraWorklog{
   key: string;
   taskId: number;
   worklogId: string;
+  jiraProjectId: number | null;
   type: JiraWorklogType;
   oldDate: string | undefined;
   oldTimeActual: number | undefined;
@@ -26,6 +27,7 @@ export class JiraWorklog{
       this.projectId = data.projectId;
       this.worklogId = data.worklogId;
       this.type = data.type;
+      this.jiraProjectId = data.jiraProjectId;
       this.oldDate = data.oldDate;
       this.oldTimeActualString = data.oldTimeActual ? this.formatSecondsToTime(data.oldTimeActual) : undefined;
       this.oldDescription = data.oldDescription;

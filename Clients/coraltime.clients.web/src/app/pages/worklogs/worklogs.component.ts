@@ -68,9 +68,6 @@ export class WorklogsComponent implements OnInit {
 	oldDateString: string;
 	userInfo: User;
 
-	@ViewChild('scrollContainer') private scrollContainer: ElementRef;
-	@ViewChild('slimScroll') slimScroll: any;
-
   private assignedProjectsEvent: any;
 
 	constructor(
@@ -129,7 +126,6 @@ export class WorklogsComponent implements OnInit {
   // send timeEntries
   addTimeEntries(): void{
     const selectedWorklog = this.worklogs.filter(worklog => worklog.selected);
-
     if(selectedWorklog.length == 0){
       this.notificationService.danger("No worklogs selected.");
       return;
@@ -204,7 +200,6 @@ export class WorklogsComponent implements OnInit {
     };
 
     this.getWorklogs(filters);
-
   }
 
   getWorklogs(filters: any): void{

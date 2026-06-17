@@ -1,7 +1,9 @@
-﻿using CoralTime.DAL.Models.TimeValues;
+﻿using CoralTime.DAL.Models.Jira;
+using CoralTime.DAL.Models.TimeValues;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CoralTime.DAL.Models
 {
@@ -53,5 +55,11 @@ namespace CoralTime.DAL.Models
         public string WorkItemId { get; set; }
 
         public string JiraWorklogId { get; set; }
+
+        [AllowNull]
+        [ForeignKey("JiraProjectId")]
+        public JiraProject? JiraProject { get; set; }
+
+        public int? JiraProjectId { get; set; }
     }
 }

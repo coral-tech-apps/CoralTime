@@ -38,15 +38,17 @@ namespace CoralTime.DAL.Repositories
         }
 
         public async Task<IEnumerable<TimeEntry>> GetDeletedWorklogs(
-            string userId, List<string> inputWorklogs, 
+            string userId, List<string> inputWorklogs,
+            List<int> jiraProjectids,
             DateTime startDate, DateTime endDate,
             CancellationToken cancellationToken = default)
         {
             return await GetQuery(asNoTracking: true)
                 .Include(x => x.Project)
+                .Include(x => x.JiraProject)
                 .Where(x => x.CreationDate >= startDate && x.CreationDate <= endDate && 
                     x.JiraWorklogId != null && !inputWorklogs.Contains(x.JiraWorklogId) &&
-                    x.CreatorId == userId)
+                    x.CreatorId == userId && jiraProjectids.Contains(x.JiraProjectId.Value))
                 .ToListAsync(cancellationToken);
         }
     }

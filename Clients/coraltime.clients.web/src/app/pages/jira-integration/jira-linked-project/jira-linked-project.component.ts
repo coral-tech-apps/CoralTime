@@ -7,7 +7,7 @@ import { debounceTime, Subject, switchMap, tap } from 'rxjs';
 import { JiraSetting } from 'src/app/models/jira-setting';
 import { HttpClient } from '@angular/common/http';
 import { PagedResult } from 'src/app/services/odata';
-import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
+import { ROWS_ON_PAGE, DEFAULT_TABLE_LOAD_EVENT, createDefaultPageResult } from 'src/app/core/constant.service';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Project } from 'src/app/models/project';
 import { ProjectsService } from 'src/app/services/projects.service';
@@ -31,25 +31,19 @@ export class JiraLinkedProjectComponent implements OnInit{
   jiraMemberSetting: JiraMemberSetting;
   isAvaliableLoadProjects: boolean;
 
-  assignedJiraProjects: PagedResult<AssignedJiraProject>;
+  assignedJiraProjects: PagedResult<AssignedJiraProject> = createDefaultPageResult<AssignedJiraProject>();
   firstLoadingAssignedJiraProject: boolean = true;
   updatingAssignedJiraProject: boolean = false;
   isAssingedProjects: boolean = false;
   private assignedProjectsSubject = new Subject<any>();
-  public assignedProjectsLastEvent: TableLazyLoadEvent = {
-    first: 0,
-    rows: ROWS_ON_PAGE
-  };
+  public assignedProjectsLastEvent: TableLazyLoadEvent = DEFAULT_TABLE_LOAD_EVENT;
 
-  notAssignedJiraProjects: PagedResult<NotAssignedJiraProject>;
+  notAssignedJiraProjects: PagedResult<NotAssignedJiraProject> = createDefaultPageResult<NotAssignedJiraProject>();
   firstLoadingNotAssignedJiraProject: boolean = true;
   updatingNotAssignedJiraProject: boolean = false;
   isNotAssingedProjects: boolean = false;
   private notAssignedProjectsSubject = new Subject<any>();
-  public notAssignedProjectsLastEvent: TableLazyLoadEvent = {
-    first: 0,
-    rows: ROWS_ON_PAGE
-  };
+  public notAssignedProjectsLastEvent: TableLazyLoadEvent = DEFAULT_TABLE_LOAD_EVENT;
 
   private projectsLastEvent: TableLazyLoadEvent;
 
@@ -121,7 +115,7 @@ export class JiraLinkedProjectComponent implements OnInit{
       return this.jiraProjectService.getAssignedProjects(this.jiraSetting.id, this.assignedProjectsLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<AssignedJiraProject>) => {
-      if (!this.assignedJiraProjects) {
+      if (!this.assignedJiraProjects || this.assignedJiraProjects.data.length === 0 || this.assignedProjectsLastEvent.first === 0) {
         this.firstLoadingAssignedJiraProject = false;
         this.assignedJiraProjects = result;
       } else {
@@ -138,6 +132,13 @@ export class JiraLinkedProjectComponent implements OnInit{
   updateAssignedProjects(event: TableLazyLoadEvent | null = null, updatePage?: boolean): void {
     if (event) {
       this.assignedProjectsLastEvent = event;
+
+      if (event.first === 0) {
+        this.assignedJiraProjects = createDefaultPageResult<AssignedJiraProject>();
+      }
+    } else {
+      this.assignedProjectsLastEvent = DEFAULT_TABLE_LOAD_EVENT;
+      this.assignedJiraProjects = createDefaultPageResult<AssignedJiraProject>();
     }
     if (event || updatePage) {
       this.isAssingedProjects = false;
@@ -164,7 +165,7 @@ export class JiraLinkedProjectComponent implements OnInit{
       return this.jiraProjectService.getNotAssignedProjects(this.jiraSetting.id, this.notAssignedProjectsLastEvent, this.filterStr)
     }))
     .subscribe((result: PagedResult<NotAssignedJiraProject>) => {
-      if (!this.notAssignedJiraProjects) {
+      if (!this.notAssignedJiraProjects || this.notAssignedJiraProjects.data.length === 0 || this.notAssignedProjectsLastEvent.first === 0) {
         this.firstLoadingNotAssignedJiraProject = false;
         this.notAssignedJiraProjects = result;
       } else {
@@ -182,7 +183,15 @@ export class JiraLinkedProjectComponent implements OnInit{
   updateNotAssignedProjects(event: TableLazyLoadEvent | null = null, updatePage?: boolean): void {
     if (event) {
       this.notAssignedProjectsLastEvent = event;
+
+      if (event.first === 0) {
+        this.notAssignedJiraProjects = createDefaultPageResult<NotAssignedJiraProject>();
+      }
+    } else {
+      this.notAssignedProjectsLastEvent = DEFAULT_TABLE_LOAD_EVENT;
+      this.notAssignedJiraProjects = createDefaultPageResult<NotAssignedJiraProject>();
     }
+
     if (event || updatePage) {
       this.isNotAssingedProjects = false;
     }
@@ -217,30 +226,33 @@ export class JiraLinkedProjectComponent implements OnInit{
   }
 
   onSelectionChange(event: any, jiraProject: NotAssignedJiraProject):void{
-    this.jiraProjectService.linkProjects(event.value.id, jiraProject.id).subscribe(() => {
-      this.updateAssignedProjects(null, true);
-      this.updateNotAssignedProjects(null, true);
-      this.notificationService.success("Project linked successfully");
-    },
-    () => {
-      this.updateAssignedProjects(null, true);
-      this.updateNotAssignedProjects(null, true);
-      this.notificationService.danger("Error occured while linking projects");
+    this.jiraProjectService.linkProjects(event.value.id, jiraProject.id).subscribe({
+      next: () => {
+        this.notificationService.success("Project linked successfully");
+      },
+      error: () => {
+        this.notificationService.danger("Error occured while linking projects");
+      },
+      complete: () => {
+        this.updateAssignedProjects(null, true);
+        this.updateNotAssignedProjects(null, true);
+      }
     });
   }
 
-  unLink(assignedJiraProject: AssignedJiraProject): void{
-    this.jiraProjectService.removeProjectJiraLink(assignedJiraProject.id).subscribe(() => {
-      this.updateAssignedProjects(null, true);
-      this.updateNotAssignedProjects(null, true);
-      this.notificationService.success("Project link removed successfully");
-    },
-    () => {
-      this.updateAssignedProjects(null, true);
-      this.updateNotAssignedProjects(null, true);
-      this.notificationService.danger("Error occured while unlinking projects");
-    }
-  )
+  unLink(assignedJiraProject: AssignedJiraProject): void {
+    this.jiraProjectService.removeProjectJiraLink(assignedJiraProject.id).subscribe({
+      next: () => {
+        this.notificationService.success("Project link removed successfully");
+      },
+      error: () => {
+        this.notificationService.danger("Error occured while unlinking projects");
+      },
+      complete: () => {
+        this.updateAssignedProjects(null, true);
+        this.updateNotAssignedProjects(null, true);
+      }
+    })
   }
 
   getJiraMemberSetting(): void{

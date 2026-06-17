@@ -4,8 +4,8 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { JiraProjectService } from 'src/app/services/jira-project.service';
 import { JiraMemberSetting } from 'src/app/models/jira-member-setting';
-import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
-import { Table } from 'primeng/table';
+import { ROWS_ON_PAGE, DEFAULT_TABLE_LOAD_EVENT, createDefaultPageResult } from 'src/app/core/constant.service';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { PagedResult } from 'src/app/services/odata';
 import { NotAssignedJiraProject } from 'src/app/models/not-assigned-jira-project';
 import { AssignedJiraProject } from 'src/app/models/assigned-jira-project';
@@ -24,17 +24,17 @@ export class JiraProjectProjectComponent implements OnInit{
   filterStr: string = '';
   jiraSettingId: number;
 
-  assignedJiraProjects: PagedResult<AssignedJiraProject>;
+  assignedJiraProjects: PagedResult<AssignedJiraProject> = createDefaultPageResult<AssignedJiraProject>();
   updatingAssignedJiraProject: boolean = false;
   isAssingedProjects: boolean = false;
   private assignedProjectsSubject = new Subject<any>();
-  private assignedProjectsLastEvent: any;
+  public assignedProjectsLastEvent: TableLazyLoadEvent = DEFAULT_TABLE_LOAD_EVENT;
 
-  notAssignedJiraProjects: PagedResult<NotAssignedJiraProject>;
+  notAssignedJiraProjects: PagedResult<NotAssignedJiraProject> = createDefaultPageResult<NotAssignedJiraProject>();
   updatingNotAssignedJiraProject: boolean = false;
   isNotAssingedProjects: boolean = false;
   private notAssignedProjectsSubject = new Subject<any>();
-  private notAssignedProjectsLastEvent: any;
+  public notAssignedProjectsLastEvent: TableLazyLoadEvent = DEFAULT_TABLE_LOAD_EVENT;
 
 
   onSubmit: any;
@@ -60,13 +60,14 @@ export class JiraProjectProjectComponent implements OnInit{
       return this.jiraProjectService.getAssignedProjects(this.jiraSettingId, this.assignedProjectsLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<AssignedJiraProject>) => {
-      if (!this.assignedJiraProjects || !this.assignedProjectsLastEvent.first || this.updatingAssignedJiraProject) {
+      if (!this.assignedJiraProjects || this.assignedJiraProjects.data.length === 0 || this.assignedProjectsLastEvent.first === 0) {
         this.assignedJiraProjects = result;
       } else {
         this.assignedJiraProjects.data = this.assignedJiraProjects.data.concat(result.data);
       }
 
-      this.assignedProjectsLastEvent.first = this.assignedJiraProjects.data.length;
+      this.assignedProjectsLastEvent = {...this.assignedProjectsLastEvent,
+        first: (this.assignedJiraProjects?.data.length ?? 0) + ROWS_ON_PAGE};
       this.updatingAssignedJiraProject = false;
       this.checkIsAllAssignedProjects();
     })
@@ -74,29 +75,31 @@ export class JiraProjectProjectComponent implements OnInit{
 
   onAssignedProjectsEndScroll(): void {
     if (!this.isAssingedProjects) {
-      this.updateAssignedProjects();
+      this.updateAssignedProjects(this.assignedProjectsLastEvent, true);
     }
   }
 
-  updateAssignedProjects(event = null, updatePage?: boolean): void {
+  updateAssignedProjects(event: TableLazyLoadEvent | null = null, updatePage?: boolean): void {
     if (event) {
       this.assignedProjectsLastEvent = event;
-    }
-    if (updatePage) {
-      this.updatingAssignedJiraProject = updatePage;
-      this.assignedProjectsLastEvent.first = 0;
+
+      if (event.first === 0) {
+        this.assignedJiraProjects = createDefaultPageResult<AssignedJiraProject>();
+      }
+    } else {
+      this.assignedProjectsLastEvent = DEFAULT_TABLE_LOAD_EVENT;
+      this.assignedJiraProjects = createDefaultPageResult<AssignedJiraProject>();
     }
     if (event || updatePage) {
       this.isAssingedProjects = false;
-      this.assignedJiraProjects = null;
     }
-    this.assignedProjectsLastEvent.rows = ROWS_ON_PAGE;
+
     if (!updatePage && this.isAssingedProjects) {
       return;
     }
 
     this.assignedProjectsSubject.next({
-      event,
+      event: this.assignedProjectsLastEvent,
       filterStr: this.filterStr
     });
   }
@@ -110,13 +113,14 @@ export class JiraProjectProjectComponent implements OnInit{
       return this.jiraProjectService.getNotAssignedProjects(this.jiraSettingId, this.notAssignedProjectsLastEvent, this.filterStr)
     }),)
     .subscribe((result: PagedResult<NotAssignedJiraProject>) => {
-      if (!this.notAssignedJiraProjects || !this.notAssignedProjectsLastEvent.first || this.updatingNotAssignedJiraProject) {
+      if (!this.notAssignedJiraProjects || this.notAssignedJiraProjects.data.length === 0 || this.notAssignedProjectsLastEvent.first === 0) {
         this.notAssignedJiraProjects = result;
       } else {
         this.notAssignedJiraProjects.data = this.notAssignedJiraProjects.data.concat(result.data);
       }
 
-      this.notAssignedProjectsLastEvent.first = this.notAssignedJiraProjects.data.length;
+      this.notAssignedProjectsLastEvent = {...this.notAssignedProjectsLastEvent,
+        first: (this.notAssignedJiraProjects?.data.length ?? 0) + ROWS_ON_PAGE};
       this.updatingNotAssignedJiraProject = false;
       this.checkIsAllNotAssignedProjects();
     })
@@ -124,29 +128,31 @@ export class JiraProjectProjectComponent implements OnInit{
 
   onNotAssignedProjectsEndScroll(): void {
     if (!this.isNotAssingedProjects) {
-      this.updateNotAssignedProjects();
+      this.updateNotAssignedProjects(this.notAssignedProjectsLastEvent, true);
     }
   }
 
-  updateNotAssignedProjects(event = null, updatePage?: boolean): void {
+  updateNotAssignedProjects(event: TableLazyLoadEvent | null = null, updatePage?: boolean): void {
     if (event) {
       this.notAssignedProjectsLastEvent = event;
+
+      if (event.first === 0) {
+        this.notAssignedJiraProjects = createDefaultPageResult<NotAssignedJiraProject>();
+      }
+    } else {
+      this.notAssignedProjectsLastEvent = DEFAULT_TABLE_LOAD_EVENT;
+      this.notAssignedJiraProjects = createDefaultPageResult<NotAssignedJiraProject>();
     }
-    if (updatePage) {
-      this.updatingNotAssignedJiraProject = updatePage;
-      this.notAssignedProjectsLastEvent.first = 0;
-    }
+
     if (event || updatePage) {
       this.isNotAssingedProjects = false;
-      this.notAssignedJiraProjects = null;
     }
-    this.notAssignedProjectsLastEvent.rows = ROWS_ON_PAGE;
     if (!updatePage && this.isNotAssingedProjects) {
       return;
     }
 
     this.notAssignedProjectsSubject.next({
-      event,
+      event: this.notAssignedProjectsLastEvent,
       filterStr: this.filterStr
     });
   }

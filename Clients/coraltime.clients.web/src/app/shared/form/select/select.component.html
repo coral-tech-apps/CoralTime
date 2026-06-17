@@ -23,14 +23,15 @@
     <i [ngClass]="isOpen ? 'fa fa-angle-up' : 'fa fa-angle-down'"></i>
   </div>
 
+</div>
+
+<ng-template #overlayTemplate>
   <div
-    *ngIf="isOpen"
     class="ct-select-options"
     role="listbox"
-    style="width: 100%; position: absolute; top: 100%; left: 0; z-index: 1000;"
     [class.ct-show-to-top]="isListShowToTop"
   >
-    <mat-list class="ct-select-options-list" #matList>
+    <mat-list class="ct-select-options-list">
       <div
         class="ct-select-options-wrapper"
         #slimScroll="slimScroll"
@@ -55,4 +56,4 @@
       </div>
     </mat-list>
   </div>
-</div>
+</ng-template>
