@@ -5,6 +5,7 @@ using CoralTime.DAL.Models.Jira;
 using CoralTime.DAL.Repositories;
 using CoralTime.ViewModels.Jira;
 using Newtonsoft.Json.Linq;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,31 +34,44 @@ namespace CoralTime.BL.Services
 
                 try
                 {
-                    var response = await client.GetAsync("rest/api/3/project/search");
+                    var isAllJiraProjects = true;
+                    var startAtProjects = 0;
+                    var countProjects = 100;
+                    var jiraProjects = new List<JiraProject>();
 
-                    if (response.IsSuccessStatusCode)
+                    do
                     {
-                        var content = await response.Content.ReadAsStringAsync();
+                        var response = await client.GetAsync(BuildGetPaginatedJiraProjects(startAtProjects, countProjects));
 
-                        var json = JObject.Parse(content);
-                        var values = json["values"] as JArray;
-
-                        var jiraProjects = values.Select(x => new JiraProject
+                        if (response.IsSuccessStatusCode)
                         {
-                            JiraProjectId = (string)x["id"],
-                            Key = (string)x["key"],
-                            Name = (string)x["name"],
-                            JiraSettingId = jiraSettingId
-                        }).ToList();
+                            var content = await response.Content.ReadAsStringAsync();
 
-                        return jiraProjects;
-                        //content - should be array of project
+                            var json = JObject.Parse(content);
+                            var values = json["values"] as JArray;
+
+                            jiraProjects.AddRange(values
+                                .Select(x => new JiraProject
+                                {
+                                    JiraProjectId = (string)x["id"],
+                                    Key = (string)x["key"],
+                                    Name = (string)x["name"],
+                                    JiraSettingId = jiraSettingId
+                                }).ToList());
+
+                            //content - should be array of project
+                            isAllJiraProjects = !(bool)json["isLast"];
+                            startAtProjects += countProjects;
+                        }
+                        else
+                        {
+                            //notSuccessStatusCode
+                            isAllJiraProjects = true;
+                        }
                     }
-                    else
-                    {
-                        //notSuccessStatusCode
-                        return new List<JiraProject>();
-                    }
+                    while (isAllJiraProjects);
+
+                    return jiraProjects;
                 }
                 catch (Exception ex)
                 {
@@ -179,6 +193,11 @@ namespace CoralTime.BL.Services
             {
                 throw new CoralTimeDangerException("An error occured while unlinking project from Jira project", ex);
             }
+        }
+
+        private string BuildGetPaginatedJiraProjects(int startAt = 0, int count = 50)
+        {
+            return $"rest/api/3/project/search?startAt={startAt}&maxResults={count}";
         }
     }
 }
