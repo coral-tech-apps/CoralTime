@@ -11,8 +11,9 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using CoralTime.DAL.Models.Member;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 using CoralTime.Common.Services;
 
 namespace CoralTime.BL.Services
@@ -188,22 +189,24 @@ namespace CoralTime.BL.Services
                 byteArrayAvatar = binaryReader.ReadBytes((int) uploadedFile.Length);
             }
 
-            byte[] byteArrayIcon;
-            using (var memoryStream = new MemoryStream())
-            {
-                ResizeImage(byteArrayAvatar, Constants.ImageTypeSizeIcon, Constants.ImageTypeSizeIcon).Save(memoryStream, ImageFormat.Jpeg);
-                byteArrayIcon = memoryStream.ToArray();
-            }
+            byte[] byteArrayIcon = ResizeImage(byteArrayAvatar, Constants.ImageTypeSizeIcon, Constants.ImageTypeSizeIcon);
 
             return (byteArrayAvatar, byteArrayIcon);
         }
 
-        private static Image ResizeImage(byte[] byteArrayOfImageFile, int horizontalSize, int verticalSize)
+        private static byte[] ResizeImage(byte[] byteArrayOfImageFile, int horizontalSize, int verticalSize)
         {
-            var imageResize = Image.FromStream(new MemoryStream(byteArrayOfImageFile));
+            using var image = Image.Load(byteArrayOfImageFile);
+            image.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Size = new Size(horizontalSize, verticalSize),
+                Mode = ResizeMode.Max
+            }));
 
-            imageResize = imageResize.GetThumbnailImage(horizontalSize, verticalSize, () => false, IntPtr.Zero);
-            return imageResize;
+            using var memoryStream = new MemoryStream();
+            image.Save(memoryStream, new JpegEncoder());
+            
+            return memoryStream.ToArray();
         }
 
         public void SaveImagesFromDbToFolder()
@@ -226,7 +229,7 @@ namespace CoralTime.BL.Services
                 File.WriteAllBytes(pathIcon, memberImage.ByteArrayIcon);
             }
 
-            if (!File.Exists(pathAvatar) && memberImage.ByteArrayAvatar!= null)
+            if (!File.Exists(pathAvatar) && memberImage.ByteArrayAvatar != null)
             {
                 File.WriteAllBytes(pathAvatar, memberImage.ByteArrayAvatar);
             }

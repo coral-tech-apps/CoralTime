@@ -78,7 +78,7 @@
 }
 
 .mat-mdc-select {
-  &:focus:not(.mat-mdc-select-disabled) {
+  &:focus-visible:not(.mat-mdc-select-disabled) {
     .mat-mdc-select-arrow,
     .mat-mdc-select-trigger {
       color: $main-blue;

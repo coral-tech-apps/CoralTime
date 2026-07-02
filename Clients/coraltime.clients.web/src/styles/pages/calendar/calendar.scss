@@ -166,7 +166,8 @@ $titleDayHeight: 145px;
   margin: 81px -5px 0;
 
   > * {
-    display: block;
+    display: flex;
+    flex: 0 0 auto;
   }
 
   &:after {
@@ -269,7 +270,8 @@ $titleDayHeight: 145px;
   }
 }
 
-.ct-calendar-day-hours {
+.ct-calendar-day-hours, .ct-calendar-time-entry-time {
+  width: 100%;
   max-width: 160px;
 }
 

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -58,28 +59,44 @@ namespace CoralTime.BL.Services
             }
         }
 
-        private async Task<List<JiraWorklogView>> GetIssuesAsync(
+        private async Task<List<JiraWorklogView>> GetIssuesWorklogsAsync(
             string email,
             string apiToken,
             string domain,
-            string urlQuery,
-            Dictionary<string, (Project Project, JiraProject JiraProject)> projectKeyToProject,
+            string jqlUrl,
+            string jiraAccountId,
+            Dictionary<string, (Project Project, JiraProject JiraProject)> projectsByJiraId,
             DateTime dateFrom,
             DateTime dateTo)
         {
-            var response = await SendRequestAsync(email, apiToken, domain, urlQuery);
-            if (!response.IsSuccessStatusCode)
+            var issues = await FetchAllIssuesAsync(email, apiToken, domain, jqlUrl, projectsByJiraId);
+
+            var startedAfter = new DateTimeOffset(dateFrom).ToUnixTimeMilliseconds();
+            var startedBefore = new DateTimeOffset(dateTo.AddDays(1)).ToUnixTimeMilliseconds();
+
+            var rawWorklogs = new List<RawWorklog>();
+            foreach (var issue in issues)
             {
-                //notSuccessStatusCode
-                return [];
+                var worklogs = await FetchIssueWorklogsAsync(
+                    email, apiToken, domain, issue.IssueId, jiraAccountId, startedAfter, startedBefore);
+
+                foreach (var w in worklogs)
+                {
+                    rawWorklogs.Add(new RawWorklog(
+                        new IssuesWithProject
+                        {
+                            IssueId = issue.IssueId,
+                            ProjectId = issue.Project.Project.Id,
+                            Key = issue.Project.JiraProject.Key
+                        },
+                        (string)w["id"],
+                        w,
+                        issue.Project));
+                }
             }
 
-            var content = await response.Content.ReadAsStringAsync();
-            var jsonResponse = JObject.Parse(content);
-
-            var rawWorklogs = ExtractWorklogs(jsonResponse, projectKeyToProject);
             var worklogsIds = rawWorklogs.Select(x => x.WorklogId).ToList();
-            var jiraProjectIds = projectKeyToProject.Values
+            var jiraProjectIds = projectsByJiraId.Values
                 .Select(x => x.JiraProject.Id)
                 .Distinct()
                 .ToList();
@@ -87,9 +104,6 @@ namespace CoralTime.BL.Services
             var existedWorklogs = Uow.TimeEntryRepository
                 .GetByJiraWorklogIds(worklogsIds)
                 .ToDictionary(e => e.JiraWorklogId, e => e);
-
-            var startedAfter = new DateTimeOffset(dateFrom).ToUnixTimeMilliseconds();
-            var startedBefore = new DateTimeOffset(dateTo.AddDays(1)).ToUnixTimeMilliseconds();
 
             var newAndEdited = rawWorklogs
                 .Select(BuildWorklogView)
@@ -108,40 +122,102 @@ namespace CoralTime.BL.Services
                 .ToList();
         }
 
-        private static List<RawWorklog> ExtractWorklogs(
-            JObject jsonResponse,
-            Dictionary<string, (Project Project, JiraProject JiraProject)> projectKeyToProject)
+        private async Task<List<IssueInfo>> FetchAllIssuesAsync(
+            string email,
+            string apiToken,
+            string domain,
+            string jqlUrl,
+            Dictionary<string, (Project Project, JiraProject JiraProject)> projectsByJiraId)
         {
-            var result = new List<RawWorklog>();
+            var result = new List<IssueInfo>();
+            string nextPageToken = null;
 
-            foreach (var issue in jsonResponse["issues"])
+            do
             {
-                var projectKey = issue["fields"]["project"]["key"].ToString();
-                if (!projectKeyToProject.TryGetValue(projectKey, out var project))
+                var url = jqlUrl;
+                if (!string.IsNullOrEmpty(nextPageToken))
                 {
-                    continue;
+                    url += $"&nextPageToken={Uri.EscapeDataString(nextPageToken)}";
                 }
 
-                if (issue["fields"]["worklog"]["worklogs"] is not JArray worklogs)
+                var response = await SendRequestAsync(email, apiToken, domain, url);
+                if (!response.IsSuccessStatusCode)
                 {
-                    continue;
+                    return result;
                 }
 
-                var issueId = issue["id"].ToString();
-                foreach (var w in worklogs)
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JObject.Parse(content);
+
+                if (jsonResponse["issues"] is JArray issues)
                 {
-                    result.Add(new RawWorklog(
-                        new IssuesWithProject 
-                        { 
-                            IssueId = issueId, 
-                            ProjectId = project.Project.Id, 
-                            Key = projectKey 
-                        },
-                        (string)w["id"],
-                        w,
-                        project));
+                    foreach (var issue in issues)
+                    {
+                        var jiraProjectId = issue["fields"]?["project"]?["id"]?.ToString();
+                        if (jiraProjectId == null || !projectsByJiraId.TryGetValue(jiraProjectId, out var project))
+                        {
+                            continue;
+                        }
+
+                        result.Add(new IssueInfo(
+                            issue["id"].ToString(),
+                            project));
+                    }
                 }
+
+                var isLast = jsonResponse["isLast"]?.Value<bool>() ?? true;
+                nextPageToken = isLast ? null : jsonResponse["nextPageToken"]?.ToString();
             }
+            while (!string.IsNullOrEmpty(nextPageToken));
+
+            return result;
+        }
+
+        private async Task<List<JToken>> FetchIssueWorklogsAsync(
+            string email,
+            string apiToken,
+            string domain,
+            string issueId,
+            string jiraAccountId,
+            long startedAfter,
+            long startedBefore)
+        {
+            var result = new List<JToken>();
+            int startAt = 0;
+            const int maxResults = 100;
+            int total;
+
+            do
+            {
+                var url = $"/rest/api/3/issue/{issueId}/worklog" +
+                          $"?startedAfter={startedAfter}&startedBefore={startedBefore}" +
+                          $"&startAt={startAt}&maxResults={maxResults}";
+
+                var response = await SendRequestAsync(email, apiToken, domain, url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return result;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JObject.Parse(content);
+
+                if (jsonResponse["worklogs"] is JArray worklogs)
+                {
+                    foreach (var w in worklogs)
+                    {
+                        var authorId = w["author"]?["accountId"]?.ToString();
+                        if (authorId == jiraAccountId)
+                        {
+                            result.Add(w);
+                        }
+                    }
+                }
+
+                total = jsonResponse["total"]?.Value<int>() ?? 0;
+                startAt += maxResults;
+            }
+            while (startAt < total);
 
             return result;
         }
@@ -226,11 +302,15 @@ namespace CoralTime.BL.Services
             JToken Token,
             (Project Project, JiraProject JiraProject) Project);
 
+        private sealed record IssueInfo(
+            string IssueId,
+            (Project Project, JiraProject JiraProject) Project);
+
         private string GenerateUrlFoIssues(JiraWorklogFilterView filter, int currentMemberId)
         {
             var assignedProjects = Uow.LinkedJiraProjectRepository.GetLinkedJiraProjects(filter.JiraSettingId)
                 .Where(j => filter.ProjectIds.Contains(j.Id))
-                .Select(j => j.JiraProject.Key)
+                .Select(j => j.JiraProject.JiraProjectId)
             .ToArray();
 
             var jiraAccountId = Uow.jiraMemberSettingsRepository.GetJiraUserId(filter.JiraSettingId, currentMemberId);
@@ -239,7 +319,7 @@ namespace CoralTime.BL.Services
             var jql = $"/rest/api/3/search/jql?jql=project IN ({projectList}) " +
                 $"AND worklogAuthor = {jiraAccountId} " +
                 $"AND worklogDate >= \"{filter.DateFrom.ToString("yyyy-MM-dd")}\" AND worklogDate <= \"{filter.DateTo.ToString("yyyy-MM-dd")}\"" +
-                $"&fields=id,key,project,worklog";
+                $"&fields=id,key,project";
 
             return jql;
         }
@@ -253,11 +333,11 @@ namespace CoralTime.BL.Services
                 .Where(x => projectIds.Contains(x.Id))
                 .Select(x => new
                 {
-                    x.JiraProject.Key,
+                    x.JiraProject.JiraProjectId,
                     x.Project,
                     x.JiraProject
                 })
-                .ToDictionaryAsync(x => x.Key, x => (x.Project, x.JiraProject));
+                .ToDictionaryAsync(x => x.JiraProjectId, x => (x.Project, x.JiraProject));
         }
 
 
@@ -276,8 +356,9 @@ namespace CoralTime.BL.Services
             var projectKeyToProject = await GetKeyToPrj(filter);
 
             var urlStringIssues = GenerateUrlFoIssues(filter, currentMemberId);
+            var jiraAccountId = Uow.jiraMemberSettingsRepository.GetJiraUserId(filter.JiraSettingId, currentMemberId);
 
-            return await GetIssuesAsync(email, apiToken, domain, urlStringIssues, projectKeyToProject, filter.DateFrom, filter.DateTo);
+            return await GetIssuesWorklogsAsync(email, apiToken, domain, urlStringIssues, jiraAccountId, projectKeyToProject, filter.DateFrom, filter.DateTo);
         }
 
         public void LoadWorklog(JiraWorklogView[] worklogs)

@@ -1,11 +1,12 @@
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, QueryList } from '@angular/core';
-import { ODataServiceFactory, ODataService } from './odata';
+import { Injectable } from '@angular/core';
+import { ODataServiceFactory } from './odata';
 import { JiraSetting } from '../models/jira-setting';
 import { ConstantService } from '../core/constant.service';
 import { User } from '../models/user';
 import { JiraMemberSetting } from '../models/jira-member-setting';
+import { TableLazyLoadEvent } from 'primeng/table';
 
 @Injectable()
 export class JiraSettingService {
@@ -17,7 +18,7 @@ export class JiraSettingService {
 ;
 	}
 
-  getAssignedUsers(id: number, event, filterStr = ''): any{
+  getAssignedUsers(id: number, event: TableLazyLoadEvent, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<User>(`Jira/GetAssignedUsers(id=${id})`);
     let filters: string[] = []
 
@@ -41,7 +42,7 @@ export class JiraSettingService {
 		}));
   }
 
-  getNotAssignedUsers(id: number, event, filterStr = ''): any{
+  getNotAssignedUsers(id: number, event: TableLazyLoadEvent, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<User>(`Jira/GetNotAssignedUsers(id=${id})`);
     let filters: string[] = []
 
@@ -112,7 +113,7 @@ export class JiraSettingService {
     )
   }
 
-  loadSettingsTable(id: number, event, filterStr = ''): any{
+  loadSettingsTable(id: number, event: TableLazyLoadEvent, filterStr = ''): any{
     let odata = this.odataFactory.CreateService<JiraSetting>('Jira/GetSettings()');
     let filters: string[] = []
 
@@ -122,7 +123,7 @@ export class JiraSettingService {
     if (event.sortField) {
       query.OrderBy(event.sortField + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
     } else {
-      query.OrderBy('name' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
+      query.OrderBy('settingName' + ' ' + (event.sortOrder === 1 ? 'asc' : 'desc'));
     }
     if(filterStr){
       filters.push('contains(tolower(settingName),\'' + filterStr.trim().toLowerCase() + '\')');

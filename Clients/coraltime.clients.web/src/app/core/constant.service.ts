@@ -9,7 +9,8 @@ export const OUTPUT_DATE_FORMAT = 'YYYY-MM-DD';
 
 export const DEFAULT_TABLE_LOAD_EVENT: TableLazyLoadEvent = {
 	first: 0,
-	rows: ROWS_ON_PAGE
+	rows: ROWS_ON_PAGE,
+	sortOrder: 1
 };
 
 export const createDefaultPageResult = <T>(): PagedResult<T> => ({

@@ -52,10 +52,30 @@ export class HoverPopupDirective implements OnDestroy, AfterViewInit {
       host.addEventListener('mouseleave', () => this.scheduleClose());
     }
 
-    if (!this.overlayRef.hasAttached()) {
+    if (!this.overlayRef.hasAttached() && this.hasTemplateContent()) {
       const portal = new TemplatePortal(this.popupContentContainerRef, this.viewContainerRef);
       this.overlayRef.attach(portal);
     }
+  }
+
+  private hasTemplateContent(): boolean {
+    if (!this.popupContentContainerRef) {
+      return false;
+    }
+    const view = this.popupContentContainerRef.createEmbeddedView({});
+    view.detectChanges();
+    const hasContent = view.rootNodes.some(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return (node.textContent ?? '').trim().length > 0;
+      }
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        return el.children.length > 0 || (el.textContent ?? '').trim().length > 0;
+      }
+      return false;
+    });
+    view.destroy();
+    return hasContent;
   }
 
   private scheduleClose() {

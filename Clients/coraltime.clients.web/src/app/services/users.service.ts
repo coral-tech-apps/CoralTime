@@ -56,34 +56,31 @@ export class UsersService {
 	}
 
 	assignProjectToUser(userId: number, projectId: number, roleId: number): Observable<any> {
-		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles');
 		let userProject = new UserProject({
 			projectId: projectId,
 			roleId: roleId,
 			memberId: userId
 		});
 
-		return odata.Post(userProject);
+		return this.http.post(this.constantService.apiBaseUrl + '/MemberProjectRoles', userProject);
 	}
 
 	assignUserToProject(projectId: number, userId: number, roleId: number) {
-		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles');
 		let userProject = new UserProject({
 			projectId: projectId,
 			roleId: roleId,
 			memberId: userId
 		});
 
-		return odata.Post(userProject);
+		return this.http.post(this.constantService.apiBaseUrl + '/MemberProjectRoles', userProject);
 	}
 
 	changeRole(userProjectId: number, roleId: number): Observable<any> {
-		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles');
 		let newRoleId = {
 			roleId: roleId
 		};
 
-		return odata.Patch(newRoleId, userProjectId.toString());
+		return this.http.patch(this.constantService.apiBaseUrl + '/MemberProjectRoles/' + userProjectId, newRoleId);
 	}
 
 	getProjectUsersWithCount(event, filterStr = '', projectId: number): Observable<PagedResult<UserProject>> {
@@ -285,9 +282,7 @@ export class UsersService {
 	}
 
 	removeFromProject(userProject: UserProject): Observable<any> {
-		let odata = this.odataFactory.CreateService<UserProject>('MemberProjectRoles');
-
-		return odata.Delete(userProject.id.toString());
+		return this.http.delete(this.constantService.apiBaseUrl + '/MemberProjectRoles/' + userProject.id);
 	}
 
 	updateUser(id: number, user: User): Observable<User> {

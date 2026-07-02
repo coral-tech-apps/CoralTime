@@ -265,18 +265,18 @@ tr:hover {
     position: absolute;
     top: 14px;
     content: '';
-    width: 5px;
+    width: 16px;
     height: 16px;
     border-radius: 2.5px;
     background-color: #fff;
   }
 
   &:before {
-    left: 15px;
+    left: 14px;
   }
 
   &:after {
-    right: 15px;
+    right: 14px;
   }
 
   @media (max-width: $calendarTabletWidth) {

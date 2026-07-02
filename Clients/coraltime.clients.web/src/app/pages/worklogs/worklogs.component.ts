@@ -202,7 +202,7 @@ export class WorklogsComponent implements OnInit {
     this.getWorklogs(filters);
   }
 
-  getWorklogs(filters: any): void{
+  getWorklogs(filters: any): void {
     this.worklogService.getWorklogs(filters)
       .subscribe((res: JiraWorklog[]) => {
         this.worklogs = res.map(item => new JiraWorklog(item));

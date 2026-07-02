@@ -19,7 +19,6 @@ import { NgForIn } from './ngForIn.directive';
 import { ClickCloseDirective } from './click-close.directive';
 import { SlimscrollArrowsDirective } from './slimscroll-arrows.directive';
 import { FocusInputDirective } from './focus-input.directive';
-import { TooltipDirective } from './tooltip.directive';
 import { ComparisonHighlightsDirective } from './compare-highlighting.directive';
 import { PaginationScrollingDirective } from './pagination-scrolling.directive';
 import { HoverPopupDirective } from './hover-popup.directive';
@@ -47,7 +46,6 @@ import { HoverPopupDirective } from './hover-popup.directive';
 		ClickCloseDirective,
 		SlimscrollArrowsDirective,
 		FocusInputDirective,
-		TooltipDirective,
 		ComparisonHighlightsDirective,
 		PaginationScrollingDirective,
 		HoverPopupDirective
@@ -73,7 +71,6 @@ import { HoverPopupDirective } from './hover-popup.directive';
 		ClickCloseDirective,
 		SlimscrollArrowsDirective,
 		FocusInputDirective,
-		TooltipDirective,
 		ComparisonHighlightsDirective,
 		PaginationScrollingDirective,
 		HoverPopupDirective

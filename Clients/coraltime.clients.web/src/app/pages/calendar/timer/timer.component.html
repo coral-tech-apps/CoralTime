@@ -9,8 +9,7 @@
     </div>
     <div class="ct-hours-container">
       <button *ngIf="!getImpersonationUser()" class="ct-round-button"
-              ctTooltip
-              [ct-tooltip-data]="getButtonTitle()"
+              [title]="getButtonTitle()"
               [class.ct-timer-play-icon]="!isTimerActivated()"
               [class.ct-timer-pause-icon]="isTimerActivated()"
               [class.ct-loading]="isTimerLoading"
