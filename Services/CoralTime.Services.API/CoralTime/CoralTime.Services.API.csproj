@@ -8,7 +8,7 @@
 		<SpaProxyServerUrl>http://localhost:4200</SpaProxyServerUrl>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<LangVersion>13</LangVersion>
+		<LangVersion>14</LangVersion>
 		<!-- PreserveCompilationReferences & PreserveCompilationContext are needed for the PDF exports.
          Without this, the RazorLight package will throw the error "Cannot find reference assembly 'Microsoft.AspNetCore.Antiforgery.dll'".
          This is the suggested fix on the project's GitHub page.
