@@ -1,5 +1,4 @@
 ﻿using CoralTime.BL.Interfaces;
-using CoralTime.Common.Constants;
 using CoralTime.DAL.Repositories;
 
 namespace CoralTime.BL.Services
@@ -11,9 +10,6 @@ namespace CoralTime.BL.Services
 
         public void ResetCache()
         {
-            Uow.SingleCacheClearByKey(Constants.CertificateKeys);
-            Uow.SingleCacheClearByKey(Constants.CertificateKeysTime);
-
             Uow.UserRepository.LinkedCacheClear();
             Uow.UserRepository.LinkedCacheGetList();
         }

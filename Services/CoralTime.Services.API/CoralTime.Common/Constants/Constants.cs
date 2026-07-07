@@ -448,10 +448,7 @@ namespace CoralTime.Common.Constants
 
         public const int MockId = -1;
 
-        public const string CertificateKeys = "CertificateKeys";
-        public const string CertificateKeysTime = "CertificateKeysTime";
-
-        #region VSTS 
+        #region VSTS
 
         public const string VstsProjectsUrl = "/_apis/projects";
         public const string VstsTeamsUrl = "/teams";
