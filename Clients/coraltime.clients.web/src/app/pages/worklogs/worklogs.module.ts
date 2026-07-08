@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { WorklogsComponent } from './worklogs.component';
 import { WorklogsRoutingModule } from './worklogs-routing.module';
 import { RangeDatepickerService } from '../reports/range-datepicker/range-datepicker.service';
-import { ReportsService } from 'src/app/services/reposts.service';
 
 @NgModule({
     imports: [
@@ -16,7 +15,6 @@ import { ReportsService } from 'src/app/services/reposts.service';
       WorklogsComponent,
     ],
     providers: [
-      ReportsService,
       RangeDatepickerService,
     ],
     exports: [

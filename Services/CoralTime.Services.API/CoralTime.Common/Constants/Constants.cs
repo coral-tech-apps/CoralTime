@@ -188,6 +188,7 @@ namespace CoralTime.Common.Constants
             public const string Tasks = "Tasks";
             public const string TimeEntries = "TimeEntries";
             public const string Setup = "Setup";
+            public const string CompanySettingsWeekStart = "WeekStart";
 
             //TODO: delete this
             public const string GetWorklogs = "GetWorklogs";

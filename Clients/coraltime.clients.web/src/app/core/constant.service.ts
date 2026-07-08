@@ -18,6 +18,17 @@ export const createDefaultPageResult = <T>(): PagedResult<T> => ({
 	data: []
 });
 
+export const BROWSER_STORAGE_KEYS = {
+	STATES: {
+		RANGE_DATEPICKER_STATE_WORKLOGS: 'RANGE_DATEPICKER_STATE_WORKLOGS',
+		// RANGE_DATEPICKER_STATE_REPORTS: 'RANGE_DATEPICKER_STATE_REPORTS'
+	},
+	QUERIES: {
+		// REPORTS_QUERY: 'REPORTS_QUERY',
+		WORKLOGS_QUERY: 'WORKLOGS_QUERY',
+	}
+};
+
 @Injectable()
 export class ConstantService {
 	apiBaseUrl = '/api/v1';
@@ -25,6 +36,7 @@ export class ConstantService {
 	jiraProject = this.apiBaseUrl + '/JiraProject';
   jiraWorklog = this.apiBaseUrl + '/JiraWorklog';
 	adminApi = this.apiBaseUrl + '/Admin/';
+	companySettingsApi: string = this.apiBaseUrl + '/CompanySettings';
 	profileApi: string = this.apiBaseUrl + '/Profile';
 	reportsApi: string = this.apiBaseUrl + '/Reports';
 	timeEntriesApi: string = this.apiBaseUrl + '/TimeEntries/';

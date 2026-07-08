@@ -20,7 +20,7 @@
                     <ct-range-datepicker *ngIf="isDatepickerShown"
                                                  [class.ct-datepicker-opened]="isDatepickerAnimating"
                                                  [dateResponse]="dateResponse"
-                                                 [datePeriodList]="reportDropdowns?.values.dateStatic"
+                                                 [datePeriodList]="datePeriodList"
                                                  [firstDayOfWeek]="firstDayOfWeek"
                                                  (clickOutside)="toggleRangeDatepicker($event)"
                                                  (onPeriodChanged)="datePeriodOnChange($event)"
@@ -33,7 +33,7 @@
                     <div>
                       <ct-select [name]="'defaultProject'"
                                 [displayName]="'settingName'"
-                                [trackBy]="'id'"
+                                [trackBy]="'id'" 
                                 [defaultValue]="'Select Jira Connection'"
                                 [options]="jiraSettings"
                                 [(ngModel)]="selectedJiraSetting"
@@ -49,7 +49,8 @@
                                   [options]="assignedJiraProjectsItems"
                                   [maxSelectedLabels]="1"
                                   [selectedItemsLabel]="'Projects ({0})'"
-                                  [disabled]="!isAvaliableCheckProject || isEmptyProjects">
+                                  [disabled]="!isAvaliableCheckProject || isEmptyProjects"
+                                  (onSubmitAction)="onSelectJiraProjects()">
                         </ct-multiselect>
                         <div *ngIf="!isAvaliableCheckProject" class="ct-hint-text">
                           Select Jira connection before choosing project.

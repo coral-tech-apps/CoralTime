@@ -1,4 +1,4 @@
-export class JiraMemberSetting{
+export class JiraMemberSetting {
   id: number;
   userEmail: string;
 	settingName: string;

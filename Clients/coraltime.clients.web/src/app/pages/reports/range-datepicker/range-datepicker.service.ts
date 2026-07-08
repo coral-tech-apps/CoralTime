@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DateStatic } from '../../../models/reports';
 import dayjs from 'dayjs';
 import DayJs = dayjs.Dayjs;
+import { CompanySettingsService } from 'src/app/services/company-settings.service';
 
 export class DatePeriod {
 	dateFrom: DayJs;
@@ -18,9 +19,95 @@ export interface DateResponse {
 	dateStaticId: number
 }
 
+export enum DatesStaticIds {
+	Lifetime = 0,
+	Today = 1,
+	ThisWeek = 2,
+	ThisMonth = 3,
+	ThisYear = 4,
+	Yesterday = 5,
+	LastWeek = 6,
+	LastMonth = 7,
+	LastYear = 9,
+	ThisQuarter = 10,
+	LastQuarter = 11,
+}
+
 @Injectable()
 export class RangeDatepickerService {
 	dateStaticList: DateStatic[];
+
+	constructor(
+		private companySettingsService: CompanySettingsService
+	) {
+		this.dateStaticList = this.buildDateStaticList(this.companySettingsService.startOfWeek);
+	}
+
+	private buildDateStaticList(startOfWeek: number, today: Date = new Date()): DateStatic[] {
+		const base = dayjs(today).startOf('day');
+
+		const thisWeekFrom = this.startOfWeekDay(base, startOfWeek);
+		const thisWeek = { from: thisWeekFrom, to: thisWeekFrom.add(7, 'day').subtract(1, 'millisecond') };
+		const lastWeekFrom = thisWeekFrom.subtract(7, 'day');
+		const lastWeek = { from: lastWeekFrom, to: lastWeekFrom.add(7, 'day').subtract(1, 'millisecond') };
+
+		const thisMonth = { from: base.startOf('month'), to: base.endOf('month').startOf('day').add(1, 'day').subtract(1, 'millisecond') };
+		const lastMonthBase = base.subtract(1, 'month');
+		const lastMonth = { from: lastMonthBase.startOf('month'), to: lastMonthBase.endOf('month').startOf('day').add(1, 'day').subtract(1, 'millisecond') };
+
+		const thisQuarter = this.quarterRange(base);
+		const lastQuarter = this.quarterRange(base.subtract(3, 'month'));
+
+		const thisYear = { from: base.startOf('year'), to: base.endOf('year').startOf('day').add(1, 'day').subtract(1, 'millisecond') };
+		const lastYearBase = base.subtract(1, 'year');
+		const lastYear = { from: lastYearBase.startOf('year'), to: lastYearBase.endOf('year').startOf('day').add(1, 'day').subtract(1, 'millisecond') };
+
+		const today0 = { from: base, to: base };
+		const yesterdayBase = base.subtract(1, 'day');
+		const yesterday = { from: yesterdayBase, to: yesterdayBase };
+		const lifetimeMin = dayjs(new Date(1, 0, 1)).year(1);
+		const lifetime = { from: lifetimeMin, to: lifetimeMin };
+
+		this.dateStaticList = [
+			this.toDateStatic(DatesStaticIds.ThisWeek, 'This Week', thisWeek),
+			this.toDateStatic(DatesStaticIds.ThisMonth, 'This Month', thisMonth),
+			this.toDateStatic(DatesStaticIds.ThisQuarter, 'This Quarter', thisQuarter),
+			this.toDateStatic(DatesStaticIds.ThisYear, 'This Year', thisYear),
+			this.toDateStatic(DatesStaticIds.LastWeek, 'Last Week', lastWeek),
+			this.toDateStatic(DatesStaticIds.LastMonth, 'Last Month', lastMonth),
+			this.toDateStatic(DatesStaticIds.LastQuarter, 'Last Quarter', lastQuarter),
+			this.toDateStatic(DatesStaticIds.LastYear, 'Last Year', lastYear),
+			this.toDateStatic(DatesStaticIds.Today, 'Today', today0),
+			this.toDateStatic(DatesStaticIds.Yesterday, 'Yesterday', yesterday),
+			this.toDateStatic(DatesStaticIds.Lifetime, 'Lifetime', lifetime),
+		];
+
+		return this.dateStaticList;
+	}
+
+	private startOfWeekDay(date: DayJs, startOfWeek: number): DayJs {
+		let diff = date.day() - startOfWeek;
+		if (diff < 0) {
+			diff += 7;
+		}
+		return date.subtract(diff, 'day').startOf('day');
+	}
+
+	private quarterRange(date: DayJs): { from: DayJs, to: DayJs } {
+		const quarterId = Math.floor(date.month() / 3);
+		const from = dayjs(new Date(date.year(), quarterId * 3, 1)).startOf('day');
+		const to = from.add(3, 'month').subtract(1, 'millisecond');
+		return { from, to };
+	}
+
+	private toDateStatic(id: DatesStaticIds, description: string, range: { from: DayJs, to: DayJs }): DateStatic {
+		return {
+			id,
+			description,
+			dateFrom: range.from.toISOString(),
+			dateTo: range.to.toISOString()
+		};
+	}
 
 	setDateStringPeriod(period: DatePeriod): string {
 		for (let dateStatic of this.dateStaticList) {

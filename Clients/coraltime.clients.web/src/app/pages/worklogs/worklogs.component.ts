@@ -1,31 +1,30 @@
 import { NotificationService } from './../../core/notification.service';
 import { JiraProjectService } from 'src/app/services/jira-project.service';
-import { finalize } from 'rxjs/operators';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import dayjs from 'dayjs';
-import {
-	ReportDropdowns,
-  ReportQuery,
-} from '../../models/reports';
 import { User } from '../../models/user';
 import { LoadingMaskService } from '../../shared/loading-indicator/loading-mask.service';
 import { ImpersonationService } from '../../services/impersonation.service';
-import { ReportsService } from '../../services/reposts.service';
 import { CustomSelectItem } from '../../shared/form/multiselect/multiselect.component';
-import { DatePeriod, DateResponse, RangeDatepickerService } from '../reports/range-datepicker/range-datepicker.service';
+import {
+	DatePeriod,
+	DateResponse,
+	DatesStaticIds,
+	RangeDatepickerService
+} from '../reports/range-datepicker/range-datepicker.service';
 import { JiraSettingService } from 'src/app/services/jira-settings.service';
 import { JiraMemberSetting } from 'src/app/models/jira-member-setting';
 import { AssignedJiraProject } from 'src/app/models/assigned-jira-project';
-import { ROWS_ON_PAGE } from 'src/app/core/constant.service';
+import { ROWS_ON_PAGE } from './../../core/constant.service';
 import { PagedResult } from 'src/app/services/odata';
-import { HttpClient } from '@angular/common/http';
 import { JiraWorklog, JiraWorklogType } from 'src/app/models/jira-worklog';
 import { Task } from 'src/app/models/task';
 import { TasksService } from 'src/app/services/tasks.service';
 import { WorkglogService } from 'src/app/services/worklog.service';
-
-const ROWS_TOTAL_NUMBER = 50;
+import { DateStatic } from '../../models/reports';
+import { StatePersistenceService } from './../../core/state-persistence.service';
+import { WorklogFilters } from './worklogs-filters.interface';
 
 @Component({
     selector: 'ct-worklogs',
@@ -39,7 +38,6 @@ export class WorklogsComponent implements OnInit {
   hasNoJiraFiltersSelected: boolean = true;
   hasJiraFiltersButNoWorklogsSelected: boolean = false;
   isEmptyProjects: boolean = true;
-	reportDropdowns: ReportDropdowns;
   user: User;
 
   tasks: Task[] =[]
@@ -67,6 +65,10 @@ export class WorklogsComponent implements OnInit {
 	oldDateResponse: DateResponse;
 	oldDateString: string;
 	userInfo: User;
+  
+  public get datePeriodList(): DateStatic[] {
+    return this.rangeDatepickerService.dateStaticList;
+  }
 
   private assignedProjectsEvent: any;
 
@@ -76,12 +78,11 @@ export class WorklogsComponent implements OnInit {
 	            private impersonationService: ImpersonationService,
 	            private loadingService: LoadingMaskService,
 	            private rangeDatepickerService: RangeDatepickerService,
-	            private reportsService: ReportsService,
+              private statePersistenceService: StatePersistenceService,
 	            private route: ActivatedRoute,
               private tasksService: TasksService,
               private notificationService: NotificationService,
-              private worklogService: WorkglogService,
-              private http: HttpClient) {
+              private worklogService: WorkglogService) {
               this.route.data.forEach((data: { user: User }) => {
                 this.user = this.impersonationService.impersonationUser || data.user;
                 });
@@ -89,39 +90,20 @@ export class WorklogsComponent implements OnInit {
 
 	ngOnInit() {
 
-		this.route.data.forEach((data: { user: User, reportFilters: ReportDropdowns }) => {
+		this.route.data.forEach((data: { user: User }) => {
 			this.userInfo = this.impersonationService.impersonationUser || data.user;
 			this.dateFormat = this.userInfo.dateFormat;
 			this.dateFormatId = this.userInfo.dateFormatId;
 			this.firstDayOfWeek = this.userInfo.weekStart;
 		});
 
+    this.loadQueryState();
+
     this.getJiraSettings();
     this.checkSelectProject();
 
-		this.loadingService.addLoading();
-		this.reportsService.getReportDropdowns().pipe(
-			finalize(() => this.loadingService.removeLoading()))
-			.subscribe((reportFilters: ReportDropdowns) => {
-				this.setWorklogDropdowns(reportFilters);
-			});
     this.loadTasks();
-
-	}
-
-	setWorklogDropdowns(worklogDropdowns: ReportDropdowns): void {
-		this.reportDropdowns = worklogDropdowns;
-		this.rangeDatepickerService.dateStaticList = worklogDropdowns.values.dateStatic;
-
-    this.setWorkglogDatePeriog(worklogDropdowns.currentQuery);
-	}
-
-    private setWorkglogDatePeriog(worklogFilters: ReportQuery): void {
-      this.datePeriodOnChange({
-        datePeriod: new DatePeriod(dayjs(worklogFilters.dateFrom), dayjs(worklogFilters.dateTo)),
-        dateStaticId: worklogFilters.dateStaticId
-      });
-    }
+  }
 
   // send timeEntries
   addTimeEntries(): void{
@@ -224,11 +206,13 @@ export class WorklogsComponent implements OnInit {
     this.assignedJiraProjectsIds = [];
     this.checkSelectProject();
     this.updatePopupFlags();
+
+    this.updateWorklogsQueryState({ jiraMemberSetting: this.selectedJiraSetting, selectedJiraProjectIds: this.assignedJiraProjectsIds });
   }
 
   // Assigned Jira Projects
 
-  getAssignedJiraProjects(){
+  getAssignedJiraProjects() {
     if(!this.assignedProjectsEvent){
       this.assignedProjectsEvent = {
         first: 0,
@@ -260,6 +244,10 @@ export class WorklogsComponent implements OnInit {
     }else{
       this.isAvaliableCheckProject = false;
     }
+  }
+
+  onSelectJiraProjects(): void {
+    this.updateWorklogsQueryState({ selectedJiraProjectIds: this.assignedJiraProjectsIds });
   }
 
 	// Datepicker
@@ -299,6 +287,7 @@ export class WorklogsComponent implements OnInit {
 	datePeriodOnChange(dateResponse: DateResponse): void {
 		this.dateResponse = dateResponse;
 		this.setDateString(dateResponse.datePeriod);
+		this.updateWorklogsQueryState({ dateRange: dateResponse });
 	}
 
 	getNewPeriod(isNext: boolean = true): void {
@@ -321,6 +310,7 @@ export class WorklogsComponent implements OnInit {
 
 		this.setDateString(this.dateResponse.datePeriod);
 		this.dateResponse.dateStaticId = null;
+		this.updateWorklogsQueryState({ dateRange: this.dateResponse });
 	}
 
   isDisable(): boolean {
@@ -336,6 +326,52 @@ export class WorklogsComponent implements OnInit {
 		let selectedRange = new DatePeriod(period.dateFrom, period.dateTo);
 		this.dateString = this.rangeDatepickerService.setDateStringPeriod(selectedRange);
 	}
+
+  private loadQueryState(): void {
+    const worklogsQuery = this.statePersistenceService.getState<WorklogFilters>('WORKLOGS_QUERY');
+    if(worklogsQuery) {
+      this.selectedJiraSetting = worklogsQuery.jiraMemberSetting;
+      this.assignedJiraProjectsIds = worklogsQuery.selectedJiraProjectIds;
+
+      this.applyInitialDatePeriod(this.rehydrateDateResponse(worklogsQuery.dateRange));
+    }
+  }
+
+  private rehydrateDateResponse(raw: DateResponse): DateResponse | null {
+    if (!raw || !raw.datePeriod) {
+      return null;
+    }
+    return {
+      datePeriod: new DatePeriod(dayjs(raw.datePeriod.dateFrom), dayjs(raw.datePeriod.dateTo)),
+      dateStaticId: raw.dateStaticId
+    };
+  }
+
+	private applyInitialDatePeriod(dateResponse: DateResponse): void {
+		if (dateResponse) {
+			this.datePeriodOnChange(dateResponse);
+			return;
+		}
+
+		const thisWeek = this.rangeDatepickerService.dateStaticList.find(x => x.id === DatesStaticIds.ThisWeek);
+		this.datePeriodOnChange({
+			datePeriod: new DatePeriod(dayjs(thisWeek.dateFrom), dayjs(thisWeek.dateTo)),
+			dateStaticId: thisWeek.id
+		});
+	}
+
+  private updateWorklogsQueryState(patch: Partial<WorklogFilters>): void {
+    const currentState = this.statePersistenceService.getState<WorklogFilters>('WORKLOGS_QUERY') || {
+      dateRange: this.dateResponse,
+      jiraMemberSetting: this.selectedJiraSetting,
+      selectedJiraProjectIds: this.assignedJiraProjectsIds
+    };
+
+    this.statePersistenceService.setState<WorklogFilters>('WORKLOGS_QUERY', {
+      ...currentState,
+      ...patch
+    });
+  }
 
   private updatePopupFlags(): void {
   this.hasSelectedWorklogsWithoutTask = this.worklogs.some(w => w.selected && (!w.taskId || w.taskId === 0));

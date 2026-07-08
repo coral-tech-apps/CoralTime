@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { inject, NgModule, provideAppInitializer } from '@angular/core';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,6 +30,7 @@ import { MemberActionsService } from './services/member-action.service';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
+import { CompanySettingsService } from './services/company-settings.service';
 
 export function httpFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, 'assets/translate/i18n', '.json');
@@ -78,6 +79,11 @@ export function httpFactory(http: HttpClient) {
         AppInsightsService,
         { provide: ErrorHandler, useClass: CustomErrorHandler },
         provideHttpClient(withInterceptorsFromDi()),
+        provideAppInitializer(() => {
+            const companySettingsService = inject(CompanySettingsService);
+
+            companySettingsService.getStartOfWeek();
+        })
     ]})
 
 export class AppModule {
