@@ -11,30 +11,14 @@
   [value] = "tableData">
   <ng-template pTemplate="header">
     <tr>
-      <th>
-        Setting name
-      </th>
-      <th>
-        Api Token
-      </th>
-      <th>
-        Domain
-      </th>
-      <th>
-        User Email
-      </th>
-      <th>
-        Account id
-      </th>
-      <th>
-        Edit
-      </th>
-      <th>
-        Projects
-      </th>
-      <th>
-        Action
-      </th>
+      <th>Setting name</th>
+      <th>Api Token</th>
+      <th>Domain</th>
+      <th>User Email</th>
+      <th>Account id</th>
+      <th>Edit</th>
+      <th>Projects</th>
+      <th>Action</th>
     </tr>
   </ng-template>
 
@@ -64,6 +48,13 @@
       </td>
       <td>
           <a class="ct-grid-link ct-grid-ellipse" style="left: 0px !important" (click)="checkConncetion(row.jiraSettingId, row.settingName)" >Verify</a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8" class="ct-grid-empty-message">
+        Ask your project admin to assign Jira project
       </td>
     </tr>
   </ng-template>
