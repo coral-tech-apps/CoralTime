@@ -1,22 +1,20 @@
-﻿using CoralTime.Common.Constants;
+using CoralTime.Common.Constants;
 using CoralTime.DAL.Models;
-using CoralTime.ViewModels.Azure;
 using Duende.IdentityModel;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoralTime.Services.API.Services
@@ -26,18 +24,18 @@ namespace CoralTime.Services.API.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
         private readonly ILogger<AzureGrant> _logger;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IConfigurationManager<OpenIdConnectConfiguration> _configManager;
 
         public AzureGrant(
             UserManager<ApplicationUser> userManager,
             IConfiguration config,
             ILogger<AzureGrant> logger,
-            IMemoryCache memoryCache)
+            IConfigurationManager<OpenIdConnectConfiguration> configManager)
         {
             _userManager = userManager;
             _config = config;
             _logger = logger;
-            _memoryCache = memoryCache;
+            _configManager = configManager;
         }
 
         public string GrantType => Constants.Authorization.CoralTimeAzure.GrantType;
@@ -83,44 +81,21 @@ namespace CoralTime.Services.API.Services
             }
         }
 
-
-    private async Task<JwtSecurityToken> ValidateTokenAsync(string jwtToken)
+        private async Task<JwtSecurityToken> ValidateTokenAsync(string jwtToken)
         {
             try
             {
-                var certificates = await GetCertificateKeysAsync();
-                var tokenToCheck = new JwtSecurityToken(jwtToken);
-                var kid = tokenToCheck.Header.Kid;
-                var x5t = tokenToCheck.Header.X5t;
-
-                string Normalize(string s) => s?.Replace('-', '+').Replace('_', '/');
-                var normalizedKid = Normalize(kid);
-                var normalizedX5t = Normalize(x5t);
-
-                var matchingKey = certificates.Keys.FirstOrDefault(k =>
-                    (normalizedKid != null && (k.Kid == kid || Normalize(k.Kid) == normalizedKid)) ||
-                    (normalizedX5t != null && Normalize(k.X5t) == normalizedX5t));
-
-                if (matchingKey?.X5c?.FirstOrDefault() is not string x5cBase64 || string.IsNullOrWhiteSpace(x5cBase64))
-                {
-                    _logger.LogError("Matching certificate not found. kid: {kid}, x5t: {x5t}, available kids: {kids}",
-                        kid, x5t, string.Join(",", certificates.Keys.Select(k => k.Kid)));
-                    return null;
-                }
-
-                var rawCertData = Convert.FromBase64String(x5cBase64);
-                var cert = X509CertificateLoader.LoadCertificate(rawCertData);
-                var key = new X509SecurityKey(cert);
+                var openIdConfig = await _configManager.GetConfigurationAsync(CancellationToken.None);
 
                 var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = _config["Authentication:AzureAd:Issuer"],
+                    ValidIssuer = openIdConfig.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = _config["Authentication:AzureAd:Audience"],
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = key,
-                    ValidateAudience = true,
-                    ValidAudience = _config["Authentication:AzureAd:Audience"]
+                    IssuerSigningKeys = openIdConfig.SigningKeys
                 };
 
                 var handler = new JwtSecurityTokenHandler();
@@ -132,32 +107,6 @@ namespace CoralTime.Services.API.Services
                 _logger.LogError(ex, "Azure Token validation failed");
                 return null;
             }
-        }
-
-
-    private async Task<CertificateKeys> GetCertificateKeysAsync()
-        {
-            var certificateKeys = _memoryCache.TryGetValue(Constants.CertificateKeys, out CertificateKeys certificates);
-            var certificateKeysTime = _memoryCache.TryGetValue(Constants.CertificateKeysTime, out DateTime certificatesTime);
-
-           if (!certificateKeys || !certificateKeysTime || DateTime.Now.Subtract(certificatesTime).TotalHours >= 24)
-            {
-                var url = _config["Authentication:AzureAd:CertificatesUrl"];
-                var client = new HttpClient();
-                var json = await client.GetStringAsync(url);
-
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-                certificates = JsonSerializer.Deserialize<CertificateKeys>(json, options);
-                
-                _memoryCache.Set(Constants.CertificateKeysTime, DateTime.Now);
-                _memoryCache.Set(Constants.CertificateKeys, certificates);
-            }
-
-            return certificates;
         }
 
         private static IEnumerable<Claim> GetUserClaims(ApplicationUser user)

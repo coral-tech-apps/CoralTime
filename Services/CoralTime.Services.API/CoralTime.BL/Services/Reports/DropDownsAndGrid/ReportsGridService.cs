@@ -195,19 +195,22 @@ namespace CoralTime.BL.Services.Reports.DropDownsAndGrid
             {
                 CheckAndSetIfInFilterChooseSingleProject(reportsGridView);
 
-                timeEntriesByDateOfUser = timeEntriesByDateOfUser.Where(x => reportsGridView.CurrentQuery.ProjectIds.Contains(x.ProjectId));
+                var projectIds = reportsGridView.CurrentQuery.ProjectIds.ToList();
+                timeEntriesByDateOfUser = timeEntriesByDateOfUser.Where(x => projectIds.Contains(x.ProjectId));
             }
 
             // By Members.
             if (reportsGridView.CurrentQuery?.MemberIds != null && reportsGridView.CurrentQuery.MemberIds.Length > 0)
             {
-                timeEntriesByDateOfUser = timeEntriesByDateOfUser.Where(x => reportsGridView.CurrentQuery.MemberIds.Contains(x.MemberId));
+                var memberIds = reportsGridView.CurrentQuery.MemberIds.ToList();
+                timeEntriesByDateOfUser = timeEntriesByDateOfUser.Where(x => memberIds.Contains(x.MemberId));
             }
 
             // By Clients that has Projects.
             if (reportsGridView.CurrentQuery?.ClientIds != null && reportsGridView.CurrentQuery.ClientIds.Length > 0)
             {
-                timeEntriesByDateOfUser = timeEntriesByDateOfUser.Where(x => reportsGridView.CurrentQuery.ClientIds.Contains(x.Project.ClientId) || x.Project.ClientId == null && reportsGridView.CurrentQuery.ClientIds.Contains(WithoutClient.Id));
+                var clientIds = reportsGridView.CurrentQuery.ClientIds.ToList();
+                timeEntriesByDateOfUser = timeEntriesByDateOfUser.Where(x => clientIds.Contains(x.Project.ClientId) || x.Project.ClientId == null && clientIds.Contains(WithoutClient.Id));
             }
 
             return timeEntriesByDateOfUser.ToList();
@@ -279,8 +282,8 @@ namespace CoralTime.BL.Services.Reports.DropDownsAndGrid
             var managerProjectIds = Uow.MemberProjectRoleRepository.LinkedCacheGetList()
                 .Where(r => r.MemberId == ReportMemberImpersonated.Id && r.RoleId == Uow.ProjectRoleRepository.GetManagerRoleId())
                 .Select(x => x.ProjectId)
-                .ToArray();
-            var isManager = managerProjectIds.Length > 0;
+                .ToList();
+            var isManager = managerProjectIds.Count > 0;
 
             #region Constrain for Member. return only TimeEntries that manager is assign.
 

@@ -43,6 +43,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
@@ -199,6 +201,17 @@ builder.Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPass
 builder.Services.AddTransient<Duende.IdentityServer.Services.IProfileService, IdentityWithAdditionalClaimsProfileService>();
 builder.Services.AddTransient<IExtensionGrantValidator, AzureGrant>();
 builder.Services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
+
+builder.Services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(_ =>
+{
+    var instance = (builder.Configuration["Authentication:AzureAd:AADInstance"] ?? "https://login.microsoftonline.com/").TrimEnd('/');
+    var tenantId = builder.Configuration["Authentication:AzureAd:TenantId"];
+    var metadataAddress = $"{instance}/{tenantId}/v2.0/.well-known/openid-configuration";
+    return new ConfigurationManager<OpenIdConnectConfiguration>(
+        metadataAddress,
+        new OpenIdConnectConfigurationRetriever(),
+        new HttpDocumentRetriever());
+});
 
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IClientService, ClientService>();
