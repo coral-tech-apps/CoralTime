@@ -46,7 +46,7 @@ namespace CoralTime.DAL.Repositories
             return await GetQuery(asNoTracking: true)
                 .Include(x => x.Project)
                 .Include(x => x.JiraProject)
-                .Where(x => x.CreationDate >= startDate && x.CreationDate <= endDate && 
+                .Where(x => x.Date >= startDate && x.Date <= endDate && 
                     x.JiraWorklogId != null && !inputWorklogs.Contains(x.JiraWorklogId) &&
                     x.CreatorId == userId && jiraProjectids.Contains(x.JiraProjectId.Value))
                 .ToListAsync(cancellationToken);
