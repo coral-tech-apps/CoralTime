@@ -141,7 +141,7 @@ export class EntryTimeComponent implements AfterContentInit, OnDestroy {
 	}
 
 	private isTopClear(el: HTMLElement): boolean {
-		return el.getBoundingClientRect().bottom > 800;
+		return el.getBoundingClientRect().bottom > 560;
 	}
 
 	private changeCloseParameter(): void {
@@ -154,20 +154,25 @@ export class EntryTimeComponent implements AfterContentInit, OnDestroy {
 	}
 
 	private scrollWindow(el: HTMLElement): void {
+		let scrollContainer = el.closest('.ct-calendar') as HTMLElement;
+		if (!scrollContainer) {
+			return;
+		}
+
 		let elTop: number = el.getBoundingClientRect().top;
 		if (!this.isDirectionTop && elTop < 295) {
-			window.scrollTo({
+			scrollContainer.scrollTo({
 				left: 0,
-				top: elTop + window.scrollY - 295,
+				top: elTop + scrollContainer.scrollTop - 295,
 				behavior: 'smooth'
 			});
 		}
 
 		let elBottom: number = el.getBoundingClientRect().bottom;
 		if (this.isDirectionTop && elBottom > window.innerHeight) {
-			window.scrollTo({
+			scrollContainer.scrollTo({
 				left: 0,
-				top: elBottom - window.innerHeight + window.scrollY + 10,
+				top: elBottom - window.innerHeight + scrollContainer.scrollTop + 10,
 				behavior: 'smooth'
 			});
 		}

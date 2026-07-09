@@ -25,6 +25,7 @@ html, body {
   padding: $nav-height 20px 0;
   background: $gray-page-background;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .ct-page-container {
@@ -145,6 +146,10 @@ html, body {
 
     .ct-calendar-day-container {
       min-height: calc(100vh - 200px);
+    }
+
+    .ct-calendar {
+      height: calc(100vh - 200px);
     }
   }
 

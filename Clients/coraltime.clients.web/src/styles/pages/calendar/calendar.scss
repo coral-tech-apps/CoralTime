@@ -164,6 +164,9 @@ $titleDayHeight: 145px;
   -ms-user-select: none;
   display: flex;
   margin: 81px -5px 0;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
 
   > * {
     display: flex;
