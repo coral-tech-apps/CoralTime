@@ -16,7 +16,7 @@
       <th>Domain</th>
       <th>User Email</th>
       <th>Account id</th>
-      <th>Edit</th>
+      <th>Token</th>
       <th>Projects</th>
       <th>Action</th>
     </tr>
@@ -41,13 +41,22 @@
           ></i>
       </td>
       <td class="ct-small-padding">
-          <a class="ct-grid-settings-icon" (click)="openConnectionDialog(row)"></a>
+        <button class="ct-action-button ct-bold" (click)="openConnectionDialog(row)">
+          <span [style]="{'margin-top': '7px'}">************</span>
+          <i class="ct-edit-icon" [style]="{'width': '20px', 'height': '20px'}"></i>
+        </button>
       </td>
       <td class="ct-small-padding">
-        <a class="ct-grid-settings-icon" (click)="onJiraProjectDialog(row)"></a>
+        <button class="ct-action-button ct-gray-background ct-bold" (click)="onJiraProjectDialog(row)">
+          <span>View</span>
+          <i class="ct-visible-icon" [style]="{'width': '20px', 'height': '20px'}"></i>
+        </button>
       </td>
       <td>
-          <a class="ct-grid-link ct-grid-ellipse" style="left: 0px !important" (click)="checkConncetion(row.jiraSettingId, row.settingName)" >Verify</a>
+        <button class="ct-action-button ct-light-green-background ct-bold" (click)="checkConncetion(row.jiraSettingId, row.settingName)">
+          <span>Verify</span>
+          <i class="ct-edit-icon" [style]="{'width': '20px', 'height': '20px'}"></i>
+        </button>
       </td>
     </tr>
   </ng-template>

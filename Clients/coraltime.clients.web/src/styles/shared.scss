@@ -1,5 +1,6 @@
 @use './colors.scss' as *;
 @use './fonts.scss' as *;
+@use './variables.scss' as *;
 
 $fieldHeight: 30px;
 $selectHeight: 35px;
@@ -557,6 +558,27 @@ button.ct-blue-button.mat-mdc-raised-button {
   .fa {
     font-size: 18px;
   }
+}
+
+.ct-action-button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  color: $black;
+  padding: $padding-btn;
+  border-radius: $rounded-btn;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.ct-gray-background {
+  background-color: $gray-page-background;
+}
+
+.ct-light-green-background {
+  background-color: $light-green;
 }
 
 .ct-noscroll {

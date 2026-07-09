@@ -314,3 +314,13 @@ tr:hover {
     background-color: #fff;
   }
 }
+
+.ct-visible-icon {
+  display: inline-block;
+  background: url(/assets/icons/visible.svg) no-repeat center;
+}
+
+.ct-edit-icon {
+  display: inline-block;
+  background: url(/assets/icons/edit.svg) no-repeat center;
+}
