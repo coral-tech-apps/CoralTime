@@ -329,25 +329,25 @@ export class WorklogsComponent implements OnInit {
 
   private loadQueryState(): void {
     const worklogsQuery = this.statePersistenceService.getState<WorklogFilters>('WORKLOGS_QUERY');
-    if(worklogsQuery) {
-      this.selectedJiraSetting = worklogsQuery.jiraMemberSetting;
-      this.assignedJiraProjectsIds = worklogsQuery.selectedJiraProjectIds;
+    
+    this.selectedJiraSetting = worklogsQuery?.jiraMemberSetting;
+    this.assignedJiraProjectsIds = worklogsQuery?.selectedJiraProjectIds ?? [];
 
-      this.applyInitialDatePeriod(this.rehydrateDateResponse(worklogsQuery.dateRange));
-    }
+    this.applyInitialDatePeriod(this.rehydrateDateResponse(worklogsQuery?.dateRange));
   }
 
-  private rehydrateDateResponse(raw: DateResponse): DateResponse | null {
+  private rehydrateDateResponse(raw: DateResponse | null): DateResponse | null {
     if (!raw || !raw.datePeriod) {
       return null;
     }
+    
     return {
       datePeriod: new DatePeriod(dayjs(raw.datePeriod.dateFrom), dayjs(raw.datePeriod.dateTo)),
       dateStaticId: raw.dateStaticId
     };
   }
 
-	private applyInitialDatePeriod(dateResponse: DateResponse): void {
+	private applyInitialDatePeriod(dateResponse: DateResponse | null): void {
 		if (dateResponse) {
 			this.datePeriodOnChange(dateResponse);
 			return;
