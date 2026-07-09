@@ -144,9 +144,10 @@ export class RangeDatepickerService {
 			return this.isFromPeriod(period, 3) ? dateString : dateString + ', ' + period.dateFrom.year();
 		}
 
-		let yearTo = period.dateTo.year();
+		const shortYearFrom = period.dateFrom.toDate().toLocaleString('en-us', {year: '2-digit'});
+		const shortYearTo = period.dateTo.toDate().toLocaleString('en-us', {year: '2-digit'});
 
-		return monthNameFrom + ' ' + monthDayFrom + ', ' + yearFrom + ' - ' + monthNameTo + ' ' + monthDayTo + ', ' + yearTo;
+		return monthNameFrom + ' ' + monthDayFrom + ', ' + shortYearFrom + ' - ' + monthNameTo + ' ' + monthDayTo + ', ' + shortYearTo;
 	}
 
 	isDatePeriodEqual(a: DatePeriod, b: DateStatic): boolean {
